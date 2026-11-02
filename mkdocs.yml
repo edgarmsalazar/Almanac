@@ -1,0 +1,80 @@
+site_name: Almanac
+site_description: An MkDocs theme and plugin for reference sites, after Tabler's look.
+docs_dir: docs
+site_dir: site
+# Pages as files, so the built site opens from disk.
+use_directory_urls: false
+
+theme:
+  name: almanac
+  icon: images/icon.svg
+  navigation: navbar
+  sections:
+    Guide:
+      icon: book
+      about: Installing the theme, configuring a site and writing its pages.
+    Lexicon:
+      icon: vocabulary
+    Roadmap:
+      icon: route
+    Components:
+      icon: components
+      about: Every component the theme carries, drawn live with its markup beneath.
+
+plugins:
+  - search
+  - almanac:
+      lexicon: lexicon.json
+      roadmap: roadmap.json
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [source, examples]
+          options:
+            heading_level: 2
+            show_root_heading: true
+            show_source: false
+            members_order: source
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+
+markdown_extensions:
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: false
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+        - name: example
+          class: example
+          format: !!python/name:almanac.fences.example_format
+
+nav:
+  - index.md
+  - Guide:
+      - Setting up: setting-up.md
+      - Writing pages: writing-pages.md
+  - Components:
+      - Content: components/content.md
+      - Data: components/data.md
+      - Controls: components/controls.md
+      - Layout: components/layout.md
+      - Code and diagrams: components/code.md
+      - Page standing: components/standing.md
+      - Reference pages: components/reference.md
+  - Lexicon: lexicon.md
+  - Roadmap: roadmap.md

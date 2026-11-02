@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mkdocs-almanac"
+version = "0.1.0"
+description = "An MkDocs theme and plugin for reference sites, after Tabler's look."
+readme = "README.md"
+license = {file = "LICENSE"}
+# Not for any package index while it is proprietary: PyPI refuses an upload with this classifier.
+classifiers = ["Private :: Do Not Upload"]
+requires-python = ">=3.12"
+dependencies = [
+    "mkdocs>=1.6,<2",
+    "pymdown-extensions>=10",
+    "pygments>=2.16",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+# What the guide's own reference page is drawn with.
+docs = ["mkdocstrings[python]>=1.0.8"]
+
+[project.entry-points."mkdocs.themes"]
+almanac = "almanac.theme"
+
+[project.entry-points."mkdocs.plugins"]
+almanac = "almanac.plugin:AlmanacPlugin"
+
+[tool.setuptools.packages.find]
+where = ["source"]
+
+[tool.setuptools.package-data]
+almanac = ["theme/*.html", "theme/*.yml", "theme/assets/**/*", "icons/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

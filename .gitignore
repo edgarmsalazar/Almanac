@@ -1,0 +1,10 @@
+site/
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.DS_Store
+site-sidebar/
+.mypy_cache/
+*.code-workspace
+.vscode/

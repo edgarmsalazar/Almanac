@@ -1,0 +1,326 @@
+/*
+ * Almanac's design tokens.
+ *
+ * Palette, gray ramps and semantic token names are adapted from Tabler
+ * (https://tabler.io) — MIT, Copyright (c) 2020-2026 Paweł Kuna — by way of a
+ * hand-written copy made for another project, without a build step.
+ *
+ * Layered as Tabler layers them:
+ *   1. raw palette      hues, grays, radii, fonts
+ *   2. theme knobs      [data-theme-base] the gray ramp, [data-theme-primary] the
+ *                       accent, [data-theme-radius] the rounding, [data-theme-font]
+ *                       the text face
+ *   3. derived variants -lt / -fg per hue, for chips and callouts
+ *   4. semantic tokens  what components read; dark mode redefines these
+ *
+ * components.css reads these and never redefines them. settings.js sets the attributes.
+ */
+
+/* ------------------------------------------------------------------ fonts */
+/* Free fonts (SIL Open Font License, each beside its file). The default text
+   face is Tabler's own, the system's; the others are offered by the theme panel.
+   Fira Code is the code's font. Pages sit beside assets/, so the fonts load
+   from file:// in every browser. */
+
+@font-face {
+  font-family: "Lexend";
+  src: url("fonts/lexend/Lexend-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Exo 2";
+  src: url("fonts/exo-2/Exo2-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("fonts/barlow/Barlow-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fira Code";
+  src: url("fonts/fira-code/FiraCode-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------- 1. palette */
+
+:root {
+  --blue: #066fd1;
+  --azure: #4299e1;
+  --indigo: #4263eb;
+  --purple: #ae3ec9;
+  --pink: #d6336c;
+  --red: #d63939;
+  --orange: #f76707;
+  --yellow: #f59f00;
+  --lime: #74b816;
+  --green: #2fb344;
+  --teal: #0ca678;
+  --cyan: #17a2b8;
+
+  --primary: var(--blue);
+  --success: var(--green);
+  --info: var(--azure);
+  --warning: var(--yellow);
+  --danger: var(--red);
+
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Every radius follows one scale: 0 squares the corners, 2 nearly pills them. */
+  --border-radius-scale: 1;
+  --border-radius-sm: calc(2px * var(--border-radius-scale));
+  --border-radius: calc(4px * var(--border-radius-scale));
+  --border-radius-md: calc(6px * var(--border-radius-scale));
+  --border-radius-lg: calc(8px * var(--border-radius-scale));
+  --border-radius-xl: calc(12px * var(--border-radius-scale));
+  --border-radius-pill: 100rem;
+
+  --border-width: 1px;
+
+  --spacer: 1rem;
+  --page-padding: 1.5rem;
+
+  /* Tabler's own stacks: the system's faces. */
+  --font-system: system-ui, -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI",
+    Roboto, "Helvetica Neue", sans-serif;
+  --font-sans-serif: var(--font-system);
+  --font-monospace: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --font-size-base: 0.875rem;
+  --line-height-base: 1.4285714286;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+  /* The sidebar's width, which the page beside it is offset by, on a page that
+     carries the sidebar. */
+  --sidebar-width: 16rem;
+}
+
+/* ------------------------------------------------------------ 2. theme knobs */
+/* The gray ramp: everything downstream reads --gray-*. */
+
+:root,
+[data-theme-base="gray"] {
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+}
+
+[data-theme-base="slate"] {
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  --gray-950: #020617;
+}
+
+[data-theme-base="zinc"] {
+  --gray-50: #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-200: #e4e4e7;
+  --gray-300: #d4d4d8;
+  --gray-400: #a1a1aa;
+  --gray-500: #71717a;
+  --gray-600: #52525b;
+  --gray-700: #3f3f46;
+  --gray-800: #27272a;
+  --gray-900: #18181b;
+  --gray-950: #09090b;
+}
+
+[data-theme-base="neutral"] {
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+  --gray-950: #0a0a0a;
+}
+
+[data-theme-base="stone"] {
+  --gray-50: #fafaf9;
+  --gray-100: #f5f5f4;
+  --gray-200: #e7e5e4;
+  --gray-300: #d6d3d1;
+  --gray-400: #a8a29e;
+  --gray-500: #78716c;
+  --gray-600: #57534e;
+  --gray-700: #44403c;
+  --gray-800: #292524;
+  --gray-900: #1c1917;
+  --gray-950: #0c0a09;
+}
+
+/* The accent: Tabler's twelve hues, and "inverted", the ramp's own ink. */
+
+[data-theme-primary="blue"] { --primary: var(--blue); }
+[data-theme-primary="azure"] { --primary: var(--azure); }
+[data-theme-primary="indigo"] { --primary: var(--indigo); }
+[data-theme-primary="purple"] { --primary: var(--purple); }
+[data-theme-primary="pink"] { --primary: var(--pink); }
+[data-theme-primary="red"] { --primary: var(--red); }
+[data-theme-primary="orange"] { --primary: var(--orange); }
+[data-theme-primary="yellow"] { --primary: var(--yellow); }
+[data-theme-primary="lime"] { --primary: var(--lime); }
+[data-theme-primary="green"] { --primary: var(--green); }
+[data-theme-primary="teal"] { --primary: var(--teal); }
+[data-theme-primary="cyan"] { --primary: var(--cyan); }
+
+[data-theme-primary="inverted"] {
+  --primary: var(--gray-800);
+  --primary-fg: var(--gray-50);
+}
+
+[data-theme-primary="inverted"][data-theme="dark"] {
+  --primary: var(--gray-100);
+  --primary-fg: var(--gray-900);
+}
+
+[data-theme-radius="0"] { --border-radius-scale: 0; }
+[data-theme-radius="0.5"] { --border-radius-scale: 0.5; }
+[data-theme-radius="1"] { --border-radius-scale: 1; }
+[data-theme-radius="1.5"] { --border-radius-scale: 1.5; }
+[data-theme-radius="2"] { --border-radius-scale: 2; }
+
+/* The text face, as Tabler's settings offer one. Barlow comes in one weight, so
+   its bold is the browser's. */
+
+[data-theme-font="system"] { --font-sans-serif: var(--font-system); }
+[data-theme-font="lexend"] { --font-sans-serif: "Lexend", var(--font-system); }
+[data-theme-font="exo-2"] { --font-sans-serif: "Exo 2", var(--font-system); }
+[data-theme-font="barlow"] { --font-sans-serif: "Barlow", var(--font-system); }
+
+/* -------------------------------------------------------- 3. derived variants */
+
+:root {
+  --primary-lt: color-mix(in oklab, var(--primary) 10%, transparent);
+  --success-lt: color-mix(in oklab, var(--success) 10%, transparent);
+  --info-lt: color-mix(in oklab, var(--info) 10%, transparent);
+  --warning-lt: color-mix(in oklab, var(--warning) 10%, transparent);
+  --danger-lt: color-mix(in oklab, var(--danger) 10%, transparent);
+
+  /* And one for each hue of the palette, as Tabler has: --blue-lt to --cyan-lt. */
+  --blue-lt: color-mix(in oklab, var(--blue) 10%, transparent);
+  --azure-lt: color-mix(in oklab, var(--azure) 10%, transparent);
+  --indigo-lt: color-mix(in oklab, var(--indigo) 10%, transparent);
+  --purple-lt: color-mix(in oklab, var(--purple) 10%, transparent);
+  --pink-lt: color-mix(in oklab, var(--pink) 10%, transparent);
+  --red-lt: color-mix(in oklab, var(--red) 10%, transparent);
+  --orange-lt: color-mix(in oklab, var(--orange) 10%, transparent);
+  --yellow-lt: color-mix(in oklab, var(--yellow) 10%, transparent);
+  --lime-lt: color-mix(in oklab, var(--lime) 10%, transparent);
+  --green-lt: color-mix(in oklab, var(--green) 10%, transparent);
+  --teal-lt: color-mix(in oklab, var(--teal) 10%, transparent);
+  --cyan-lt: color-mix(in oklab, var(--cyan) 10%, transparent);
+
+  --primary-fg: var(--white);
+  --success-fg: var(--white);
+  --info-fg: var(--white);
+  --warning-fg: var(--gray-950);
+  --danger-fg: var(--white);
+}
+
+/* -------------------------------------------------------- 4. semantic tokens */
+
+:root {
+  color-scheme: light;
+
+  --body-bg: var(--gray-50);
+  --body-color: var(--gray-900);
+
+  --bg-surface: var(--white);
+  --bg-surface-secondary: var(--gray-50);
+  --bg-surface-tertiary: var(--gray-100);
+  --bg-surface-dark: var(--gray-800);
+
+  --secondary: var(--gray-600);
+  --tertiary: var(--gray-500);
+  --text-inverted: var(--white);
+
+  --border-color: var(--gray-200);
+  --border-active-color: var(--primary);
+
+  --link-color: var(--primary);
+  --link-hover-color: color-mix(in oklab, var(--primary) 80%, var(--black));
+
+  --icon-color: var(--gray-500);
+  --active-bg: var(--gray-100);
+  --disabled-bg: var(--gray-100);
+  --disabled-color: var(--gray-400);
+
+  /* Inline code: the accent palette's pink on the ramp's light gray in light
+     (4.2 : 1); dark mode has its own, below. */
+  --code-color: var(--pink);
+  --code-bg: var(--gray-100);
+
+  /* Behind a picture drawn bare: the checks show where it is transparent. */
+  --checker-a: var(--gray-100);
+  --checker-b: var(--gray-200);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --body-bg: var(--gray-950);
+  --body-color: var(--gray-100);
+
+  --bg-surface: var(--gray-900);
+  --bg-surface-secondary: var(--gray-800);
+  --bg-surface-tertiary: var(--gray-700);
+  --bg-surface-dark: var(--black);
+
+  --secondary: var(--gray-400);
+  --tertiary: var(--gray-500);
+  --text-inverted: var(--gray-950);
+
+  --border-color: var(--gray-700);
+
+  --link-hover-color: color-mix(in oklab, var(--primary) 80%, var(--white));
+
+  --icon-color: var(--gray-400);
+  --active-bg: var(--gray-800);
+  --disabled-bg: var(--gray-800);
+  --disabled-color: var(--gray-600);
+
+  /* In dark the pink fades into the gray (3.2 : 1), so a pale yellow (11.8 : 1). */
+  --code-color: #fde68a;
+  --code-bg: var(--gray-800);
+
+  --warning-fg: var(--gray-950);
+
+  --checker-a: var(--gray-800);
+  --checker-b: var(--gray-900);
+}

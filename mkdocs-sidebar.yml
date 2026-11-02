@@ -1,0 +1,5 @@
+# The same site with its navigation down the left: mkdocs build -f mkdocs-sidebar.yml
+INHERIT: mkdocs.yml
+site_dir: site-sidebar
+theme:
+  navigation: sidebar

@@ -1,0 +1,89 @@
+{
+ "intro": "Where the theme has got to, drawn from this guide's roadmap file: the stops reached, the one under way, the route planned next, and what waits on no stop yet.",
+ "milestones": [
+  {
+   "name": "port",
+   "title": "The Tabler port",
+   "status": "reached",
+   "version": "v0.1",
+   "date": "2026-10-20",
+   "items": [
+    "Tabler's tokens, cards, tables and navbar, hand-written with no build step.",
+    "The reader's settings: light or dark, the base gray, the accent, the corners and the font."
+   ]
+  },
+  {
+   "name": "pages",
+   "title": "Pages from data",
+   "status": "reached",
+   "version": "v0.1",
+   "date": "2026-10-28",
+   "items": [
+    "The [lexicon](lexicon.md), its tooltips and its page.",
+    "Each page's [standing](components/standing.md), from its front matter or a status file."
+   ]
+  },
+  {
+   "name": "markdown",
+   "title": "Markdown's extensions",
+   "status": "reached",
+   "version": "v0.1",
+   "date": "2026-10-31",
+   "items": [
+    "Admonitions as Tabler's alerts, tabs as its card tabs, maths by KaTeX.",
+    "[Reference pages](components/reference.md), a card for each object."
+   ]
+  },
+  {
+   "name": "roadmap",
+   "title": "The roadmap",
+   "status": "under way",
+   "version": "v0.2",
+   "items": [
+    "This page: stops on Tabler's timeline, the route as numbered steps."
+   ]
+  },
+  {
+   "name": "first-site",
+   "title": "The first site",
+   "status": "ahead",
+   "items": [
+    "A project's own site moved over from Material for MkDocs."
+   ]
+  },
+  {
+   "name": "release",
+   "title": "The first release",
+   "status": "ahead",
+   "items": [
+    "A licence, and the package published."
+   ]
+  }
+ ],
+ "planned": {
+  "lead": "The roadmap, then the first site, in the order they land.",
+  "steps": [
+   "The page drawn from its file, with `roadmap: true`.",
+   "The roadmap's own tests.",
+   "The first site's switch-over, its stylesheets ported to the theme's tokens."
+  ]
+ },
+ "pending": {
+  "lead": "In no particular order, and on no stop yet.",
+  "groups": [
+   {
+    "title": "Components",
+    "items": [
+     "Tabler's charts beyond the bar chart.",
+     "A changelog page drawn from its file."
+    ]
+   },
+   {
+    "title": "Tooling",
+    "items": [
+     "A check that every page's links resolve."
+    ]
+   }
+  ]
+ }
+}

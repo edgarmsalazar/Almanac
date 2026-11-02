@@ -1,0 +1,15 @@
+# The theme's options, set under theme: in a site's mkdocs.yml.
+locale: en
+# A path under docs_dir to the site's icon, shown beside its name and in the tab.
+# An .svg is drawn inline, so its colours can follow the page's: currentColor, or
+# style="fill: var(--primary)" for the accent. None by default.
+icon: null
+# navbar, the sections across the top as menus; or sidebar, down the left.
+navigation: navbar
+# Each section or top-level page of nav, by its title: a Tabler icon by name
+# (tabler.io/icons), and for a section a line about it, which the site's map
+# shows. {Guide: {icon: book, about: "…"}, Changelog: {icon: history}}. The home
+# page has a house unless it names its own.
+sections: {}
+# The address a commit's hash is appended to, for a page's standing.
+commit_url: null

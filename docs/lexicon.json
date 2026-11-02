@@ -1,0 +1,88 @@
+{
+  "intro": "The words this guide uses for the parts of a page and of a site, one concept to a word. Each is explained where a page first uses it; here they are all together, in groups.",
+  "groups": [
+    {"name": "page", "title": "The page"},
+    {"name": "site", "title": "The site"},
+    {"name": "data", "title": "Data"}
+  ],
+  "terms": [
+    {
+      "term": "layout",
+      "group": "page",
+      "kind": "front matter",
+      "definition": "The body a page is drawn in, named in its front matter: docs, the default, or cards.",
+      "form": "`layout: docs` or `layout: cards`",
+      "note": "The layout changes only the body; the navbar and the header band are the same on every page.",
+      "see": ["header band", "card"],
+      "binds": "both",
+      "added": "2026-10-20"
+    },
+    {
+      "term": "header band",
+      "group": "page",
+      "definition": "The strip under the navbar holding a page's pretitle, title and lead.",
+      "not": [{"word": "hero", "why": "a hero is a landing page's banner; the band is on every page"}],
+      "see": ["layout"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "card",
+      "group": "page",
+      "definition": "A raised surface holding one part of a page, with an optional header naming it.",
+      "example": "on a cards page, each ## section is a card, its italic first line the card's subtitle",
+      "see": ["layout"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "standing",
+      "group": "page",
+      "definition": "Whether a page still agrees with the code it describes: built, designed, drifted or disagrees.",
+      "form": "a red, amber or green dot on the map and in the page's footer",
+      "not": ["status"],
+      "see": ["map"],
+      "added": "2026-10-24"
+    },
+    {
+      "term": "section",
+      "group": "site",
+      "definition": "A titled group of pages in the site's nav, drawn as a menu in the navbar and as a card on the map.",
+      "note": "A section may hold sections of its own; their pages are listed under a header in the menu.",
+      "see": ["map"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "map",
+      "group": "site",
+      "definition": "Every section of the site as a card, its pages listed with their descriptions and standings.",
+      "form": "`map: true` in a page's front matter",
+      "see": ["section", "standing"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "lexicon",
+      "group": "site",
+      "definition": "The site's words and what they mean, one file the tooltips and the lexicon page both read.",
+      "example": "this page is the lexicon of this guide, drawn from docs/lexicon.json",
+      "not": [{"word": "glossary", "why": "one word for one thing"}],
+      "see": ["term"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "term",
+      "group": "site",
+      "kind": "unit",
+      "definition": "One word of the lexicon with its definition, explained in a tooltip where a page first uses it.",
+      "see": ["lexicon"],
+      "added": "2026-10-20"
+    },
+    {
+      "term": "data script",
+      "group": "data",
+      "definition": "A script beside the pages that sets a part of the site's data, which a page names in its front matter.",
+      "form": "`data: [data/showcase.js]`",
+      "example": "`window.ALMANAC_DATA.showcase = {pages: 4}` fills every place a page names showcase.pages",
+      "note": "A script rather than JSON, so a site opened from disk reads it with no server.",
+      "added": "2026-10-20"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120" role="img" aria-label="Drawn for the dark theme">
+  <rect width="320" height="120" rx="8" fill="#111827" stroke="#066fd1" stroke-width="2"/>
+  <circle cx="60" cy="60" r="26" fill="#e5e7eb"/>
+  <circle cx="72" cy="50" r="24" fill="#111827"/>
+  <text x="104" y="66" font-family="system-ui, sans-serif" font-size="17" fill="#f3f4f6">Drawn for the dark theme</text>
+</svg>

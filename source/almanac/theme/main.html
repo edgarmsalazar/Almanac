@@ -1,0 +1,311 @@
+{#-
+  Almanac's one page shell. Every page shares the site's navigation, drawn from
+  mkdocs.yml's nav as a navbar across the top or a sidebar down the left, and the
+  header band; the layout in a page's front matter picks the body: "docs" (the
+  default) is the article as prose on one surface with its contents beside it,
+  "cards" is a card a section. The plugin gives the template almanac_icon and
+  almanac_svg; without it the icons are left out.
+-#}
+{%- set layout = page.meta.layout or "docs" -%}
+{%- set sidebar = config.theme.navigation == "sidebar" -%}
+{%- set sections_of = config.theme.sections or {} -%}
+{%- set has_icons = almanac_icon is defined -%}
+{%- set ico = 'class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"' -%}
+{%- set sections = page.toc.items[0].children if page.toc.items and page.toc.items[0].level == 1 else page.toc.items -%}
+{%- set standing_words = {
+  "built": ("green", "Agrees with the code"),
+  "designed": ("yellow", "Designed, not built yet"),
+  "drifted": ("red", "The code it describes changed since it was checked"),
+  "disagrees": ("red", "Disagrees with the code")} -%}
+
+{%- macro section_icon(title, css_class="icon") -%}
+  {%- set name = (sections_of[title] or {}).icon if title in sections_of else none -%}
+  {%- if name and has_icons %}{{ almanac_icon(name, css_class) }}{% endif -%}
+{%- endmacro -%}
+
+{#- A top-level page's icon: its own from the sections option, else a house for the home page. -#}
+{%- macro page_icon(item) -%}
+  {%- set icon = section_icon(item.title) -%}
+  {%- if icon %}{{ icon }}{% elif has_icons and item.is_homepage %}{{ almanac_icon("home") }}{% endif -%}
+{%- endmacro -%}
+
+{#- A section's pages, for its menu or its card on the map: a section inside it
+    gives a header and then its own pages, at any depth. -#}
+{%- macro section_entries(children, kind, ns=none) -%}
+  {%- for child in children %}
+    {%- if child.is_page %}
+      {%- if kind == "sidebar" %}
+              <a class="dropdown-item{% if child.active %} active{% endif %}" href="{{ child.url | url }}"{% if child.active %} aria-current="page"{% endif %}><span class="dropdown-item-title">{{ child.title }}</span></a>
+      {%- elif kind == "navbar" %}
+            <a class="dropdown-item{% if child.active %} active{% endif %}" href="{{ child.url | url }}"{% if child.active %} aria-current="page"{% endif %}>{{ child.title }}</a>
+      {%- else %}
+              <a class="list-group-item" href="{{ child.url | url }}">
+                <span class="list-group-item-title">{% if child.meta.standing %}{% set ns.standings = true %}{{ dot(child.meta.standing) }}{% endif %}{{ child.title }}</span>
+                {%- if child.meta.description %}<div class="list-group-item-text">{{ child.meta.description }}</div>{% endif %}
+              </a>
+      {%- endif %}
+    {%- elif child.is_section %}
+      {%- if kind == "map" %}
+              <div class="list-group-header">{{ child.title }}</div>
+      {%- else %}
+            <h6 class="dropdown-header">{{ child.title }}</h6>
+      {%- endif %}
+      {{- section_entries(child.children, kind, ns) }}
+    {%- endif %}
+  {%- endfor %}
+{%- endmacro -%}
+
+{%- macro dot(standing) -%}
+  {%- set colour, words = standing_words[standing.status] -%}
+  <span class="status-dot status-{{ colour }}{% if colour == 'red' %} status-dot-animated{% endif %}" role="img" aria-label="{{ words }}" title="{{ words }}"></span>
+{%- endmacro -%}
+
+{#- The page's headings at every depth, each a step further in, as a reference page's members are. -#}
+{%- macro toc_links(items, depth=0) -%}
+  {%- for h in items %}
+  <a class="nav-link" href="{{ h.url }}" style="--toc-depth: {{ depth }}">{{ h.title }}</a>
+  {%- if h.children %}{{ toc_links(h.children, depth + 1) }}{% endif %}
+  {%- endfor %}
+{%- endmacro -%}
+
+{%- macro commit(sha) -%}
+  {%- if config.theme.commit_url %}<a href="{{ config.theme.commit_url }}{{ sha }}" target="_blank" rel="noopener"><code>{{ sha }}</code></a>{% else %}<code>{{ sha }}</code>{% endif -%}
+{%- endmacro -%}
+
+{#- Tabler's navbar search: the field with its icon at the start, the shortcut at its end, the results under it. -#}
+{%- macro search_box() -%}
+  {%- if "search" in config.plugins %}
+  <form class="almanac-search d-print-none" role="search" autocomplete="off" novalidate data-almanac-search data-base="{{ base_url }}" data-index="{{ 'search/search_index.js' | url }}">
+    <div class="input-icon">
+      <span class="input-icon-addon"><svg {{ ico }}><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/></svg></span>
+      <input class="form-control" type="search" placeholder="Search…" aria-label="Search the site" role="combobox" aria-expanded="false" aria-controls="almanac-search-results" aria-autocomplete="list">
+      <kbd class="almanac-search-kbd" aria-hidden="true">Ctrl K</kbd>
+    </div>
+    <div class="dropdown-menu almanac-search-results" id="almanac-search-results" role="listbox" hidden></div>
+  </form>
+  {%- endif %}
+{%- endmacro -%}
+
+{%- macro brand() -%}
+  <a class="navbar-brand" href="{{ nav.homepage.url | url }}">
+    {%- if config.theme.icon and config.theme.icon.endswith(".svg") and almanac_svg is defined -%}
+    <span class="navbar-brand-image" data-almanac-icon>{{ almanac_svg(config.theme.icon, "almanac-icon") }}</span>
+    {%- elif config.theme.icon -%}
+    <img class="navbar-brand-image" src="{{ config.theme.icon | url }}" alt="">
+    {%- endif %}{{ config.site_name }}</a>
+{%- endmacro -%}
+
+<!DOCTYPE html>
+<html lang="{{ config.theme.locale or 'en' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page and page.title and not page.is_homepage %}{{ page.title }} — {% endif %}{{ config.site_name }}</title>
+{%- if page.meta.description %}
+<meta name="description" content="{{ page.meta.description }}">
+{%- endif %}
+{%- if config.theme.icon %}
+<link rel="icon" href="{{ config.theme.icon | url }}">
+{%- endif %}
+<link rel="stylesheet" href="{{ 'assets/theme.css' | url }}">
+<link rel="stylesheet" href="{{ 'assets/components.css' | url }}">
+<link rel="stylesheet" href="{{ 'assets/almanac.css' | url }}">
+{%- if 'class="doc doc-object' in page.content %}
+<link rel="stylesheet" href="{{ 'assets/reference.css' | url }}">
+{%- endif %}
+{%- if 'class="arithmatex"' in page.content %}
+<link rel="stylesheet" href="{{ 'assets/katex/katex.min.css' | url }}">
+{%- endif %}
+{#- mkdocstrings' own stylesheet is written for Material; reference.css draws its output instead. -#}
+{%- for path in config.extra_css if not path.endswith('_mkdocstrings.css') %}
+<link rel="stylesheet" href="{{ path | url }}">
+{%- endfor %}
+<script src="{{ 'assets/settings.js' | url }}"></script>
+<script src="{{ 'assets/charts.js' | url }}"></script>
+<script src="{{ 'data/lexicon.js' | url }}"></script>
+{%- for path in page.meta.data or [] %}
+<script src="{{ path | url }}"></script>
+{%- endfor %}
+{%- for path in page.meta.scripts or [] %}
+<script src="{{ path | url }}"></script>
+{%- endfor %}
+</head>
+<body>
+<div class="page">
+{%- if sidebar %}
+  <aside class="navbar navbar-vertical d-print-none" id="sidebar">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Menu"><svg {{ ico }}><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg></button>
+      {{ brand() }}
+      <nav class="navbar-collapse" id="sidebar-menu" aria-label="Site">
+        {{ search_box() }}
+        <ul class="navbar-nav">
+        {%- for item in nav %}
+          {%- if item.is_section %}
+          <li class="nav-item dropdown{% if item.active %} active{% endif %}">
+            <button class="nav-link dropdown-toggle" type="button" aria-expanded="{{ 'true' if item.active else 'false' }}" aria-controls="menu-{{ loop.index }}"><span class="nav-link-icon">{{ section_icon(item.title) }}</span><span class="nav-link-title">{{ item.title }}</span></button>
+            <div class="dropdown-menu" id="menu-{{ loop.index }}"{% if not item.active %} hidden{% endif %}>
+            {{- section_entries(item.children, "sidebar") }}
+            </div>
+          </li>
+          {%- else %}
+          <li class="nav-item{% if item.active %} active{% endif %}"><a class="nav-link" href="{{ item.url | url }}"{% if item.active %} aria-current="page"{% endif %}><span class="nav-link-icon">{{ page_icon(item) }}</span><span class="nav-link-title">{{ item.title }}</span></a></li>
+          {%- endif %}
+        {%- endfor %}
+        </ul>
+        <div class="navbar-side"><ul class="navbar-nav">
+          <li class="nav-item"><button class="nav-link" type="button" id="theme-toggle" aria-pressed="false"><span class="nav-link-icon when-light"><svg {{ ico }}><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/></svg></span><span class="nav-link-title when-light">Dark mode</span><span class="nav-link-icon when-dark"><svg {{ ico }}><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></svg></span><span class="nav-link-title when-dark">Light mode</span></button></li>
+          <li class="nav-item"><button class="nav-link" type="button" id="theme-settings-open" aria-haspopup="dialog" hidden><span class="nav-link-icon"><svg {{ ico }}><path d="M3 21v-4a4 4 0 1 1 4 4h-4"/><path d="M21 3a16 16 0 0 0 -12.8 10.2"/><path d="M21 3a16 16 0 0 1 -10.2 12.8"/><path d="M10.6 9a9 9 0 0 1 4.4 4.4"/></svg></span><span class="nav-link-title">Customize</span></button></li>
+        </ul></div>
+      </nav>
+    </div>
+  </aside>
+{%- else %}
+  <header class="navbar d-print-none" id="navbar">
+    <div class="container-xl">
+      <button class="navbar-toggler" type="button" aria-controls="navbar-menu" aria-expanded="false" aria-label="Menu"><svg {{ ico }}><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg></button>
+      {{ brand() }}
+      <nav class="navbar-collapse" id="navbar-menu" aria-label="Site"><ul class="navbar-nav">
+      {%- for item in nav %}
+        {%- if item.is_section %}
+        <li class="nav-item dropdown{% if item.active %} active{% endif %}">
+          <button class="nav-link dropdown-toggle" type="button" aria-expanded="false" aria-controls="menu-{{ loop.index }}">{% set icon = section_icon(item.title) %}{% if icon %}<span class="nav-link-icon">{{ icon }}</span>{% endif %}<span class="nav-link-title">{{ item.title }}</span></button>
+          <div class="dropdown-menu" id="menu-{{ loop.index }}" hidden>
+          {{- section_entries(item.children, "navbar") }}
+          </div>
+        </li>
+        {%- else %}
+        <li class="nav-item{% if item.active %} active{% endif %}"><a class="nav-link" href="{{ item.url | url }}"{% if item.active %} aria-current="page"{% endif %}>{% set icon = page_icon(item) %}{% if icon %}<span class="nav-link-icon">{{ icon }}</span>{% endif %}<span class="nav-link-title">{{ item.title }}</span></a></li>
+        {%- endif %}
+      {%- endfor %}
+      </ul></nav>
+      <div class="navbar-actions">
+        {{ search_box() }}
+        <button class="theme-toggle" id="theme-settings-open" type="button" aria-label="Customize the theme" aria-haspopup="dialog" hidden><svg {{ ico }}><path d="M3 21v-4a4 4 0 1 1 4 4h-4"/><path d="M21 3a16 16 0 0 0 -12.8 10.2"/><path d="M21 3a16 16 0 0 1 -10.2 12.8"/><path d="M10.6 9a9 9 0 0 1 4.4 4.4"/></svg></button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></svg></button>
+      </div>
+    </div>
+  </header>
+{%- endif %}
+  <script src="{{ 'assets/navbar.js' | url }}"></script>
+
+  <div class="page-wrapper">
+    <header class="page-header d-print-none">
+      <div class="container-xl page-header-row">
+        <div class="page-header-titles">
+          {%- set pretitle = page.meta.pretitle or (page.parent.title if page.parent else '') %}
+          {%- if pretitle %}<div class="page-pretitle">{{ pretitle }}</div>{% endif %}
+          <h1 class="page-title">{{ page.title }}</h1>
+          {%- if page.meta.description %}<p class="page-lead">{{ page.meta.description }}</p>{% endif %}
+        </div>
+      </div>
+    </header>
+    <main class="page-body">
+      <div class="container-xl">
+      {%- if layout == "cards" %}
+{{ page.content }}
+      {%- else %}
+        {#- The contents column runs the page's whole height, beside the article, the map and the pager, so it stays in view to the foot. -#}
+        <div class="almanac-docs">
+          <div class="almanac-main">
+          <article class="card almanac-article">
+            <div class="card-body prose">
+{{ page.content }}
+            </div>
+          </article>
+      {%- endif %}
+
+      {%- if page.meta.map %}
+        {#- The site's map: a card a section of nav, each page a row with its description and its standing. -#}
+        {%- set ns = namespace(standings=false) %}
+        <div class="map-grid">
+        {%- for item in nav if item.is_section %}
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">{{ section_icon(item.title) }}{{ item.title }}</h2></div>
+            {%- set about = (sections_of[item.title] or {}).about if item.title in sections_of else none %}
+            {%- if about %}<div class="card-body"><p class="intro-note">{{ about }}</p></div>{% endif %}
+            <div class="list-group">
+            {{- section_entries(item.children, "map", ns) }}
+            </div>
+          </div>
+        {%- endfor %}
+        </div>
+        {%- if ns.standings %}
+        <p class="status-legend">
+          <span>{{ dot({"status": "built"}) }}{{ standing_words.built[1] }}</span>
+          <span>{{ dot({"status": "designed"}) }}{{ standing_words.designed[1] }}</span>
+          <span>{{ dot({"status": "drifted"}) }}Changed since checked, or disagrees with the code</span>
+        </p>
+        {%- endif %}
+      {%- endif %}
+
+      {%- if layout != "cards" and (page.previous_page or page.next_page) %}
+        <nav class="almanac-pager d-print-none" aria-label="Pages">
+          {%- if page.previous_page %}<a href="{{ page.previous_page.url | url }}"><small>Previous</small>{{ page.previous_page.title }}</a>{% else %}<span></span>{% endif %}
+          {%- if page.next_page %}<a class="next" href="{{ page.next_page.url | url }}"><small>Next</small>{{ page.next_page.title }}</a>{% endif %}
+        </nav>
+      {%- endif %}
+
+      {%- if layout != "cards" %}
+          </div>
+          {%- if sections %}
+          <aside class="almanac-toc d-print-none" aria-label="On this page">
+            <div class="almanac-toc-title">On this page</div>
+            <nav class="nav nav-vertical" data-almanac-toc>{{ toc_links(sections) }}</nav>
+          </aside>
+          {%- endif %}
+        </div>
+      {%- endif %}
+      </div>
+    </main>
+
+    {%- set standing = page.meta.standing %}
+    {%- if standing %}
+    {#- The page's standing in words, with the commit it was checked against. -#}
+    <footer class="page-footer d-print-none">
+      <div class="container-xl"><p>{{ dot(standing) }}<span>{{ standing_words[standing.status][1] }}.
+        {%- if standing.status in ("built", "drifted") and standing.checked %} Checked against commit {{ commit(standing.checked) }}{% if standing.checked_date %} of {{ standing.checked_date }}{% endif %}
+          {%- if standing.status == "drifted" and standing.commits %}; since then {% for c in standing.commits %}{{ commit(c.commit) }} {{ c.subject }}{{ ", " if not loop.last }}{% endfor %}{% if standing.files %} changed {% for f in standing.files %}<code>{{ f }}</code>{{ ", " if not loop.last }}{% endfor %}{% endif %}{% endif %}.
+        {%- endif %}
+        {%- if standing.why %} {{ standing.why }}{% endif %}</span></p></div>
+    </footer>
+    {%- endif %}
+  </div>
+</div>
+
+{%- if layout == "cards" or sections %}
+<button class="btn btn-primary btn-icon btn-floating{% if layout != 'cards' %} almanac-toc-floating{% endif %} d-print-none" id="toc-toggle" type="button" aria-controls="toc" aria-expanded="false" aria-label="Contents" title="Contents" hidden><svg {{ ico }}><path d="M9 6l11 0"/><path d="M9 12l11 0"/><path d="M9 18l11 0"/><path d="M5 6l0 .01"/><path d="M5 12l0 .01"/><path d="M5 18l0 .01"/></svg></button>
+<nav class="offcanvas offcanvas-end offcanvas-narrow d-print-none" id="toc" aria-labelledby="toc-title" hidden>
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title" id="toc-title">Contents</h2>
+    <button class="btn-close" type="button" aria-label="Close contents"><svg {{ ico }}><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg></button>
+  </div>
+  <div class="offcanvas-body"><div class="nav nav-vertical" data-toc-list></div></div>
+</nav>
+{%- endif %}
+{%- if layout == "cards" %}
+<script src="{{ 'assets/toc.js' | url }}"></script>
+{%- else %}
+<script src="{{ 'assets/almanac.js' | url }}"></script>
+{%- endif %}
+<script src="{{ 'assets/code.js' | url }}"></script>
+<script src="{{ 'assets/data.js' | url }}"></script>
+<script src="{{ 'assets/table.js' | url }}"></script>
+<script src="{{ 'assets/terms.js' | url }}"></script>
+<script src="{{ 'assets/search.js' | url }}"></script>
+{%- if page.meta.lexicon %}
+<script src="{{ 'assets/lexicon.js' | url }}"></script>
+{%- endif %}
+{%- if 'class="mermaid"' in page.content %}
+<script src="{{ 'assets/mermaid.min.js' | url }}"></script>
+<script src="{{ 'assets/diagrams.js' | url }}"></script>
+{%- endif %}
+{%- if 'class="arithmatex"' in page.content %}
+<script src="{{ 'assets/katex/katex.min.js' | url }}"></script>
+<script src="{{ 'assets/maths.js' | url }}"></script>
+{%- endif %}
+{%- for script in config.extra_javascript %}
+{{ script | script_tag }}
+{%- endfor %}
+</body>
+</html>

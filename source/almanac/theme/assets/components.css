@@ -1,0 +1,3131 @@
+/*
+ * Almanac's component styles.
+ *
+ * Markup patterns and class names are adapted from Tabler (https://tabler.io) —
+ * MIT, Copyright (c) 2020-2026 Paweł Kuna — by way of a hand-written copy made for
+ * another project. The CSS is written against the tokens in theme.css rather than
+ * compiled from Tabler's SCSS, and reads them without redefining any.
+ *
+ * In order: the page shell, cards, datagrid, alerts, tabs, the theme panel and
+ * buttons, the segmented control, printing, status, tables, empty
+ * states and steps from that copy; then, ported from Tabler for Almanac, the
+ * navbar's dropdowns, badges, list groups, prose, pictures by the pixel and the
+ * front page's map; then Almanac's own components below them.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans-serif);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--body-color);
+  background: var(--body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------- page shell */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  flex: 1 1 auto;
+}
+
+.page-header {
+  padding: var(--page-padding) 0;
+  border-bottom: var(--border-width) solid var(--border-color);
+  background: var(--bg-surface);
+}
+
+/* The titles, and room at the row's end for a page's own action. */
+.page-header-row {
+  display: flex;
+  gap: var(--page-padding);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-pretitle {
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--secondary);
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+/* A section jumped to lands clear of the sticky navbar. */
+.page-body [id] {
+  scroll-margin-top: 4.5rem;
+}
+
+.page-body {
+  padding: var(--page-padding) 0;
+}
+
+.container-xl {
+  width: 100%;
+  max-width: 1320px;
+  padding: 0 var(--page-padding);
+  margin: 0 auto;
+}
+
+/* -------------------------------------------------------------------- card */
+
+.card {
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Cards stacked down the page are separated by a margin on the lower one. A
+   multi-column container is excluded: its own gap already does the separating,
+   and the margin would drop one column below the other.
+ *
+ * The `+` selector reaches a card following either another card or a layout
+ * container, because "the previous thing was a card" and "the previous thing was
+ * a row of cards" both mean the same to the card underneath. */
+.card + .card,
+.card + .tabbed-set,
+.tabbed-set + .card {
+  margin-top: var(--page-padding);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem var(--page-padding);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.card-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.card-body {
+  padding: var(--page-padding);
+}
+/* ------------------------------------------------------------------- intro */
+/* The front page's one block: art beside a short statement of what the project
+   is.
+
+   NOT called `.hero`, deliberately. Tabler has a `.hero` in core/scss/marketing/
+   — a centred product-landing banner (6.5rem padding, 3rem black title). Reusing
+   that name for a side-by-side app intro would invite someone to drop Tabler's
+   rules in and get a different component. A distinct name keeps the borrowed
+   vocabulary honest.
+
+   The art is the project's own. */
+
+.intro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--page-padding);
+  align-items: center;
+}
+
+.intro-art {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+  align-items: center;
+  max-width: 100%;
+  color: var(--primary);
+}
+
+/* At most a line's width, so on a phone it wraps under the art rather than
+   pushing past the card. */
+.intro-body {
+  flex: 1 1 min(20rem, 100%);
+}
+
+.intro-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.intro-text {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--secondary);
+}
+
+.intro-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--tertiary);
+}
+
+/* ---------------------------------------------------------------- datagrid */
+/* Adapted from Tabler's _datagrid.scss (20 lines). An auto-flowing label/value
+   grid — better than a two-column table because it reflows at any width. */
+
+.datagrid {
+  --datagrid-item-width: 15rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--datagrid-item-width), 1fr));
+  gap: var(--page-padding);
+}
+
+.datagrid-title {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--secondary);
+}
+
+.datagrid-content {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+}
+
+/* A number in a table reads right-aligned, its digits in columns, so a column
+   of counts or rates can be scanned by magnitude. Almanac's own: Tabler's
+   `text-end` is a utility class, which pages do not carry. */
+.table .table-cell-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------- alert */
+/* Tabler's alert (core/scss/ui/_alerts.scss), variables resolved: a box tinted
+   with its variant's colour, its icon in the corner, the heading in the colour
+   and the description quieter. A variant for each semantic colour and each hue
+   of the palette; then Tabler's modifiers: important fills the box with the
+   colour, minor keeps only a plain border, dismissible makes room for a close
+   button ([data-close] inside the alert removes it). An alert may be a
+   <details>, its <summary> the heading: the admonitions the plugin draws. */
+.alert {
+  --alert-color: var(--secondary);
+  --alert-icon-size: 1.25rem;
+  position: relative;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  color: var(--alert-color);
+  background: color-mix(in srgb, var(--alert-color) 8%, var(--bg-surface));
+  border: var(--border-width) solid color-mix(in srgb, var(--alert-color) 20%, var(--bg-surface));
+  border-radius: var(--border-radius);
+}
+
+.alert:has(> .alert-icon),
+.alert:has(> summary > .alert-icon) {
+  padding-left: calc(1rem + var(--alert-icon-size) + 0.75rem);
+}
+
+.alert > :last-child { margin-bottom: 0; }
+
+.alert-primary { --alert-color: var(--primary); }
+.alert-secondary { --alert-color: var(--secondary); }
+.alert-info { --alert-color: var(--info); }
+.alert-success { --alert-color: var(--success); }
+.alert-warning { --alert-color: var(--warning); }
+.alert-danger { --alert-color: var(--danger); }
+.alert-blue { --alert-color: var(--blue); }
+.alert-azure { --alert-color: var(--azure); }
+.alert-indigo { --alert-color: var(--indigo); }
+.alert-purple { --alert-color: var(--purple); }
+.alert-pink { --alert-color: var(--pink); }
+.alert-red { --alert-color: var(--red); }
+.alert-orange { --alert-color: var(--orange); }
+.alert-yellow { --alert-color: var(--yellow); }
+.alert-lime { --alert-color: var(--lime); }
+.alert-green { --alert-color: var(--green); }
+.alert-teal { --alert-color: var(--teal); }
+.alert-cyan { --alert-color: var(--cyan); }
+
+.alert-icon {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  display: flex;
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+  color: var(--alert-color);
+}
+
+.alert-icon .icon {
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+}
+
+.alert-heading {
+  display: block;
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--alert-icon-size);
+  color: inherit;
+}
+
+.alert-heading:last-child { margin-bottom: 0; }
+
+.alert-description {
+  font-size: 0.875rem;
+  color: var(--secondary);
+}
+
+.alert-description > :last-child { margin-bottom: 0; }
+
+/* A link inside the alert's sentence, in its colour; an action, a link on a
+   line of its own. */
+.alert-link,
+.alert-link:hover {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.alert-action {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: var(--font-weight-medium);
+  color: inherit;
+  text-decoration: underline;
+}
+
+.alert-list {
+  padding-left: 1.25rem;
+  margin: 0;
+  color: var(--secondary);
+}
+
+.alert-dismissible {
+  padding-right: 3rem;
+}
+
+.alert-dismissible > .btn-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: inherit;
+}
+
+.alert-minor {
+  background: transparent;
+  border-color: var(--border-color);
+}
+
+/* Important: the alert filled with its colour, for what a reader must not miss.
+   The light hues take dark text, as --warning-fg does. */
+.alert-important {
+  --alert-fg: var(--white);
+  color: var(--alert-fg);
+  background: var(--alert-color);
+  border-color: var(--alert-color);
+}
+
+.alert-important.alert-warning,
+.alert-important.alert-yellow,
+.alert-important.alert-lime { --alert-fg: var(--gray-950); }
+
+.alert-important .alert-icon,
+.alert-important .alert-description,
+.alert-important .alert-list {
+  color: inherit;
+}
+
+.alert-important .alert-description { opacity: 0.92; }
+
+/* An alert as <details>: the summary its heading, with Tabler's chevron at the
+   end turning as it opens. */
+details.alert > summary {
+  display: block;
+  padding-right: 1.5rem;
+  margin: 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+details.alert > summary::-webkit-details-marker { display: none; }
+
+details.alert > summary::after {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+  content: "";
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 6l6 6l-6 6'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 6l6 6l-6 6'/></svg>") center / contain no-repeat;
+  transition: transform 0.15s;
+}
+
+details.alert[open] > summary::after { transform: rotate(90deg); }
+
+details.alert:not([open]) > summary { margin-bottom: 0; }
+
+details.alert > .alert-description { margin-top: 0.25rem; }
+
+/* A box written past Markdown, as mkdocstrings writes a docstring's Note: its
+   body straight under the summary, drawn as the description is. */
+details.alert > :not(summary, .alert-description) {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--secondary);
+}
+
+/* ---------------------------------------------------------- theme settings */
+/* Tabler's "Theme Settings" panel (shared/ui/ThemeSettings.astro): its class
+   contract — .offcanvas.offcanvas-end.offcanvas-narrow > .offcanvas-header
+   (.offcanvas-title, .btn-close) + .offcanvas-body, .form-label, .form-hint,
+   .form-colorinput, .btn — on a native <dialog> rather than Bootstrap's offcanvas
+   plugin, which is not taken: showModal() brings the backdrop, Escape and a focus
+   trap with no JS library, from file://. It opens at the end the button is on. */
+.offcanvas {
+  position: fixed;
+  width: 20rem;
+  max-width: 100%;
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  margin: 0;
+  color: var(--body-color);
+  background: var(--bg-surface);
+  border: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+/* The side it opens from — Tabler's -end and -start. */
+.offcanvas-end {
+  inset: 0 0 0 auto;
+  border-left: var(--border-width) solid var(--border-color);
+}
+
+.offcanvas-start {
+  inset: 0 auto 0 0;
+  border-right: var(--border-width) solid var(--border-color);
+}
+
+/* Open: a modal <dialog> by its attribute; a plain panel (the page's contents,
+   not modal) by not being hidden. It sits over the page, under the button that
+   toggles it. */
+.offcanvas[open],
+nav.offcanvas:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+}
+
+nav.offcanvas {
+  z-index: 1040;
+}
+
+.offcanvas::backdrop {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.offcanvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.offcanvas-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.offcanvas-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.offcanvas-body fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.offcanvas-foot {
+  margin-top: auto;
+}
+
+.btn-close {
+  display: inline-flex;
+  padding: 0.25rem;
+  color: var(--secondary);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+}
+
+.btn-close .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.btn-close:hover,
+.btn-close:focus-visible {
+  color: var(--body-color);
+  background: var(--active-bg);
+}
+
+.form-label {
+  display: block;
+  padding: 0;
+  margin-bottom: 0.125rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.form-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+
+/* A colour picked by a swatch: a radio hidden behind a square of the colour,
+   Tabler's white check on the chosen one. */
+.form-colorinput-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form-colorinput {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.form-colorinput-input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.form-colorinput-color {
+  --swatch: var(--primary); /* each swatch sets its own hue */
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--white);
+  background: var(--swatch);
+  border: var(--border-width) solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.form-colorinput-color svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem;
+  opacity: 0;
+}
+
+.form-colorinput-input:checked ~ .form-colorinput-color svg {
+  opacity: 1;
+}
+
+/* A base's swatch: three bands of its own ramp, light to dark, where the tint
+   of a gray shows — it takes them from the data-theme-base it carries. Wider than
+   a hue's swatch, with the base's name beneath. */
+.form-colorinput-ramp {
+  width: 2.75rem;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 0 33%,
+    var(--gray-500) 33% 67%,
+    var(--gray-800) 67%
+  );
+}
+
+.form-colorinput-named {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.form-colorinput-name {
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+
+.form-colorinput-input:checked ~ .form-colorinput-name {
+  color: var(--primary);
+}
+
+.form-colorinput-input:focus-visible ~ .form-colorinput-color {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Tabler's .btn, the plain variant: the panel's one action is Reset. */
+.btn {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4375rem 1rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--body-color);
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--active-bg);
+}
+
+.btn .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Tabler's w-100, where the panel's one action spans its foot. */
+.offcanvas-foot .btn {
+  width: 100%;
+}
+
+/* Tabler's small button: a table's Copy and CSV, as tall as a small segmented
+   control beside them. */
+.btn-sm {
+  height: 1.625rem;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+
+.btn-sm .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* A table's Copy and CSV, right-aligned above it. */
+.table-actions {
+  display: flex;
+  gap: 0.375rem;
+  justify-content: flex-end;
+  padding: 0.5rem var(--page-padding);
+}
+
+/* Tabler's primary, icon-only and floating buttons: the page-contents toggle,
+   fixed at the window's bottom-right corner, clear of the page's text, above the
+   panel it opens from that side so it can close it again. */
+.btn-primary {
+  color: var(--primary-fg);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: color-mix(in oklab, var(--primary) 85%, var(--black));
+}
+
+.btn-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+}
+
+.btn-icon .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.btn-floating {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 1045;
+  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.07), 0 6px 30px 5px rgba(0, 0, 0, 0.06);
+}
+
+.btn-floating[hidden] {
+  display: none;
+}
+
+/* While its panel is open the button steps just outside the panel's edge: still
+   there to close it, covering none of the list. */
+.btn-floating[aria-expanded="true"] {
+  right: calc(20rem + 1rem);
+}
+
+/* Tabler's vertical nav — its docs' table of contents: plain links, the current
+   one semibold (600: the theme's --font-weight-bold) in the accent. */
+.nav-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nav-vertical .nav-link {
+  padding: 0.375rem 0.625rem;
+  line-height: 1.3;
+}
+
+.nav-vertical .nav-link.active {
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+}
+
+/* ------------------------------------------------------ segmented control */
+/* Tabler's segmented control (core/scss/ui/_segmented.scss, 105 lines; its class
+   contract .nav.nav-segmented > .nav-link.active, .nav-sm), variables resolved and
+   no JS of its own: the page's script wires the clicks, or it is the radio form
+   below.
+
+   Two departures, from the copy this one comes from:
+   - .nav-sm is 26 px high (items 1.625rem, padding 0.625rem, no gap) rather than
+     Tabler's 32 px, as tall as a small button;
+   - the chosen option takes the primary colour rather than Tabler's neutral raised
+     pill, so a selection reads as switched on.
+   These rules outrank the navbar's .nav-link on every property it sets. */
+.nav-segmented {
+  --nav-bg: var(--bg-surface-tertiary);
+  --nav-padding: 2px;
+  --nav-height: 2.5rem;
+  --nav-gap: 0.25rem;
+  --nav-font-size: inherit;
+  --nav-radius: 6px;
+  --nav-link-padding-x: 0.75rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--nav-gap);
+  padding: var(--nav-padding);
+  list-style: none;
+  background: var(--nav-bg);
+  border-radius: calc(var(--nav-radius) + var(--nav-padding));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.nav-segmented .nav-link {
+  display: inline-flex;
+  flex-grow: 1;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--nav-height) - 2 * var(--nav-padding));
+  height: calc(var(--nav-height) - 2 * var(--nav-padding));
+  padding: 0 calc(var(--nav-link-padding-x) - 2px);
+  margin: 0;
+  font: inherit;
+  font-size: var(--nav-font-size);
+  color: var(--secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--nav-radius);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.nav-segmented .nav-link:hover,
+.nav-segmented .nav-link:focus-visible {
+  color: var(--body-color);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.nav-segmented .nav-link:disabled {
+  color: var(--disabled-color);
+  cursor: not-allowed;
+}
+
+.nav-segmented .nav-link.active,
+.nav-segmented .nav-link-input:checked + .nav-link {
+  color: var(--primary);
+  background: var(--primary-lt);
+  border-color: var(--primary);
+}
+
+/* Tabler's radio form of the control: an input before each label. Hidden but not
+   display:none — Tabler's choice there takes the radios out of the tab order —
+   so the keyboard still reaches the group and moves through it by arrow. */
+.nav-segmented .nav-link-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.nav-segmented .nav-link-input:focus-visible + .nav-link {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+/* A settings row spans the panel, each option an equal share (Tabler's w-100). */
+.nav-segmented.nav-fill {
+  display: flex;
+}
+
+.nav-sm {
+  --nav-height: 1.625rem;
+  --nav-gap: 0;
+  --nav-font-size: 0.75rem;
+  --nav-radius: 4px;
+  --nav-link-padding-x: 0.625rem;
+}
+/* --------------------------------------------------------------- printing */
+/* Chrome is anything that is not content. The browser's print dialogue offers
+   "Save as PDF", which is why Almanac ships no PDF library. */
+
+@media print {
+  .d-print-none { display: none !important; }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .card {
+    border-color: #ccc;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+
+/* ------------------------------------------------------------------ status */
+/* Tabler's status (core/scss/ui/_status.scss): a dot-and-label chip, a dot on
+   its own, and the larger indicator. One class per theme colour and palette hue
+   sets --status-color, which the chip, its dot and a free-standing dot all read;
+   the chip's tint is that colour at a tenth. status-lite is the chip with a
+   plain border and the body's text, its dot alone in the colour.
+ *
+ * Chosen over .badge for a state: .badge carries its colour with a utility class
+ * (badge bg-green-lt), .status-danger is self-contained, so the markup stays
+ * semantic. */
+
+.status {
+  --status-color: var(--secondary);
+
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  color: var(--status-color);
+  background: color-mix(in oklab, var(--status-color) 10%, transparent);
+  border-radius: var(--border-radius-pill);
+}
+
+.status .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.status-lite {
+  color: var(--body-color);
+  background: transparent;
+  border: var(--border-width) solid var(--border-color);
+}
+
+/* Not an outcome: a choice shown as chosen, such as a filter's "everything". */
+.status-primary { --status-color: var(--primary); }
+.status-secondary { --status-color: var(--secondary); }
+.status-success { --status-color: var(--success); }
+.status-info { --status-color: var(--info); }
+.status-warning { --status-color: var(--warning); }
+.status-danger { --status-color: var(--danger); }
+.status-blue { --status-color: var(--blue); }
+.status-azure { --status-color: var(--azure); }
+.status-indigo { --status-color: var(--indigo); }
+.status-purple { --status-color: var(--purple); }
+.status-pink { --status-color: var(--pink); }
+.status-red { --status-color: var(--red); }
+.status-orange { --status-color: var(--orange); }
+.status-yellow { --status-color: var(--yellow); }
+.status-lime { --status-color: var(--lime); }
+.status-green { --status-color: var(--green); }
+.status-teal { --status-color: var(--teal); }
+.status-cyan { --status-color: var(--cyan); }
+
+/* Free-standing, and the chip's leading dot: it takes --status-color from its
+   own class or from the chip around it. Animated, a ring pulses out of it. */
+.status-dot {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--status-color, var(--secondary));
+  border-radius: var(--border-radius-pill);
+}
+
+.status-dot-animated::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background: inherit;
+  border-radius: inherit;
+  opacity: 0.6;
+  animation: 1s linear 2s backwards infinite status-pulsate-tertiary;
+}
+
+/* The larger indicator: a dot in three circles, which pulse when animated. */
+.status-indicator {
+  position: relative;
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.status-indicator-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: -0.375rem 0 0 -0.375rem;
+  background: var(--status-color, var(--secondary));
+  border-radius: 50%;
+}
+
+.status-indicator-circle:nth-child(1) { z-index: 3; }
+.status-indicator-circle:nth-child(2) { z-index: 2; opacity: 0.1; }
+.status-indicator-circle:nth-child(3) { z-index: 1; opacity: 0.3; }
+
+.status-indicator-animated .status-indicator-circle:nth-child(1) {
+  animation: 2s linear 1s infinite backwards status-pulsate-main;
+}
+
+.status-indicator-animated .status-indicator-circle:nth-child(2) {
+  animation: 2s linear 1s infinite backwards status-pulsate-secondary;
+}
+
+.status-indicator-animated .status-indicator-circle:nth-child(3) {
+  animation: 2s linear 1s infinite backwards status-pulsate-tertiary;
+}
+
+@keyframes status-pulsate-main {
+  40% { transform: scale(1.25, 1.25); }
+  60% { transform: scale(1.25, 1.25); }
+}
+
+@keyframes status-pulsate-secondary {
+  10% { transform: scale(1, 1); }
+  30% { transform: scale(3, 3); }
+  80% { transform: scale(3, 3); }
+  100% { transform: scale(1, 1); }
+}
+
+@keyframes status-pulsate-tertiary {
+  25% { transform: scale(1, 1); }
+  80% { transform: scale(3, 3); opacity: 0; }
+  100% { transform: scale(3, 3); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot-animated::before,
+  .status-indicator-animated .status-indicator-circle { animation: none; }
+}
+
+/* ------------------------------------------------------------------- table */
+/* Adapted from Tabler's _tables.scss (182 lines), which layers on Bootstrap's
+   base table (~180 more). Neither is taken whole.
+ *
+ * Bootstrap's base carries a --table-color-type / --table-bg-state cascade whose
+ * only purpose is striped, hover and contextual row variants — all three
+ * rejected here. Written plainly against the theme tokens instead, the whole
+ * component is a fraction of the source and does the same job.
+ *
+ * .table-responsive is REQUIRED, not optional: wide content scrolls inside its
+ * own container so the page body never scrolls horizontally. */
+
+/* A table taller than the window scrolls inside its card with its header in view
+   — Tabler's "table with sticky header", a table in a box of fixed height. The
+   header cannot stick to the window instead: the wrapper already scrolls
+   sideways, so a wide table never widens the page, and a scrolling box keeps
+   its sticky children to itself. A table shorter than the box is unchanged. */
+.table-responsive {
+  width: 100%;
+  max-height: calc(100vh - 8rem);
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+/* The header is the one surface that must stay distinguishable when the body
+   scrolls under it. */
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* Collapsed borders stay behind with the table when the header sticks; the
+     line under the header is drawn with it instead. */
+  box-shadow: inset 0 calc(-1 * var(--border-width)) 0 var(--border-color);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: var(--bg-surface-tertiary);
+}
+
+.table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover {
+  background: var(--active-bg);
+}
+
+/* Vertical rhythm for rows carrying a chip or an icon rather than bare text. */
+.table-vcenter > :not(caption) > * > * {
+  vertical-align: middle;
+}
+
+.table-nowrap > :not(caption) > * > * {
+  white-space: nowrap;
+}
+
+/* A table inside a card sits flush to the card's edges — the card already
+   supplies the padding, and doubling it wastes the width a wide table needs.
+   The edge cells take the card's own padding so the columns still line up with
+   the card header above them.
+
+   Descendant selectors, not direct-child ones: the depth between .card and the
+   table is not something a page template should have to get right, and a rule
+   that silently stops matching when someone adds a wrapper is worse than one
+   that is slightly less specific. */
+.card .table > :not(caption) > * > *:first-child {
+  padding-left: var(--page-padding);
+}
+
+.card .table > :not(caption) > * > *:last-child {
+  padding-right: var(--page-padding);
+}
+
+/* --------------------------------------------------------------- table sort
+ * The markup contract only. .table-sort / .table-tbody are kept because the
+ * arrow styling costs nothing extra and emitting the classes keeps the sorter
+ * choice open — a library later, or hand-written JS, the markup is the same.
+ * table.js binds them; see its header for why nothing is vendored.
+ *
+ * The arrows are mask-images: the shape comes from the SVG and the colour from
+ * the element's own background: currentColor, so they follow the theme without
+ * a light and a dark copy. The stroke inside each data URI is arbitrary — a
+ * mask reads alpha only — and is left as a literal rather than currentColor so
+ * it does not look like it controls the colour. */
+
+.table-sort {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin: -0.5rem -0.75rem;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.table-sort:hover,
+.table-sort.asc,
+.table-sort.desc {
+  color: var(--body-color);
+}
+
+.table-sort::after {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.25rem;
+  vertical-align: bottom;
+  content: "";
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='1'><path d='M5 7l3 -3l3 3'/><path d='M5 10l3 3l3 -3'/></svg>");
+}
+
+.table-sort.asc::after {
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16'><path fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='M5 10l3 -3l3 3'/></svg>");
+}
+
+.table-sort.desc::after {
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16'><path fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='M5 7l3 3l3 -3'/></svg>");
+}
+
+/* ------------------------------------------------------------------- empty */
+/* Adapted from Tabler's _empty.scss (71 lines). One pattern covers all three
+   no-data cases: nothing to show yet, a list with no rows, and a missing page.
+ *
+ * .empty-img is dropped (it needs an illustration asset). .empty-header — the
+ * big-text form — is kept, for a missing page, where it is the design.
+ *
+ * The demo puts .text-secondary on the subtitle; that is a utility, so the
+ * colour lives here instead and the markup stays semantic. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 0 1rem;
+  line-height: 1;
+  color: var(--secondary);
+}
+
+.empty-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* The missing-page form: the big text is the whole design, so it is sized to carry a page
+   on its own rather than to sit above a title. */
+.empty-header {
+  margin: 0 0 1rem;
+  font-size: 4rem;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  color: var(--secondary);
+}
+
+.empty-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.empty-subtitle {
+  max-width: 34rem;
+  margin: 0 0 0.5rem;
+  color: var(--secondary);
+}
+
+.empty-action {
+  margin-top: 1.5rem;
+}
+
+/* ------------------------------------------------------------------- steps */
+/* Adapted from Tabler's _steps.scss (172 lines), taken at roughly a third.
+ *
+ * It models one split, done and not done: where a sequence has got to, such as
+ * the stages a release passes through.
+ *
+ * Dropped: the .steps-{color} loop (12 classes, one used) and the tooltip
+ * variant (needs Popper). .steps-counter numbers the dots, for a route whose
+ * stages are steps in an order rather than names.
+ * .steps-vertical is kept — it is what makes the component usable on a narrow
+ * viewport, where a horizontal 8-stage flow is unreadable.
+ *
+ * Tabler builds these on <div>/<a>. Almanac uses <ol>/<li>: the order IS the
+ * meaning here, and a list communicates that to a screen reader for free. The
+ * SCSS never selects on the element, so nothing is lost. */
+
+.steps {
+  --steps-color: var(--primary);
+  --steps-inactive-color: var(--border-color);
+  --steps-dot-size: 0.75rem;
+  --steps-line-width: 2px;
+
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.step-item {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 5rem;
+  padding-top: calc(var(--steps-dot-size) + 0.5rem);
+  font-size: 0.8125rem;
+  color: var(--body-color);
+  text-align: center;
+}
+
+/* The connector runs from this dot to the next, so the last item has none. */
+.step-item:not(:last-child)::after {
+  position: absolute;
+  top: calc(var(--steps-dot-size) / 2);
+  left: 50%;
+  width: 100%;
+  height: var(--steps-line-width);
+  content: "";
+  background: var(--steps-color);
+  transform: translateY(-50%);
+}
+
+.step-item::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: var(--steps-dot-size);
+  height: var(--steps-dot-size);
+  content: "";
+  background: var(--steps-color);
+  border-radius: var(--border-radius-pill);
+  transform: translateX(-50%);
+}
+
+/* Pending is the DEFAULT, and completion is marked explicitly.
+ *
+ * Tabler infers it the other way — everything is coloured until `.active ~`
+ * greys the tail — which silently renders a sequence not yet started as fully
+ * complete, because with no active item the sibling rule never fires. Every
+ * Tabler demo happens to have an active step, so the case never shows up there.
+ *
+ * `~` cannot select preceding siblings, so "everything before active" is not
+ * expressible in CSS. The page marks done stages instead, which is also the
+ * more honest model — the page knows which stages were reached. */
+.step-item::before,
+.step-item:not(:last-child)::after {
+  background: var(--steps-inactive-color);
+}
+
+.step-item {
+  color: var(--disabled-color);
+}
+
+.step-item.done,
+.step-item.active {
+  color: var(--body-color);
+}
+
+.step-item.active {
+  font-weight: var(--font-weight-bold);
+}
+
+.step-item.done::before,
+.step-item.active::before {
+  background: var(--steps-color);
+}
+
+/* A connector is complete only when the stage AFTER it has been reached, which
+   is what makes the line stop at the current position rather than run past it. */
+.step-item.done:not(:last-child)::after {
+  background: var(--steps-color);
+}
+
+/* A link step keeps the step's own colour rather than taking the link ink —
+   the flow's meaning is carried by position and state, and recolouring half
+   the labels blue would compete with that. */
+.step-item a {
+  color: inherit;
+}
+
+.step-item a:hover {
+  color: var(--link-color);
+}
+
+/* Vertical: what makes 8+ stages readable on a narrow viewport. The dot moves
+   to the inline start and the connector becomes the vertical run between dots. */
+.steps-vertical {
+  flex-direction: column;
+  overflow-x: visible;
+}
+
+.steps-vertical .step-item {
+  min-height: 2rem;
+  min-width: 0;
+  padding-top: 0;
+  padding-left: calc(var(--steps-dot-size) + 1rem);
+  text-align: left;
+}
+
+.steps-vertical .step-item + .step-item {
+  margin-top: 0.75rem;
+}
+
+.steps-vertical .step-item::before {
+  top: 0.25rem;
+  left: 0;
+  transform: none;
+}
+
+.steps-vertical .step-item:not(:last-child)::after {
+  top: 0.25rem;
+  left: calc(var(--steps-dot-size) / 2);
+  width: var(--steps-line-width);
+  height: calc(100% + 0.75rem);
+  transform: translateX(-50%);
+}
+
+/* A numbered step: the dot grows to hold its number, in the secondary ink until
+   the step is reached. */
+.steps-counter {
+  --steps-dot-size: 1.5rem;
+  counter-reset: steps;
+}
+
+.steps-counter .step-item {
+  counter-increment: steps;
+}
+
+.steps-counter .step-item::before {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--secondary);
+  content: counter(steps);
+}
+
+.steps-counter .step-item.done::before,
+.steps-counter .step-item.active::before {
+  color: var(--white);
+}
+
+.steps-vertical.steps-counter .step-item::before,
+.steps-vertical.steps-counter .step-item:not(:last-child)::after {
+  top: 0;
+}
+
+/* ---------------------------------------------------------------- timeline */
+/* Tabler's timeline (core/scss/ui/_timeline.scss, 65 lines, whole): events down
+   a line, each an icon in a rounded square on the line and a card beside it. The
+   icon takes the event's colour from a status class, .is-green and the like, as
+   a tint behind the colour; without one it is Tabler's gray. .timeline-simple
+   drops the icons and the line's indent. */
+.timeline {
+  --timeline-icon-size: 2.5rem;
+  --timeline-gap: 1rem;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.timeline-event {
+  --timeline-color: var(--secondary);
+  position: relative;
+}
+
+.timeline-event:not(:last-child) {
+  margin-bottom: var(--timeline-gap);
+}
+
+.timeline-event:not(:last-child)::before {
+  position: absolute;
+  top: var(--timeline-icon-size);
+  bottom: calc(-1 * var(--timeline-gap));
+  left: calc(var(--timeline-icon-size) / 2);
+  width: var(--border-width);
+  content: "";
+  background-color: var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.timeline-event-icon {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--timeline-icon-size);
+  height: var(--timeline-icon-size);
+  color: var(--timeline-color);
+  background: var(--bg-surface-secondary);
+  border-radius: var(--border-radius);
+}
+
+.timeline-event-icon .icon {
+  width: 60%;
+  height: 60%;
+}
+
+.timeline-event:is(.is-primary, .is-green, .is-yellow, .is-red) .timeline-event-icon {
+  background: color-mix(in oklab, var(--timeline-color) 12%, var(--bg-surface));
+}
+
+.timeline-event.is-primary { --timeline-color: var(--primary); }
+.timeline-event.is-green { --timeline-color: var(--green); }
+.timeline-event.is-yellow { --timeline-color: var(--yellow); }
+.timeline-event.is-red { --timeline-color: var(--red); }
+
+.timeline-event-card {
+  margin-left: calc(var(--timeline-icon-size) + var(--timeline-gap));
+}
+
+.timeline-simple .timeline-event-icon,
+.timeline-simple .timeline-event::before {
+  display: none;
+}
+
+.timeline-simple .timeline-event-card {
+  margin-left: 0;
+}
+
+/* ------------------------------------------------------------------ navbar */
+/* Tabler's horizontal navbar with its dropdowns (core/scss/layout/_navbar.scss,
+   ui/_dropdowns.scss; shared/components/navbar/NavbarMenu.astro), hand-written:
+   its class contract — header.navbar > .container-xl > .navbar-toggler,
+   .navbar-brand, .navbar-collapse > ul.navbar-nav > li.nav-item[.active] >
+   .nav-link (.nav-link-icon, .nav-link-title), and for a section .dropdown with a
+   .dropdown-toggle and a .dropdown-menu of .dropdown-item links. No Popper and no
+   Bootstrap: nav.js draws the bar, opens one menu at a time, and closes it on a
+   click elsewhere or Escape. Below 768 px the menu folds behind the toggler and
+   the sections open inline, as Tabler's navbar-expand-md does.
+
+   The bar stays at the top of the window as the page scrolls (Tabler's
+   sticky-top); only the bar sticks, the page title under it scrolls away. */
+
+.navbar:not(.navbar-vertical) {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: var(--bg-surface);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.navbar:not(.navbar-vertical) > .container-xl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.5rem;
+  min-height: 3.5rem;
+}
+
+/* The site's name, a link to the front page as a site's brand is; it keeps the
+   body's colour and takes no underline. */
+.navbar-brand,
+.navbar-brand:hover,
+.navbar-brand:focus {
+  color: var(--body-color);
+  text-decoration: none;
+}
+
+.navbar:not(.navbar-vertical) .navbar-brand {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: var(--font-weight-bold);
+  color: var(--body-color);
+  white-space: nowrap;
+}
+
+/* The site's icon, beside its name; an inline SVG fills it (data-almanac-icon). */
+.navbar:not(.navbar-vertical) .navbar-brand-image {
+  display: inline-block;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+[data-almanac-icon] svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar:not(.navbar-vertical) .navbar-collapse {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.navbar:not(.navbar-vertical) .navbar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.navbar:not(.navbar-vertical) .nav-link {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--secondary);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+}
+
+.navbar:not(.navbar-vertical) .nav-link:hover,
+.navbar:not(.navbar-vertical) .nav-link:focus-visible,
+.navbar:not(.navbar-vertical) .dropdown-toggle[aria-expanded="true"] {
+  color: var(--body-color);
+  text-decoration: none;
+  background: var(--active-bg);
+}
+
+/* The icon is dimmer than the label until its item is current or hovered. */
+.navbar:not(.navbar-vertical) .nav-link-icon {
+  display: inline-flex;
+  opacity: 0.75;
+}
+
+.navbar:not(.navbar-vertical) .nav-link-icon .icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.navbar:not(.navbar-vertical) .nav-link:hover .nav-link-icon,
+.navbar:not(.navbar-vertical) .nav-item.active .nav-link-icon {
+  opacity: 1;
+}
+
+/* The current section: weight and an underline rather than a filled block, so it
+   does not compete with the page title under it. */
+.navbar:not(.navbar-vertical) .nav-item.active > .nav-link {
+  color: var(--body-color);
+  font-weight: var(--font-weight-medium);
+  box-shadow: inset 0 -2px 0 var(--primary);
+}
+
+/* Tabler's chevron after a section's name, turned while its menu is open. */
+.navbar:not(.navbar-vertical) .dropdown-toggle::after {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  content: "";
+  background: currentColor;
+  opacity: 0.6;
+  transition: transform 0.15s;
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6l6 -6'/></svg>");
+}
+
+.navbar:not(.navbar-vertical) .dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.navbar:not(.navbar-vertical) .dropdown {
+  position: relative;
+}
+
+/* Tabler's menu: a raised card under its toggle, its items full width. */
+.navbar:not(.navbar-vertical) .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 14rem;
+  padding: 0.25rem;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.07), 0 6px 30px 5px rgba(0, 0, 0, 0.06);
+}
+
+.navbar:not(.navbar-vertical) .dropdown-menu[hidden] {
+  display: none;
+}
+
+.navbar:not(.navbar-vertical) .dropdown-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--body-color);
+  white-space: nowrap;
+  border-radius: var(--border-radius);
+}
+
+.navbar:not(.navbar-vertical) .dropdown-item:hover,
+.navbar:not(.navbar-vertical) .dropdown-item:focus-visible {
+  text-decoration: none;
+  background: var(--active-bg);
+}
+
+.navbar:not(.navbar-vertical) .dropdown-item.active {
+  font-weight: var(--font-weight-medium);
+  color: var(--primary);
+  background: var(--primary-lt);
+}
+
+/* A page not written yet: listed, so the map is whole, but not a link. */
+.navbar:not(.navbar-vertical) .dropdown-item.disabled {
+  color: var(--disabled-color);
+  pointer-events: none;
+}
+
+.navbar:not(.navbar-vertical) .dropdown-item .badge {
+  margin-left: auto;
+}
+
+/* Tabler's .dropdown-header: a section inside the section, naming the pages
+   under it, in small capitals. */
+.navbar .dropdown-header {
+  padding: 0.5rem 0.75rem 0.25rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.navbar-vertical .dropdown-header {
+  padding-left: calc(var(--sidebar-nav-padding-x) + var(--nav-link-icon-width) + var(--nav-link-icon-margin-end));
+}
+
+/* The reader's settings, at the bar's far end and last in the tab order. */
+.navbar:not(.navbar-vertical) .navbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.navbar:not(.navbar-vertical) .navbar-toggler {
+  display: none;
+  padding: 0.375rem;
+  color: var(--body-color);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+}
+
+.navbar:not(.navbar-vertical) .navbar-toggler .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Below the breakpoint: the toggler, the name and the settings in a row, the menu
+   dropping under them when opened, each section's pages listed inline. */
+@media (max-width: 767.98px) {
+  .navbar:not(.navbar-vertical) > .container-xl {
+    gap: 0 0.75rem;
+  }
+
+  .navbar:not(.navbar-vertical) .navbar-toggler {
+    display: inline-flex;
+  }
+
+  .navbar:not(.navbar-vertical) .navbar-collapse {
+    display: none;
+    flex-basis: 100%;
+    order: 3;
+    padding-bottom: 0.5rem;
+  }
+
+  .navbar:not(.navbar-vertical) .navbar-collapse.show {
+    display: block;
+    max-height: calc(100vh - 3.5rem);
+    overflow-y: auto;
+  }
+
+  .navbar:not(.navbar-vertical) .navbar-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbar:not(.navbar-vertical) .nav-link {
+    width: 100%;
+  }
+
+  .navbar:not(.navbar-vertical) .nav-item.active > .nav-link {
+    box-shadow: inset 2px 0 0 var(--primary);
+  }
+
+  .navbar:not(.navbar-vertical) .dropdown-toggle::after {
+    margin-left: auto;
+  }
+
+  .navbar:not(.navbar-vertical) .dropdown-menu {
+    position: static;
+    min-width: 0;
+    padding: 0 0 0.25rem 1.5rem;
+    border: 0;
+    box-shadow: none;
+  }
+}
+
+/* ------------------------------------------------------------ theme toggle */
+/* Almanac's own: a bordered icon button, showing the mode it switches to. */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  font: inherit;
+  color: var(--body-color);
+  cursor: pointer;
+  background: var(--bg-surface-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.theme-toggle:hover {
+  background: var(--active-bg);
+}
+
+.theme-toggle .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* The settings button waits hidden until settings.js can open its panel; the
+   button's display would otherwise override the attribute. */
+.theme-toggle[hidden] {
+  display: none;
+}
+
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: inline-block; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* ----------------------------------------------------------------- sidebar */
+/* Kept for a page that wants it, beside the default navbar: every rule is
+   under .navbar-vertical, and the navbar's under .navbar:not(.navbar-vertical),
+   so the two never touch. nav.js draws it into <aside class="navbar
+   navbar-vertical" id="sidebar">.
+
+   Tabler's vertical navbar (core/scss/layout/_navbar.scss, navbar-vertical-nav;
+   shared/components/navbar/Sidebar.astro), hand-written: its class contract —
+   aside.navbar.navbar-vertical > .container-fluid > .navbar-toggler, .navbar-brand,
+   nav.navbar-collapse > ul.navbar-nav > li.nav-item[.active] > .nav-link
+   (.nav-link-icon, .nav-link-title) and, for a section, .dropdown-toggle with a
+   .dropdown-menu of .dropdown-item links shown inline; .navbar-side pinned to the
+   foot. No Bootstrap: nav.js draws it and opens the sections, and below 992 px it
+   folds into a bar at the top, as Tabler's does, its menu behind the toggler.
+   Tabler's sizes: 16rem wide, links 0.75rem by 0.75rem inside a 0.5rem inset,
+   icons in a 1.5rem column. The folded rail is not taken. */
+
+.navbar-vertical {
+  --sidebar-inset: 0.5rem;
+  --sidebar-nav-padding-y: 0.5rem;
+  --sidebar-nav-padding-x: 0.75rem;
+  --nav-link-icon-width: 1.5rem;
+  --nav-link-icon-margin-end: 0.5rem;
+
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1030;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  overflow-y: auto;
+  background: var(--bg-surface);
+  box-shadow: inset calc(-1 * var(--border-width)) 0 0 0 var(--border-color);
+}
+
+.navbar-vertical > .container-fluid {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.navbar-vertical ~ .page-wrapper {
+  margin-left: var(--sidebar-width);
+}
+
+.navbar-vertical .navbar-brand {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  min-height: 3.5rem;
+  padding: 0 calc(var(--sidebar-inset) + var(--sidebar-nav-padding-x));
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--body-color);
+  white-space: nowrap;
+}
+
+/* The site's icon, a little larger at the head of the sidebar. */
+.navbar-vertical .navbar-brand-image {
+  display: inline-block;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+}
+
+.navbar-vertical .navbar-collapse {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  padding-top: 0.25rem;
+}
+
+.navbar-vertical .navbar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 var(--sidebar-inset);
+  margin: 0;
+  list-style: none;
+}
+
+.navbar-vertical .nav-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--sidebar-nav-padding-y) var(--sidebar-nav-padding-x);
+  font: inherit;
+  color: var(--body-color);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+}
+
+.navbar-vertical .nav-link:hover,
+.navbar-vertical .nav-link:focus-visible {
+  text-decoration: none;
+  background: var(--active-bg);
+}
+
+.navbar-vertical .nav-link-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: var(--nav-link-icon-width);
+  margin-right: var(--nav-link-icon-margin-end);
+  color: var(--icon-color);
+}
+
+.navbar-vertical .nav-link-icon .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* One line, ellipsized: a title never wraps, so rows keep their height. */
+.navbar-vertical .nav-link-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The current page is filled; the section holding it is only emphasized, since
+   two filled rows read as two selections (Tabler's rule). */
+.navbar-vertical .nav-item.active > .nav-link {
+  font-weight: var(--font-weight-medium);
+  background: var(--active-bg);
+}
+
+.navbar-vertical .nav-item.active > .nav-link .nav-link-icon {
+  color: currentColor;
+}
+
+.navbar-vertical .nav-item.active > .nav-link.dropdown-toggle {
+  background: transparent;
+}
+
+/* The section's chevron, at the row's end, turned while it is open. */
+.navbar-vertical .dropdown-toggle::after {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin-left: auto;
+  content: "";
+  background: currentColor;
+  opacity: 0.6;
+  transition: transform 0.15s;
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6l6 -6'/></svg>");
+}
+
+.navbar-vertical .dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.navbar-vertical .dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 0 0.25rem;
+}
+
+.navbar-vertical .dropdown-menu[hidden] {
+  display: none;
+}
+
+/* A page's link, its text in line with the section's title above it. */
+.navbar-vertical .dropdown-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.375rem var(--sidebar-nav-padding-x) 0.375rem
+    calc(var(--sidebar-nav-padding-x) + var(--nav-link-icon-width) + var(--nav-link-icon-margin-end));
+  color: var(--secondary);
+  border-radius: var(--border-radius);
+}
+
+.navbar-vertical .dropdown-item:hover,
+.navbar-vertical .dropdown-item:focus-visible {
+  color: var(--body-color);
+  text-decoration: none;
+  background: var(--active-bg);
+}
+
+.navbar-vertical .dropdown-item.active {
+  font-weight: var(--font-weight-medium);
+  color: var(--body-color);
+  background: var(--active-bg);
+}
+
+/* A page not written yet: listed, so the map is whole, but not a link. */
+.navbar-vertical .dropdown-item.disabled {
+  color: var(--disabled-color);
+  pointer-events: none;
+}
+
+.navbar-vertical .dropdown-item .badge {
+  flex: none;
+  margin-left: auto;
+}
+
+/* One line, like the sections' titles. */
+.navbar-vertical .dropdown-item-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The menu's trailing group, the reader's settings, pinned to the foot. */
+.navbar-vertical .navbar-side {
+  padding: 0.5rem 0;
+  margin-top: auto;
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+/* The toggle names the mode it switches to. */
+.navbar-vertical #theme-toggle .when-dark { display: none; }
+[data-theme="dark"] .navbar-vertical #theme-toggle .when-dark { display: inline-flex; }
+[data-theme="dark"] .navbar-vertical #theme-toggle .when-light { display: none; }
+
+.navbar-vertical [hidden] {
+  display: none;
+}
+
+.navbar-vertical .navbar-toggler {
+  display: none;
+  padding: 0.375rem;
+  color: var(--body-color);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+}
+
+.navbar-vertical .navbar-toggler .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Below the breakpoint: a bar at the top, the toggler and the name in a row, the
+   menu dropping under them when opened. */
+@media (max-width: 991.98px) {
+  .navbar-vertical {
+    position: sticky;
+    inset: 0 0 auto;
+    width: auto;
+    max-height: 100vh;
+    box-shadow: inset 0 calc(-1 * var(--border-width)) 0 0 var(--border-color);
+  }
+
+  .navbar-vertical > .container-fluid {
+    flex-flow: row wrap;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+
+  .navbar-vertical ~ .page-wrapper {
+    margin-left: 0;
+  }
+
+  .navbar-vertical .navbar-toggler {
+    display: inline-flex;
+  }
+
+  .navbar-vertical .navbar-brand {
+    padding: 0 0.5rem;
+    margin-right: auto;
+  }
+
+  .navbar-vertical .navbar-collapse {
+    display: none;
+    flex-basis: 100%;
+    padding-bottom: 0.5rem;
+  }
+
+  .navbar-vertical .navbar-collapse.show {
+    display: flex;
+  }
+
+  .navbar-vertical .navbar-side {
+    margin-top: 0.5rem;
+  }
+}
+
+/* ------------------------------------------------------------------- badge */
+/* Adapted from Tabler's _badges.scss, the plain variant only: a small label on a
+   tinted ground, here for a page not written yet or still in its old layout. */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: var(--bg-surface-tertiary);
+  border-radius: var(--border-radius);
+}
+
+/* ------------------------------------------------------------- list group */
+/* Bootstrap's list group as Tabler styles it (core/scss/ui/_lists.scss), the
+   flush form inside a card and its .list-group-header: rows of links, each with
+   a quieter line under its title. */
+
+.list-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.list-group-item {
+  display: block;
+  padding: 0.75rem var(--page-padding);
+  color: var(--body-color);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.list-group-item:last-child {
+  border-bottom: 0;
+}
+
+a.list-group-item:hover,
+a.list-group-item:focus-visible {
+  text-decoration: none;
+  background: var(--active-bg);
+}
+
+.list-group-item.disabled {
+  color: var(--disabled-color);
+}
+
+.list-group-header {
+  padding: 0.5rem var(--page-padding);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--bg-surface-tertiary);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.list-group-item-title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.list-group-item-text {
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.list-group-item.disabled .list-group-item-text {
+  color: var(--disabled-color);
+}
+
+/* ------------------------------------------------------------------- prose */
+/* Tabler's .prose (core/scss/ui/_markdown.scss) with the type rules it leans on
+   (_type.scss: code, pre, kbd, blockquote, hr): a page's running text.
+   Its element rules sit under :where(.prose), so they count as an element
+   alone: a component inside prose, an alert's heading or a card's title, keeps
+   its own margins and sizes. */
+
+.prose {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+:where(.prose) p,
+:where(.prose) ul,
+:where(.prose) ol,
+:where(.prose) dl {
+  margin: 0 0 1rem;
+}
+
+:where(.prose) ul,
+:where(.prose) ol {
+  padding-left: 1.5rem;
+}
+
+:where(.prose) li + li {
+  margin-top: 0.25rem;
+}
+
+:where(.prose) h2,
+:where(.prose) h3,
+:where(.prose) h4 {
+  margin: 1.75rem 0 0.75rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+}
+
+:where(.prose) h2 { font-size: 1.25rem; }
+:where(.prose) h3 { font-size: 1.0625rem; }
+:where(.prose) h4 { font-size: 0.9375rem; }
+
+:where(.prose) blockquote {
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  color: var(--secondary);
+  border-left: 2px solid var(--border-color);
+}
+
+:where(.prose) img {
+  max-width: 100%;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+:where(.prose) hr,
+hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+/* No ligatures: Fira Code would draw 0x as 0×, and >= or != as one sign, and a
+   specification quotes code as written. */
+code,
+kbd,
+pre {
+  font-family: var(--font-monospace);
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  padding: 2px 4px;
+  font-size: 0.875em;
+  color: var(--code-color);
+  background: var(--code-bg);
+  border-radius: var(--border-radius);
+}
+
+pre {
+  max-height: 30rem;
+  padding: 1rem;
+  margin: 0 0 1rem;
+  overflow: auto;
+  font-size: 0.8125rem;
+  line-height: var(--line-height-base);
+  color: var(--gray-100);
+  background: var(--gray-900);
+  border-radius: var(--border-radius);
+}
+
+[data-theme="dark"] pre {
+  background: var(--black);
+}
+
+pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--body-color);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-bottom-width: 2px;
+  border-radius: var(--border-radius);
+}
+
+/* ------------------------------------------------------------------ pixels */
+/* A small picture drawn by whole pixels at any size, and on checks, so what is
+   transparent shows as such. */
+
+.pixel {
+  image-rendering: pixelated;
+}
+
+.checker {
+  background-color: var(--checker-a);
+  background-image:
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%, transparent 75%, var(--checker-b) 75%),
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%, transparent 75%, var(--checker-b) 75%);
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+/* --------------------------------------------------------------- the map */
+/* The front page's map of the site: a card a section, its pages listed. */
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: var(--page-padding);
+  margin-top: var(--page-padding);
+}
+
+.map-grid > .card + .card {
+  margin-top: 0;
+}
+
+.map-grid .card-body {
+  padding-block: 0.75rem;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.card-title .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  color: var(--icon-color);
+  vertical-align: -0.25rem;
+}
+
+.intro-icon {
+  display: block;
+  width: 128px;
+  height: 128px;
+}
+
+
+/* -------------------------------------------------------------- code block */
+/* Tabler's code card (core/scss/ui/_cards.scss, .card-code: a dark <pre> flush
+   to its card's edges), its highlight colours (preview/scss/_highlight.scss)
+   and its clipboard button's two states (core/js/src/clipboard.ts:
+   .clipboard-label, .clipboard-feedback, .copied on the trigger). Here the card
+   is a block inside a section, headed by the file and lines it quotes, since a
+   specification's code is a citation; code.js colours it and wires the copy. */
+
+.code-block {
+  margin: 0 0 1rem;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+}
+
+.code-block:last-child {
+  margin-bottom: 0;
+}
+
+.code-block-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.375rem 0.5rem 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  background: var(--bg-surface-tertiary);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.code-block-path {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-monospace);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-block-lines {
+  flex: none;
+  color: var(--secondary);
+}
+
+.code-block-header .btn {
+  margin-left: auto;
+}
+
+.code-block pre {
+  margin: 0;
+  border-radius: 0;
+}
+
+.highlight .c { color: #a0aec0; font-style: italic; }
+.highlight .k { color: #93ddfd; }
+.highlight .nc { color: #ff8383; }
+.highlight .nf { color: #ffe484; }
+.highlight .s { color: #b5f4a5; }
+.highlight .mi,
+.highlight .cp { color: #d9a9ff; }
+
+/* A block with no header: its copy button over the top corner, shown while the
+   pointer is on the block, and always where there is no pointer to hover. */
+.code-copyable {
+  position: relative;
+}
+
+.code-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: var(--gray-100);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.code-copy:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.code-copyable:hover .code-copy,
+.code-copy:focus-visible,
+.code-copy.copied {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .code-copy { opacity: 1; }
+}
+
+.clipboard-feedback { display: none; }
+.copied .clipboard-feedback { display: inline; }
+.copied .clipboard-label { display: none; }
+
+/* ------------------------------------------------------------- form select */
+/* Tabler's .form-select (ui/_forms.scss), the native control restyled: its own
+   chevron, the theme's surface and border. */
+
+.form-select {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.4375rem 2.25rem 0.4375rem 0.75rem;
+  font: inherit;
+  color: var(--body-color);
+  appearance: none;
+  background-color: var(--bg-surface);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6l6 -6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+  background-size: 1rem;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.form-select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+/* -------------------------------------------------------------------- flow */
+/* Almanac's own: what happens in order, one row a way of doing it, columns
+   lined up so a step one way skips is seen beside the step the other takes. A
+   step is plain, skipped (dashed, quiet) or written (the accent, dashed: what
+   one way writes that the other does not). Scrolls sideways on a phone. */
+
+.flow-scroll {
+  overflow-x: auto;
+}
+
+.flow {
+  --flow-columns: 8;
+  display: grid;
+  grid-template-columns: 8.5rem repeat(var(--flow-columns), minmax(6.5rem, 1fr));
+  gap: 0.75rem 1.25rem;
+  min-width: 62rem;
+  align-items: stretch;
+}
+
+.flow-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.flow-label code {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.flow-step {
+  position: relative;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  background: var(--bg-surface-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.flow-step b {
+  display: block;
+  margin-bottom: 0.125rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.flow-step small {
+  display: block;
+  color: var(--secondary);
+}
+
+/* The arrow to the next step, in the gap between them. */
+.flow-step:not(.is-last)::after {
+  position: absolute;
+  top: 50%;
+  right: -1.125rem;
+  width: 1rem;
+  height: 1rem;
+  content: "";
+  background: var(--tertiary);
+  transform: translateY(-50%);
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14'/><path d='M13 18l6 -6'/><path d='M13 6l6 6'/></svg>");
+}
+
+.flow-step.is-skipped {
+  color: var(--secondary);
+  background: transparent;
+  border-style: dashed;
+}
+
+.flow-step.is-written {
+  background: var(--primary-lt);
+  border: var(--border-width) dashed var(--primary);
+}
+
+.flow-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.flow-legend span::before {
+  display: inline-block;
+  width: 1.25rem;
+  height: 0.75rem;
+  margin-right: 0.375rem;
+  vertical-align: -0.0625rem;
+  content: "";
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.flow-legend .is-plain::before { background: var(--bg-surface-secondary); }
+.flow-legend .is-skipped::before { border-style: dashed; }
+.flow-legend .is-written::before { background: var(--primary-lt); border: var(--border-width) dashed var(--primary); }
+
+/* ---------------------------------------------------------------- bitfield */
+/* Almanac's own: a number drawn bit by bit, high bit first, each bit coloured
+   by the field it goes to, the fields named below. A page sets --field-a, -b, -c
+   per field from the palette. */
+
+.bitfield {
+  display: grid;
+  grid-template-columns: repeat(var(--bits, 11), minmax(1.75rem, 2.5rem));
+  gap: 3px;
+  font-family: var(--font-monospace);
+}
+
+.bit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0 0.375rem;
+  background: color-mix(in oklab, var(--field) 14%, var(--bg-surface));
+  border-top: 3px solid var(--field);
+  border-radius: var(--border-radius-sm);
+}
+
+.bit small {
+  font-size: 0.625rem;
+  color: var(--secondary);
+}
+
+.bit span {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.field-a { --field: var(--azure); }
+.field-b { --field: var(--orange); }
+.field-c { --field: var(--purple); }
+
+.field-chip {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: baseline;
+}
+
+.field-chip::before {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  content: "";
+  background: var(--field);
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------ section row */
+/* Two blocks side by side in a section, a figure beside its words, stacking on
+   a narrow window. */
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--page-padding);
+  align-items: start;
+}
+
+.card-subtitle {
+  margin: 0.125rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.card-header-titles {
+  min-width: 0;
+}
+
+/* A value quoted in a table stays one piece: its chip never breaks across lines. */
+.table code {
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- tooltip */
+/* Tabler's tooltip (ui/_tooltip.scss): a small dark bubble with an arrow, here
+   for a lexicon word's definition (terms.js), and the word's dotted underline. */
+
+.term {
+  text-decoration: underline dotted var(--tertiary);
+  text-underline-offset: 0.2em;
+  cursor: help;
+}
+
+.term:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1070;
+  max-width: 22rem;
+  pointer-events: none;
+}
+
+.tooltip[hidden] {
+  display: none;
+}
+
+.tooltip-inner {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--gray-50);
+  background: var(--gray-900);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .tooltip-inner {
+  color: var(--gray-900);
+  background: var(--gray-100);
+}
+
+/* The arrow, under the bubble pointing down, or over it when it opens below. */
+.tooltip::after {
+  position: absolute;
+  bottom: -5px;
+  left: calc(var(--arrow-x, 50%) - 5px);
+  width: 10px;
+  height: 10px;
+  content: "";
+  background: var(--gray-900);
+  transform: rotate(45deg);
+}
+
+[data-theme="dark"] .tooltip::after {
+  background: var(--gray-100);
+}
+
+.tooltip.is-below::after {
+  top: -5px;
+  bottom: auto;
+}
+
+/* A measured number whose data did not load: left as written, marked. */
+.data-missing {
+  text-decoration: underline wavy var(--warning);
+}
+
+/* -------------------------------------------------------------- bar chart */
+/* charts.js's horizontal bar chart: labels in the first column, the plot in the
+   second with its gridlines behind every row, round ticks on a value axis below,
+   each value just past its bar's end. */
+
+.chart-bars {
+  display: grid;
+  /* The labels as wide as the longest needs, up to 20rem, so the plot has the rest. */
+  grid-template-columns: fit-content(20rem) minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.375rem;
+  align-items: center;
+}
+
+.chart-label {
+  font-size: 0.875rem;
+  line-height: 1.3;
+  text-align: right;
+}
+
+/* Charts side by side, as many as fit at 20rem or more each, wrapping on a narrow window. */
+.chart-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+}
+
+/* A chart's own title, centred over its plot as the axis's title is under it. */
+.chart-title {
+  grid-column: 2;
+  margin: 0 3.5rem 0.5rem 0;
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--body-color);
+  text-align: center;
+}
+
+.chart-label small {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+
+.chart-grid {
+  position: relative;
+  grid-column: 2;
+  align-self: stretch;
+  margin-right: 3.5rem;
+  pointer-events: none;
+}
+
+.chart-grid span {
+  position: absolute;
+  top: -0.25rem;
+  bottom: -0.25rem;
+  border-left: var(--border-width) dashed var(--border-color);
+}
+
+.chart-grid span:first-child {
+  border-left-style: solid;
+  border-left-color: var(--tertiary);
+}
+
+/* The plot sits on the gridlines' row, so its bar is drawn over them. */
+.chart-plot {
+  position: relative;
+  grid-column: 2;
+  height: 1.75rem;
+  margin-right: 3.5rem;
+}
+
+.chart-bar {
+  position: absolute;
+  top: 0.3125rem;
+  bottom: 0.3125rem;
+  left: 0;
+  min-width: 2px;
+  background: var(--primary);
+}
+
+.chart-bar.is-reference {
+  background: var(--tertiary);
+}
+
+.chart-value {
+  position: absolute;
+  top: 50%;
+  padding-left: 0.375rem;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+.chart-axis {
+  position: relative;
+  grid-column: 2;
+  height: 1.25rem;
+  margin-right: 3.5rem;
+  font-size: 0.75rem;
+  color: var(--secondary);
+}
+
+.chart-axis span {
+  position: absolute;
+  top: 0.25rem;
+  font-variant-numeric: tabular-nums;
+  transform: translateX(-50%);
+}
+
+.chart-axis-title {
+  grid-column: 2;
+  margin-right: 3.5rem;
+  font-size: 0.75rem;
+  color: var(--secondary);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ legend */
+/* Tabler's legend (core/scss/ui/_legend.scss, 166 lines): a dot and a label, in
+   a wrapping list, a button where it does something. Variables resolved; the
+   large legend and the divided list are left out until a page needs them. */
+
+.legend-dot {
+  --legend-size: 0.5rem;
+  --legend-color: var(--border-color);
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--legend-size);
+  height: var(--legend-size);
+  background: var(--legend-color);
+  border: 1px solid rgba(4, 32, 69, 0.14);
+  border-radius: var(--border-radius-pill);
+}
+
+.legend {
+  --legend-color: var(--border-color);
+  --legend-hover-bg: color-mix(in oklab, var(--legend-color) 10%, transparent);
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.375rem 0;
+  margin: 0;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  color: var(--body-color);
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius-pill);
+  transition: background-color 0.3s, opacity 0.3s;
+}
+
+.legend .legend-dot { --legend-color: inherit; }
+
+.legend:focus:not(:focus-visible) { outline: none; }
+
+.legend:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+button.legend {
+  padding-inline: 0.75rem;
+  cursor: pointer;
+}
+
+button.legend:hover,
+button.legend.active {
+  color: var(--body-color);
+  background: var(--legend-hover-bg);
+}
+
+.legend-off { opacity: 0.5; }
+
+.legend-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+}
+
+.legend-list {
+  --legend-list-gap: 0.25rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--legend-list-gap);
+  align-items: center;
+}
+
+.legend-list:has(> button.legend) { --legend-list-gap: 0.25rem; }
+
+/* ------------------------------------------------------------------- range */
+/* Tabler's range input, Bootstrap's .form-range (core/scss/bootstrap/forms/
+   _form-range.scss, 99 lines) with Tabler's variables: a thin track and a round
+   thumb in the primary colour with a white rim. */
+
+.form-range {
+  width: 100%;
+  height: 1.25rem;
+  padding: 0;
+  appearance: none;
+  background-color: transparent;
+}
+
+.form-range:focus { outline: 0; }
+.form-range:focus::-webkit-slider-thumb { box-shadow: 0 0 0 0.25rem color-mix(in oklab, var(--primary) 25%, transparent); }
+.form-range:focus::-moz-range-thumb { box-shadow: 0 0 0 0.25rem color-mix(in oklab, var(--primary) 25%, transparent); }
+.form-range::-moz-focus-outer { border: 0; }
+
+.form-range::-webkit-slider-thumb {
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.375rem;
+  appearance: none;
+  background-color: var(--primary);
+  border: 2px solid var(--white);
+  border-radius: 1rem;
+  box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.1);
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-range::-webkit-slider-thumb:active { background-color: color-mix(in oklab, var(--white) 70%, var(--primary)); }
+
+.form-range::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.25rem;
+  color: transparent;
+  cursor: pointer;
+  background-color: var(--border-color);
+  border-color: transparent;
+  border-radius: 1rem;
+}
+
+.form-range::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  appearance: none;
+  background-color: var(--primary);
+  border: 2px solid var(--white);
+  border-radius: 1rem;
+  box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.1);
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-range::-moz-range-thumb:active { background-color: color-mix(in oklab, var(--white) 70%, var(--primary)); }
+
+.form-range::-moz-range-track {
+  width: 100%;
+  height: 0.25rem;
+  color: transparent;
+  cursor: pointer;
+  background-color: var(--border-color);
+  border-color: transparent;
+  border-radius: 1rem;
+}
+
+/* A range with its label above and its value at the label's end. */
+.range-field + .range-field { margin-top: 0.75rem; }
+
+.range-field label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.range-field output {
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+}
+
+/* ---------------------------------------------------------------- progress */
+/* Tabler's progress bar (core/scss/ui/_progress.scss over Bootstrap's
+   _progress.scss): a rounded track, its bars side by side, so several bars make
+   a stacked one; .progress-separated rings each bar in the card's colour. The
+   striped, animated and indeterminate bars are left out. */
+
+.progress {
+  --progress-height: 0.5rem;
+  --progress-bg: var(--border-color);
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: var(--progress-height);
+  overflow: hidden;
+  font-size: 0.75rem;
+  background-color: var(--progress-bg);
+  border-radius: var(--border-radius);
+}
+
+.progress-lg { --progress-height: 0.75rem; }
+.progress-xl { --progress-height: 1rem; }
+
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+  color: var(--white);
+  text-align: center;
+  white-space: nowrap;
+  background-color: var(--progress-bar-bg, var(--primary));
+  transition: width 0.3s, background 0.3s;
+}
+
+.progress-separated .progress-bar { box-shadow: 0 0 0 2px var(--bg-surface); }
+
+
+.progress-bar.is-over { background-color: var(--red); }
+
+/* ------------------------------------------------------------ form control */
+/* Tabler's text input (.form-control) as the form-select above has it, and its
+   icon input (ui/forms/_form-icon.scss): an icon in the field's start, the text
+   padded clear of it. */
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.4375rem 0.75rem;
+  font: inherit;
+  color: var(--body-color);
+  appearance: none;
+  background-color: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.form-control::placeholder { color: var(--secondary); opacity: 0.8; }
+
+.form-control:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.input-icon { position: relative; }
+.input-icon .form-control:not(:first-child) { padding-inline-start: 2.5rem; }
+
+.input-icon-addon {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  color: var(--icon-color);
+  pointer-events: none;
+}
+
+.input-icon-addon .icon { width: 1.125rem; height: 1.125rem; }
+
+/* ------------------------------------------------------------- form switch */
+/* Tabler's switch (ui/forms/_form-check.scss over Bootstrap's .form-switch): a
+   checkbox drawn as a pill whose knob slides to the end and takes the primary
+   colour when on. */
+
+.form-check {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+  user-select: none;
+}
+
+.form-switch .form-check-input {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 1.25rem;
+  margin: 0;
+  appearance: none;
+  cursor: pointer;
+  background-color: var(--active-bg);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='rgba(0,0,0,0.3)'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: 2rem;
+  transition: background-color 0.3s, background-position 0.3s;
+}
+
+.form-switch .form-check-input:checked {
+  background-color: var(--primary);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='white'/></svg>");
+  background-position: right center;
+  border-color: var(--primary);
+}
+
+.form-switch .form-check-input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.form-check-label { font-size: 0.875rem; cursor: pointer; }
+
+/* -------------------------------------------------------------------- tags */
+/* Tabler's tags (ui/_tags.scss): small bordered labels in a wrapping list. A
+   tag that is a button filters, .active when chosen, with its count beside. */
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.tag {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: 1.75rem;
+  padding: 0 0.625rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--body-color);
+  white-space: nowrap;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+}
+
+button.tag { cursor: pointer; }
+button.tag:hover { background: var(--active-bg); }
+
+button.tag.active {
+  color: var(--primary);
+  background: var(--primary-lt);
+  border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+}
+
+.tag-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+}
+
+/* ------------------------------------------------------------ wide drawer */
+/* An offcanvas wide enough to hold a whole record. */
+
+.offcanvas-wide { width: 44rem; }
+
+/* ------------------------------------------------------------ page standing */
+/* A page's standing against the code it describes, a red, amber or green mark
+   in Tabler's status dot: green agrees with it, amber is designed and not built,
+   red, pulsing, changed since it was checked or disagrees. The map puts one beside
+   each page; a page's footer, one beside its words. */
+
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: var(--page-padding) 0 0;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.status-legend > span,
+.page-footer p {
+  display: inline-flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.page-footer {
+  margin-top: calc(var(--page-padding) * 2);
+  padding: 1rem 0 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.page-footer p { margin: 0; align-items: baseline; }
+.page-footer .status-dot { transform: translateY(-0.0625rem); }
+

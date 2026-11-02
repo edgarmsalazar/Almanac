@@ -1,0 +1,411 @@
+/*
+ * Reference pages: what mkdocstrings writes for a Python package, drawn as
+ * Tabler's parts. Loaded only on a page that holds such output.
+ *
+ * mkdocstrings' Python handler falls back to Material's templates for a theme
+ * it does not know, so these rules read Material's markup: .doc-object per
+ * object, its .doc-heading (an empty code.doc-symbol, the name, .doc-labels,
+ * a permalink), a .doc-signature code block, and .doc-contents holding the
+ * docstring, its section tables and the object's .doc-children.
+ *
+ * A card per object: each class and module-level function or attribute is a
+ * Tabler card, its heading the card's header; its members are rows divided
+ * inside it. Headings stay near the text's size, the signature block and the
+ * section tables are tightened, and the permalink shows on hover.
+ *
+ * The kind of each object is marked in its heading and in the page's contents,
+ * in the style the reader picks in the theme settings (data-theme-symbols):
+ * a letter tile (the default), the keyword as code reads it (with tiles in the
+ * contents), the word in a badge, or a Tabler icon.
+ */
+
+/* ------------------------------------------------------------- kinds */
+
+.doc-symbol {
+  --kind: var(--secondary);
+  --kind-lt: var(--active-bg);
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--kind);
+  vertical-align: middle;
+  background: none;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Each kind's colour, letter, keyword, word and icon; after the rule above, so
+   they win over its neutral default. */
+.doc-symbol-module { --kind: var(--teal); --kind-lt: var(--teal-lt); --kind-letter: "M"; --kind-keyword: "module"; --kind-word: "mod"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5'/%3E%3Cpath d='M12 12l8 -4.5'/%3E%3Cpath d='M12 12l0 9'/%3E%3Cpath d='M12 12l-8 -4.5'/%3E%3Cpath d='M16 5.25l-8 4.5'/%3E%3C/svg%3E"); }
+.doc-symbol-class { --kind: var(--blue); --kind-lt: var(--blue-lt); --kind-letter: "C"; --kind-keyword: "class"; --kind-word: "class"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5'/%3E%3Cpath d='M12 12l8 -4.5'/%3E%3Cpath d='M12 12l0 9'/%3E%3Cpath d='M12 12l-8 -4.5'/%3E%3C/svg%3E"); }
+.doc-symbol-function { --kind: var(--purple); --kind-lt: var(--purple-lt); --kind-letter: "F"; --kind-keyword: "def"; --kind-word: "func"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 19a2 2 0 0 0 2 2c2 0 2 -4 3 -9s1 -9 3 -9a2 2 0 0 1 2 2'/%3E%3Cpath d='M5 12h6'/%3E%3Cpath d='M15 12l6 6'/%3E%3Cpath d='M15 18l6 -6'/%3E%3C/svg%3E"); }
+.doc-symbol-method { --kind: var(--purple); --kind-lt: var(--purple-lt); --kind-letter: "m"; --kind-keyword: "def"; --kind-word: "meth"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 19a2 2 0 0 0 2 2c2 0 2 -4 3 -9s1 -9 3 -9a2 2 0 0 1 2 2'/%3E%3Cpath d='M5 12h6'/%3E%3Cpath d='M15 12l6 6'/%3E%3Cpath d='M15 18l6 -6'/%3E%3C/svg%3E"); }
+.doc-symbol-attribute { --kind: var(--orange); --kind-lt: var(--orange-lt); --kind-letter: "A"; --kind-keyword: "attr"; --kind-word: "attr"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4c-2.5 5 -2.5 10 0 16m14 -16c2.5 5 2.5 10 0 16m-10 -11h1c1 0 1 1 2.016 3.527c.984 2.473 .984 3.473 1.984 3.473h1'/%3E%3Cpath d='M8 16c1.5 0 3 -2 4 -3.5s2.5 -3.5 4 -3.5'/%3E%3C/svg%3E"); }
+.doc-symbol-type_alias { --kind: var(--cyan); --kind-lt: var(--cyan-lt); --kind-letter: "T"; --kind-keyword: "type"; --kind-word: "type"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l3 0'/%3E%3Cpath d='M14 20l7 0'/%3E%3Cpath d='M6.9 15l6.9 0'/%3E%3Cpath d='M10.2 6.3l5.8 13.7'/%3E%3Cpath d='M5 20l6 -16l2 0l7 16'/%3E%3C/svg%3E"); }
+.doc-symbol-parameter { --kind: var(--pink); --kind-lt: var(--pink-lt); --kind-letter: "P"; --kind-keyword: "param"; --kind-word: "param"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0'/%3E%3Cpath d='M16 12v1.5a2.5 2.5 0 0 0 5 0v-1.5a9 9 0 1 0 -5.5 8.28'/%3E%3C/svg%3E"); }
+.doc-symbol-type_parameter { --kind: var(--pink); --kind-lt: var(--pink-lt); --kind-letter: "T"; --kind-keyword: "type"; --kind-word: "type"; --kind-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 4h-3v16h3'/%3E%3Cpath d='M16 4h3v16h-3'/%3E%3C/svg%3E"); }
+
+/* A letter tile: Tabler's avatar at its smallest, the kind's tint and edge. */
+.doc-symbol,
+[data-theme-symbols="keyword"] .doc-symbol-toc {
+  width: 1.25rem;
+  height: 1.25rem;
+  font: var(--font-weight-bold) 0.75rem/1 var(--font-sans-serif);
+  background: var(--kind-lt);
+  box-shadow: inset 0 0 0 var(--border-width) color-mix(in oklab, var(--kind) 35%, transparent);
+}
+
+.doc-symbol::after,
+[data-theme-symbols="keyword"] .doc-symbol-toc::after {
+  content: var(--kind-letter);
+}
+
+.doc-symbol-toc,
+[data-theme-symbols="keyword"] .doc-symbol-toc {
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.625rem;
+}
+
+/* The keyword, dimmed, as the code reads: class, def, attr. */
+[data-theme-symbols="keyword"] .doc-symbol-heading {
+  width: auto;
+  height: auto;
+  font: 400 0.875em/1 var(--font-monospace);
+  background: none;
+  box-shadow: none;
+}
+
+[data-theme-symbols="keyword"] .doc-symbol-heading::after {
+  content: var(--kind-keyword);
+}
+
+/* The word in a badge. */
+[data-theme-symbols="word"] .doc-symbol {
+  width: auto;
+  height: 1.125rem;
+  padding: 0 0.375rem;
+  font: var(--font-weight-medium) 0.6875rem/1 var(--font-sans-serif);
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+
+[data-theme-symbols="word"] .doc-symbol::after {
+  content: var(--kind-word);
+}
+
+[data-theme-symbols="word"] .doc-symbol-toc {
+  height: 1rem;
+  padding: 0 0.25rem;
+  font-size: 0.5625rem;
+}
+
+/* A Tabler icon in the kind's colour. */
+[data-theme-symbols="icon"] .doc-symbol {
+  width: 1.125rem;
+  height: 1.125rem;
+  background: none;
+  box-shadow: none;
+}
+
+[data-theme-symbols="icon"] .doc-symbol::after {
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: var(--kind);
+  -webkit-mask: var(--kind-icon) center / contain no-repeat;
+  mask: var(--kind-icon) center / contain no-repeat;
+}
+
+[data-theme-symbols="icon"] .doc-symbol-toc {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+/* ----------------------------------------------------------- headings */
+/* Kind, name in the code face, labels, and a permalink that shows on hover. */
+
+.prose .doc-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.5rem;
+  align-items: center;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
+.doc-module > .doc-heading {
+  margin-top: 2rem;
+  font-size: 1.125rem;
+}
+
+.prose > .doc:first-child > .doc-heading {
+  margin-top: 0;
+}
+
+.doc-object-name {
+  font-family: var(--font-monospace);
+  font-weight: var(--font-weight-bold);
+  font-variant-ligatures: none;
+}
+
+.doc-heading .headerlink {
+  color: var(--tertiary);
+  text-decoration: none;
+  opacity: 0;
+}
+
+.doc-heading:hover .headerlink,
+.doc-heading .headerlink:focus-visible {
+  opacity: 1;
+}
+
+/* Labels (dataclass, property, classmethod): Tabler's outline badge, at the end. */
+.doc-labels {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.doc-heading .headerlink {
+  order: 1;
+}
+
+.doc-label code {
+  padding: 0.1875rem 0.375rem;
+  font: var(--font-weight-medium) 0.6875rem/1 var(--font-sans-serif);
+  color: var(--secondary);
+  background: none;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+/* ----------------------------------------------------- signature, docstring */
+
+.doc-signature {
+  margin: 0 0 0.5rem;
+}
+
+.doc-signature pre {
+  max-height: none;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.doc-signature a {
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
+.doc-contents > p {
+  margin: 0 0 0.5rem;
+}
+
+.doc-class-bases {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+/* A section (Parameters, Returns, Raises…): Tabler's small-capitals label over
+   a compact table, its names bold and its types quiet. */
+p:has(> .doc-section-title) {
+  margin: 0.75rem 0 0.25rem;
+}
+
+.doc-section-title {
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.doc .almanac-table {
+  margin-bottom: 0.5rem;
+}
+
+.doc .almanac-table .table th,
+.doc .almanac-table .table td {
+  padding: 0.3125rem 0.625rem;
+  font-size: 0.8125rem;
+  vertical-align: top;
+}
+
+.doc-md-description p {
+  margin: 0;
+}
+
+.doc-section-item td code {
+  padding: 0;
+  color: inherit;
+  background: none;
+}
+
+.doc-section-item td:first-child code {
+  font-weight: var(--font-weight-bold);
+}
+
+.doc-section-item td:not(:first-child) code {
+  color: var(--secondary);
+}
+
+/* The list style: each entry's name bold, its type quiet, as in the tables. */
+li.doc-section-item code {
+  padding: 0;
+  color: var(--secondary);
+  background: none;
+}
+
+li.doc-section-item b code,
+li.doc-section-item > code:first-child {
+  font-weight: var(--font-weight-bold);
+  color: var(--body-color);
+}
+
+/* -------------------------------------------------------- a card per object */
+/* A module's heading heads the page's part; each object under it is a card. */
+
+.prose .doc-module > .doc-heading {
+  margin-bottom: 0.25rem;
+}
+
+/* Each object a module holds, and an object documented on its own. */
+.doc-module > .doc-contents > .doc-children > .doc-object,
+.prose > .doc-object:not(.doc-module) {
+  padding: 0 1rem 0.75rem;
+  margin: 1rem 0;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.doc-module > .doc-contents > .doc-children > .doc-object > .doc-heading,
+.prose > .doc-object:not(.doc-module) > .doc-heading {
+  padding: 0.625rem 1rem;
+  margin: 0 -1rem 0.75rem;
+  background: var(--bg-surface-secondary);
+  border-bottom: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+/* A class's members: rows inside its card, divided. */
+.doc-module .doc-object .doc-object,
+.prose > .doc-object:not(.doc-module) .doc-object {
+  padding: 0.25rem 1rem 0;
+  margin: 0.75rem -1rem 0;
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.doc-module .doc-object .doc-object > .doc-heading,
+.prose > .doc-object:not(.doc-module) .doc-object > .doc-heading {
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------------------- what else mkdocstrings writes */
+
+/* Several signatures for an overloaded function, stacked. */
+.doc-overloads .doc-signature {
+  margin-bottom: 0.25rem;
+}
+
+.doc-overloads {
+  margin-bottom: 0.5rem;
+}
+
+/* A section's description runs on from its name in the list and spaCy styles. */
+.doc-md-description,
+.doc-md-description > p:first-child {
+  display: inline;
+}
+
+.doc-contents td code {
+  word-break: normal;
+}
+
+/* spaCy's style: a parameter's default at the row's end. */
+.doc-param-default,
+.doc-type_param-default {
+  float: right;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+/* Parameters as headings of their own (parameter_headings): inline, at the text's size. */
+.prose .doc-heading-parameter,
+.prose .doc-heading-type_parameter {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+
+.doc-heading-parameter .headerlink,
+.doc-heading-type_parameter .headerlink {
+  margin-right: 0.25rem;
+}
+
+/* An inheritance diagram (show_inheritance_diagram): at its own size, not stretched. */
+.doc .mermaid {
+  margin: 0.5rem 0;
+  text-align: left;
+}
+
+/* The object's source, folded beneath it: its file named in the summary, the
+   code with its line numbers. */
+details.mkdocstrings-source {
+  margin: 0.5rem 0;
+}
+
+details.mkdocstrings-source > summary {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  cursor: pointer;
+}
+
+details.mkdocstrings-source > summary code {
+  padding: 0;
+  color: inherit;
+  background: none;
+}
+
+details.mkdocstrings-source .highlight {
+  margin-top: 0.5rem;
+}
+
+.highlighttable {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--gray-900);
+  border-radius: var(--border-radius);
+}
+
+[data-theme="dark"] .highlighttable {
+  background: var(--black);
+}
+
+.highlighttable td {
+  padding: 0;
+  vertical-align: top;
+}
+
+.highlighttable td.code {
+  width: 100%;
+}
+
+.highlighttable pre {
+  margin: 0;
+  background: none;
+  border-radius: 0;
+}
+
+.highlighttable .linenos pre {
+  padding-right: 0.5rem;
+  color: var(--gray-500);
+  text-align: right;
+  user-select: none;
+}

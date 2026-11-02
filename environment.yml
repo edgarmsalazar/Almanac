@@ -1,0 +1,12 @@
+# The interpreter that builds Almanac's own site and runs its tests, with Almanac
+# installed from this folder in editable mode. Create it from this folder:
+#   conda env create -f environment.yml
+name: almanac
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - pip>=25.1
+  - pip:
+      - -e .[test,docs]
