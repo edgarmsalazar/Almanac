@@ -138,6 +138,18 @@ The kinds are those Material for MkDocs knows, its aliases too. A further word o
 <span class="status status-lite status-green"><span class="status-dot"></span>lite</span>
 ```
 
+*In a table cell the chip takes the cell's size, and marks a value among plain ones.*
+
+```example
+<table class="table">
+  <thead><tr><th>Setup</th><th>One process</th><th>Threads</th><th>Every core</th></tr></thead>
+  <tbody>
+    <tr><td>Cold cache</td><td><span class="status status-danger">2,140</span></td><td>15,320</td><td><span class="status status-success">19,870</span></td></tr>
+    <tr><td>Warm cache</td><td><span class="status status-danger">2,610</span></td><td>17,050</td><td><span class="status status-success">21,400</span></td></tr>
+  </tbody>
+</table>
+```
+
 ## Status dot and indicator
 
 *A dot on its own, in any status colour; animated, a ring pulses out of it. The indicator is the larger mark, three circles.*

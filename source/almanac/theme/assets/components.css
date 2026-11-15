@@ -862,6 +862,12 @@ nav.offcanvas {
   height: 1.25rem;
 }
 
+/* In a table cell the chip takes the cell's size, so a marked value reads as
+   large as the plain values beside it. */
+.table td .status {
+  font-size: inherit;
+}
+
 .status-lite {
   color: var(--body-color);
   background: transparent;
