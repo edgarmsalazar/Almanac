@@ -8,3 +8,4 @@ site-sidebar/
 .mypy_cache/
 *.code-workspace
 .vscode/
+tmp/
