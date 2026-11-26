@@ -13,8 +13,10 @@
  *
  * The arrows step a month either way. A click on a day chooses it and fires
  * "almanac:date" on the calendar, detail.date the YYYY-MM-DD; the calendar's
- * data-selected follows. Almanac.calendar.draw(element) draws it again after
- * the page changes its attributes. Today is the reader's own, ringed.
+ * data-selected follows. The clicks are taken on the document, so they work on a
+ * calendar added at any time, but the month is drawn in only at load:
+ * Almanac.calendar.draw(element) draws one added later, or again after the page
+ * changes its attributes. Today is the reader's own, ringed.
  */
 (function () {
   'use strict';

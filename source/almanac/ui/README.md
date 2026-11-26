@@ -30,24 +30,24 @@ Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js`
 
 | Script | Binds | Reads |
 | --- | --- | --- |
-| `settings.js` | `#theme-toggle`, `#theme-settings-open`, and the theme settings panel it builds. Gives the other scripts `Almanac` helpers: copy, download, the address hash. | The `?theme-…=` address, then the browser's saved choices. |
+| `settings.js` | `#theme-toggle`, `#theme-settings-open`, and the theme settings panel it builds. Gives the other scripts `Almanac` helpers: copy, download, the address hash, `Almanac.money` (the currency formatting the charts and `data.js` share). | The `?theme-…=` address, then the browser's saved choices. |
 | `navbar.js` | `.navbar` menus and toggler, `[data-open]` buttons for a `<dialog>`, `[data-close]`, a click on a `.modal`'s backdrop, `[data-almanac-icon]`. | |
 | `toc.js` | The floating contents button `#toc-toggle` and its panel `#toc`, for a page of cards. | The cards' `.card-title`s. |
 | `almanac.js` | The docs layout's contents column, `[data-almanac-toc]`. | |
-| `table.js` | `.table-sort` buttons, `data-table-export` copy and CSV buttons. | Each cell's `data-sort-value`, else its text. |
+| `table.js` | `.table-sort` buttons, `data-table-export` copy and CSV buttons, on a table written in the page or built later. `Almanac.table.resort(table)` keeps a sort over new rows. | Each cell's `data-sort-value`, else its text. |
 | `charts.js` | Nothing by itself: `Almanac.charts.bars(element, {...})`, HTML bars of fixed figures, described at the top of the file. | |
-| `plot.js` | Nothing by itself: `Almanac.plot.create(canvasId, {...})`, canvas charts of bars, lines and boxes, with a legend, readout, table view and calendar windows. Every key is described at the top of the file. Load it in `<head>`, after `settings.js`. | Colours from theme.css's chart ramp. |
-| `period.js` | `[data-periods]`: a row of KPI cards or a table, stepped by month, week or day; `[data-page-period]`, a control for the whole page. | A `<script type="application/json">` holding every window's text, described at the top of the file. |
-| `tabs.js` | `.nav-link[data-tab]` in a `.card-tabs`: one `.tab-pane` shown at a time, the address naming it. | |
-| `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state, `almanac:filter` fired after each run, a `[data-filter-empty]` shown when no row matches. | Each row's `data-state`, and its `data-search` or text. |
+| `plot.js` | Nothing by itself: `Almanac.plot.create(canvasId, {...})`, canvas charts of bars, lines and boxes, with a legend, readout, table view and calendar windows. Every key is described at the top of the file. Load it in `<head>`, after `settings.js`. | Colours from theme.css's chart ramp, or `--primary` for a chart with one series. |
+| `period.js` | `[data-periods]`: a row of KPI cards or a table, stepped by month, week or day; `[data-page-period]`, a control for the whole page. `Almanac.period.add(element)` draws one added later. | A `<script type="application/json">` holding every window's text, described at the top of the file. |
+| `tabs.js` | `.nav-link[data-tab]` in a `.card-tabs`: one `.tab-pane` shown at a time, the address naming it. `Almanac.tabs.show(nav)` gives a row added later its first view. | |
+| `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state, `almanac:filter` fired after each run, a `[data-filter-empty]` shown when no row matches. `Almanac.filter.run(selector)` runs it again after rows change. | Each row's `data-state`, and its `data-search` or text. |
 | `dropdown.js` | `.dropdown-toggle[aria-controls]` outside the navbar: its `.dropdown-menu` opened below it, or above, fixed to the window; the arrow keys, Escape, a click elsewhere. | |
 | `toast.js` | Nothing by itself: `Almanac.toast(text)` or `Almanac.toast({title, text, meta, color, delay})`, a note in the window's corner; a `.toast`'s `[data-close]`. | |
-| `popover.js` | `[data-popover="id"]` and `[data-popover-content]` buttons: a bubble opened beside them, flipped to stay in the window. | |
+| `popover.js` | `[data-popover="id"]` and `[data-popover-content]` buttons, written in the page or added later: a bubble opened beside them, flipped to stay in the window. | |
 | `calendar.js` | `[data-calendar]`: a month drawn in, a day picked, `almanac:date` fired. | Its `data-month`, `data-selected`, `data-marked`, `data-range`, `data-week`. |
 | `autosize.js` | `textarea[data-autosize]`, where the browser does not size it itself. | |
 | `editor.js` | `textarea[data-editor]`: a HugeRTE editor, light or dark as the page. | `vendor/hugerte/hugerte.min.js`, loaded first. |
-| `data.js` | `[data-value="path"]`, filled from `window.ALMANAC_DATA`. | A script that sets `window.ALMANAC_DATA`, loaded first. |
-| `code.js` | `pre.highlight[data-lang]` and `.code-block`: colours, headers, copy buttons. | |
+| `data.js` | `[data-value="path"]`, filled from `window.ALMANAC_DATA` on load; `Almanac.data.fill(element)` fills those added later. | A script that sets `window.ALMANAC_DATA`, loaded first. |
+| `code.js` | `pre.highlight[data-lang]` and `.code-block`: colours, headers, copy buttons; any `[data-copy]` button, added at any time. | |
 | `terms.js` | The first use of each lexicon term in `.page-body`, given a tooltip. | `window.ALMANAC_DATA.lexicon`. |
 | `lexicon.js` | The lexicon page's filter, `[data-lexicon-tools]`. | |
 | `search.js` | `form[data-almanac-search]`. | `window.ALMANAC_SEARCH`, loaded from the form's `data-index` on first use. |

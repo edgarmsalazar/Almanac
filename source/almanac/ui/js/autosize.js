@@ -5,7 +5,9 @@
  *
  *   <textarea class="form-control" data-autosize rows="1"></textarea>
  *
- * Almanac.autosize(textarea) sizes one again after the page changes its value.
+ * The typing is taken on the document, so a textarea added later grows as it is
+ * typed in; Almanac.autosize(textarea) sizes one again after the page sets its
+ * value, or one added with text already in it.
  */
 (function () {
   'use strict';

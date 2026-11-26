@@ -15,9 +15,9 @@ description: "Pieces for a page of figures, from Portal: canvas charts, KPI card
     title: 'Spending by month',
     x: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
     series: [
-      { type: 'bar', label: 'Groceries', y: [410, 455, 390, 430, 470, 445] },
-      { type: 'bar', label: 'Transport', y: [120, 95, 160, 110, 130, 105] },
-      { type: 'line', label: 'Eating out', y: [180, 240, 210, 150, 195, 170] }
+      { type: 'bar', label: 'Groceries', y: [410, 455, 390, 430, 470, 445], color: '--chart-2' },
+      { type: 'bar', label: 'Transport', y: [120, 95, 160, 110, 130, 105], color: '--chart-4' },
+      { type: 'line', label: 'Eating out', y: [180, 240, 210, 150, 195, 170], color: '--chart-3' }
     ],
     yAxis: { title: 'Spent', min: 0 },
     refLines: [{ axis: 'left', value: 450, label: 'Groceries budget', color: '--danger', dashed: true }]
@@ -25,7 +25,7 @@ description: "Pieces for a page of figures, from Portal: canvas charts, KPI card
 </script>
 ```
 
-`Almanac.plot.create(id, config)` draws on the canvas with that id. `x` names the points and each series gives a value for each, `null` for a gap. A series is a `bar`, a `line` or a `box` (a median and its quartiles). Colours are the chart ramp's `--chart-1` to `--chart-8` in turn unless a series names a token. `plot.js` describes every key at its top.
+`Almanac.plot.create(id, config)` draws on the canvas with that id. `x` names the points and each series gives a value for each, `null` for a gap. A series is a `bar`, a `line` or a `box` (a median and its quartiles). A chart with one series draws it in the accent, `--primary`; with more, the series take the chart ramp's `--chart-1` to `--chart-8` in turn. A series that names a token (`color: '--chart-2'`) takes that instead. The ramp starts with red, so a chart whose first series is not a warning names its colours, as here, where red is left to the budget line. `plot.js` describes every key at its top.
 
 ## Two axes and a table
 
@@ -38,8 +38,8 @@ description: "Pieces for a page of figures, from Portal: canvas charts, KPI card
     title: 'Savings',
     x: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
     series: [
-      { type: 'bar', label: 'Saved', y: [300, 150, 420, 380, 260, 350] },
-      { type: 'line', label: 'Share of income', y: [0.09, 0.05, 0.13, 0.12, 0.08, 0.11], axis: 'right' }
+      { type: 'bar', label: 'Saved', y: [300, 150, 420, 380, 260, 350], color: '--chart-2' },
+      { type: 'line', label: 'Share of income', y: [0.09, 0.05, 0.13, 0.12, 0.08, 0.11], axis: 'right', color: '--chart-3' }
     ],
     yAxis: { title: 'Saved', tickFormat: 'currency', min: 0 },
     yAxisRight: { title: 'Of income', tickFormat: 'percent', min: 0 },
@@ -48,7 +48,7 @@ description: "Pieces for a page of figures, from Portal: canvas charts, KPI card
 </script>
 ```
 
-An axis's `tickFormat` is `percent` for a rate from 0 to 1, or `currency` for money: compact on the ticks (`$1.5k`), in full in the readout and the table (`$350.00`). The currency is the chart's `currency: 'EUR'`, else the page's `<html data-currency>`, else US dollars.
+An axis's `tickFormat` is `percent` for a rate from 0 to 1, or `currency` for money: compact on the ticks (`$1.5k`), in full in the readout and the table (`$350.00`). The currency is the chart's `currency: 'EUR'`, else the page's `<html data-currency>`, else US dollars. A reference line with `axis: 'right'` is a level on the right scale.
 
 ## KPI cards
 

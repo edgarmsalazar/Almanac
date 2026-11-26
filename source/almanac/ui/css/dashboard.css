@@ -279,10 +279,28 @@ canvas.plot[hidden] {
 /* Tabler's stat card, laid out by a grid of its own: Tabler's row / col-lg-3
    are utility classes, which templates do not carry. The value takes its band's
    colour; the delta its better-or-worse colour, its arrow the direction. */
+/* auto-fill keeps the empty tracks, so one or two tiles stay tile-sized rather
+   than stretching across the page. From three tiles up a row of them is the
+   point, and auto-fit collapses the empty tracks so the tiles share the row:
+   four tiles on a five-track page fill it instead of leaving a blank fifth. */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   gap: var(--page-padding);
+}
+
+.kpi-grid:has(> :nth-child(3)) {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+/* Six tiles that cannot share one row split three and three, not five and one.
+   Each track is at least a third of the row until the row holds all six
+   (6 x 13rem and five gaps); the x 1000 term flips the minimum back to 13rem
+   past that width, since a grid has no condition on its own width otherwise. */
+.kpi-grid:has(> :nth-child(6):last-child) {
+  --kpi-third: calc((100% - 2 * var(--page-padding)) / 3);
+  grid-template-columns: repeat(auto-fit, minmax(max(13rem, min(var(--kpi-third),
+    var(--kpi-third) + (78rem + 5 * var(--page-padding) - 100%) * 1000)), 1fr));
 }
 
 /* A row of KPI cards stacks with the cards above and below it as a card does. */

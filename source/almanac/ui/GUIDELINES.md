@@ -202,7 +202,7 @@ window.ALMANAC_DATA.budget = {
 
 7.2. Each data script MUST add one top-level key and MUST NOT replace `ALMANAC_DATA` whole, so several scripts can load on one page.
 
-7.3. A number shown in prose SHOULD be bound, not typed: `<span data-value="budget.total" data-format="currency"></span>`. `data.js` fills each `[data-value]` once, when the page has loaded; a path that finds nothing leaves the element as written and marks it `.data-missing`. A script reads the same path with `Almanac.data.get('budget.total')` and formats with `Almanac.data.format(value, how, options)` (8.5). The values of `data-format`:
+7.3. A number shown in prose SHOULD be bound, not typed: `<span data-value="budget.total" data-format="currency"></span>`. `data.js` fills each `[data-value]` when the page has loaded, and again under an element when a script calls `Almanac.data.fill(element)` (8.14); a path that finds nothing leaves the element as written and marks it `.data-missing`. A script reads the same path with `Almanac.data.get('budget.total')` and formats with `Almanac.data.format(value, how, options)` (8.5). The values of `data-format`:
 
 | `data-format` | Shows | Notes |
 | --- | --- | --- |
@@ -286,11 +286,15 @@ There is no percent and no date `data-format`. A page shows those itself: its sc
 | `autosize(textarea)` | Resize a growing textarea after setting its value |
 | `dropdown.close()`, `popover.close()` | Close what is open |
 | `table.resort(table)` | Apply the reader's chosen sort again to a table element after its rows change; nothing if it was not sorted |
-| `data.get(path)`, `data.format(value, how, options)` | Read from `ALMANAC_DATA`; format as `data-format` does (7.3) |
+| `filter.run(selector)` | Run a row filter (8.10) at once, as a key typed would, after its rows are added or changed; it fires `almanac:filter`. `selector` is the string its `data-filter` carries |
+| `tabs.show(nav)` | Show a tab row's chosen pane (the one the address names, else the one written `.active`, else the first) and hide the others: for a `.nav-tabs` added after load |
+| `period.add(element)` | Draw a period control (`[data-periods]`) added after load, its JSON script already in place; the page's own period control offers its windows too |
+| `data.get(path)`, `data.format(value, how, options)`, `data.fill(root)` | Read from `ALMANAC_DATA`; format as `data-format` does (7.3); fill every `[data-value]` in `root` (an element, itself included, or the document when left out) again, for markup added after load or data changed |
 | `hash.get(key)`, `hash.set(key, value)` | Keep state in the address, so a reload or a shared link keeps it |
 | `copyText(text, done)`, `download(filename, text)`, `delimited(rows, separator)`, `slug(text)` | Copy; save a file; rows to CSV (`','`) or TSV (`'\t'`); a name for a file or an id |
+| `money(value, options)` | Money as the kit shows it everywhere: `data.format(value, 'currency', options)` does the same. `options` MAY hold `currency`, `decimals` and `compact: true` (an axis tick: `$1.5k`, `$1.2M`) |
 
-`plot`, `charts` and the helpers in the last two rows exist once the `<head>` scripts have run; the rest exist only once the foot scripts have, so a script in the middle of `<body>` may call `plot.create` but not `data.format` or `toast`.
+`plot`, `charts` and the helpers in the last three rows exist once the `<head>` scripts have run; the rest exist only once the foot scripts have, so a script in the middle of `<body>` may call `plot.create` but not `data.format` or `toast`.
 
 8.6. **Events.** `almanac:date` on a day picker, bubbling (`detail.date`, `YYYY-MM-DD`); `almanac:filter` on a row filter's target after each run, bubbling (`detail.shown`, `total`, `query`, `state`; 8.10); `almanac:dropdown` on a menu's toggle (`detail.open`); `input` from a rich-text field's textarea as it changes; `close` from a `<dialog>`, with its `returnValue`.
 
@@ -305,7 +309,7 @@ There is no percent and no date `data-format`. A page shows those itself: its sc
 | `data-format` | `number` (default), `currency`, `hex2`, `hex3`, `text` (7.3) |
 | Chart series `type` | `bar` (default), `line`, `box` |
 | Chart axis `tickFormat` | none (plain numbers, `1.5k` past 1,000), `percent` (values 0 to 1), `currency` |
-| Chart `refLines[].axis` | `left` (default: a level across the plot, on the left scale), `x` (a line down the plot at an x label or value) |
+| Chart `refLines[].axis` | `left` (default: a level across the plot, on the left scale), `right` (the same on the right scale; the left when the chart has no right axis), `x` (a line down the plot at an x label or value) |
 | Day picker `data-week` | `1` (Monday, default), `0` (Sunday) |
 
 8.8. **Chart.** The canvas goes in a card body, alone in its parent: the chart adds its toolbar before the canvas and its legend and table after it, in the same parent. The page MAY call `Almanac.plot.create` once `settings.js` and `plot.js` have loaded (in `<head>`, 4.2) and the canvas is in the document: in an inline script right after the canvas, or in the page's script at the foot. Called before the canvas exists, it warns in the console and returns `null`.
@@ -324,7 +328,7 @@ There is no percent and no date `data-format`. A page shows those itself: its sc
     height: 260,                              // px, optional
     x: budget.months,                         // one label a point
     series: [
-      { type: 'bar', label: 'Spent', y: budget.groceries.spent, color: '--primary' }  // null in y is a gap
+      { type: 'bar', label: 'Spent', y: budget.groceries.spent }  // null in y is a gap; alone, the accent
     ],
     xAxis: { title: 'Month' },
     yAxis: { title: 'Spent', min: 0, tickFormat: 'currency' },
@@ -337,9 +341,9 @@ There is no percent and no date `data-format`. A page shows those itself: its sc
 </script>
 ```
 
-A series takes `type`, `label`, `y`, and MAY take `axis` (`'right'`, with `yAxisRight`), `color`, `dashed` and `hidden`. A colour is a token's name as a string, leading `--` included (`'--primary'`, `'--chart-3'`), never `'var(--primary)'` or a literal. Series without `color` take `--chart-1`, `--chart-2`, … by their place in `series`, and `--chart-1` is red: a single-series chart SHOULD pass `color: '--primary'`, so one series does not read as a warning, and a series SHOULD NOT share its colour with a reference line beside it. A reference line takes `value` and MAY take `label` (drawn outside the plot), `axis`, `color` (a token name; the axis colour unless given) and `dashed` (dashed unless `false`). With `tickFormat: 'currency'` the axis shows compact ticks (`$1.5k`, `$1.2M`) and the readout and table show values in full (`$445.00`); the currency is the config's `currency` (`currency: 'EUR'`), else `<html data-currency>`, else USD. `plot.js`'s header documents the other keys (`views`, `sparkline`, calendar windows).
+A series takes `type`, `label`, `y`, and MAY take `axis` (`'right'`, with `yAxisRight`), `color`, `dashed` and `hidden`. A colour is a token's name as a string, leading `--` included (`'--primary'`, `'--chart-3'`), never `'var(--primary)'` or a literal. A chart with one series draws it in the accent, `--primary`, unless it gives a `color`. With two or more, series without `color` take `--chart-1`, `--chart-2`, … by their place in `series` (the chart's or the view's), and `--chart-1` is red: where the first series is not a warning, the page SHOULD name the colours (`'--chart-2'`, `'--chart-3'`, …) so it does not read as one. A series SHOULD NOT share its colour with a reference line beside it (a `--danger` budget line beside red bars, or beside bars in the accent when the reader has chosen red). A reference line takes `value` and MAY take `label` (drawn outside the plot), `axis` (`'right'` reads `value` on the right scale, 8.7), `color` (a token name; the axis colour unless given) and `dashed` (dashed unless `false`). With `tickFormat: 'currency'` the axis shows compact ticks (`$1.5k`, `$1.2M`) and the readout and table show values in full (`$445.00`); the currency is the config's `currency` (`currency: 'EUR'`), else `<html data-currency>`, else USD. `plot.js`'s header documents the other keys (`views`, `sparkline`, calendar windows).
 
-8.9. **KPI tile.** The value MAY be bound (7.3). The delta holds the change in words for a screen reader, the change as shown, and an arrow; the class says whether it is better or worse, the arrow which way it moved. The kit has no arrow classes: the arrow is an inline icon, up, down or a dash. The sparkline is a `canvas.plot.kpi-spark` inside `.kpi-card`, after `.card-body`, drawn with `sparkline: true`.
+8.9. **KPI tile.** The value MAY be bound (7.3). The delta holds the change in words for a screen reader, the change as shown, and an arrow; the class says whether it is better or worse, the arrow which way it moved. The kit has no arrow classes: the arrow is an inline icon, up, down or a dash. The sparkline is a `canvas.plot.kpi-spark` inside `.kpi-card`, after `.card-body`, drawn with `sparkline: true`. The grid sizes the tiles itself: one or two keep a tile's width (13rem and up), three or more share the row between them, and six that cannot share one row split three and three; a page SHOULD NOT give the tiles widths of its own.
 
 ```html
 <div class="kpi-grid">
@@ -368,9 +372,9 @@ The other two deltas, in the same place:
 <span class="kpi-delta kpi-delta--flat"><span class="visually-hidden">No change </span>0%<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l14 0"/></svg></span>
 ```
 
-8.10. **Row filter.** A search box, a row of state pills, or both, over one table or over an element holding several. `data-filter` and `data-filter-states` take a CSS selector (`"#envelopes-table"`, with the `#`), and the two MUST carry the identical string to work together; `data-table` on an export button takes a bare id (`"envelopes-table"`, 8.2). The `.input-icon` wrapper and its icon are optional; the box needs only its `.form-control`. `.table-filter-count` is optional and says "3 of 12 rows" or "No rows match", empty when every row shows. Each pill's `data-state` is matched against each row's `data-state`; `all` lets every row through. The page writes the first pill `.is-active` with `aria-pressed="true"` and the others `aria-pressed="false"`; the script moves both on a click. A row is matched on its `data-search` if it has one, else on its text, every word typed found somewhere in it.
+8.10. **Row filter.** A search box, a row of state pills, or both, over one table or over an element holding several. `data-filter` and `data-filter-states` take a CSS selector (`"#envelopes-table"`, with the `#`), and the two MUST carry the identical string to work together; `data-table` on an export button takes a bare id (`"envelopes-table"`, 8.2). The `.input-icon` wrapper and its icon are optional; the box needs only its `.form-control`. `.table-filter-count` is optional and says "3 of 12 rows" or "No rows match", empty when every row shows. Each pill's `data-state` is matched against each row's `data-state`; `all` lets every row through. The page writes the first pill `.is-active` with `aria-pressed="true"` and the others `aria-pressed="false"`; the script moves both on a click. A row is matched on its `data-search` if it has one, else on its text, every word typed found somewhere in it, read afresh at each run: a row added or a cell rewritten is matched on what it says then.
 
-The script filters once when the page has loaded, then on every key typed and every pill clicked. Each run ends with `almanac:filter` on the element the selector names (here the `.table-responsive`, not the `tbody`), bubbling, with `event.detail`:
+The script filters once when the page has loaded, then on every key typed, every pill clicked and every call of `Almanac.filter.run(selector)` (8.14). Each run ends with `almanac:filter` on the element the selector names (here the `.table-responsive`, not the `tbody`), bubbling, with `event.detail`:
 
 | Field | Holds |
 | --- | --- |
@@ -512,23 +516,25 @@ A form MAY use `.was-validated` instead, added on submit, which shows the browse
 
 8.14. **Rendering from data.** A page builds markup from its data in its own script. What the kit does with that markup depends on when it is built.
 
-- **Before the kit binds.** The kit's foot scripts bind once, on `DOMContentLoaded`. Markup a page's script builds at its top level, in `js/project.js` or an inline script at the foot (4.2), is in place by then, and every component in it works as if it had been written in the page. This is the default: a page SHOULD build its first view this way, and SHOULD NOT wait for `DOMContentLoaded` to do it.
-- **Later.** Markup built or changed after `DOMContentLoaded` (in a handler, after a form is sent, after a file is read) is not bound. What each component needs:
+- **Before the kit's pass at load.** The kit's foot scripts make one pass on `DOMContentLoaded`, drawing what has to be drawn: a day picker's month, a tab row's first view, a period control, the filter's first run, a growing textarea's height, the `[data-value]` places. Markup a page's script builds at its top level, in `js/project.js` or an inline script at the foot (4.2), is in place by then and gets that pass, as if it had been written in the page. This is the default: a page SHOULD build its first view this way, and SHOULD NOT wait for `DOMContentLoaded` to do it.
+- **Later.** Every click, key and keystroke the kit answers is taken on the document and the component read at that moment, so markup built after `DOMContentLoaded` (in a handler, after a form is sent, after a file is read) answers the reader as written markup does: a table's sort and export buttons, a filter's box and pills, tabs' clicks and arrow keys, popovers (their `aria-expanded` and `aria-controls` set on first focus or pointer), menus, dialogs, side panels, toasts, alerts' `[data-close]`, `[data-copy]` buttons, a day picker's clicks and a growing textarea's typing. What markup added later misses is the pass at load; and a change the page makes to what a component shows is not seen until it is told:
 
-| Changed later | Tell the kit |
+| Added or changed later | Tell the kit |
 | --- | --- |
-| Rows of a sorted table added, removed or replaced | `Almanac.table.resort(tableElement)`; a sort button bound at load sorts the new rows on its next click either way |
-| Rows of a filtered table | Run the filter again: `input.dispatchEvent(new Event('input'))` on its search box, or, with pills alone, `.click()` on the active pill. The run fires `almanac:filter` and sets `data-filter-empty` as any other; a page learns what is in sight from the event, not by reading the rows. A row's text is read once, the first time it is filtered: to change a row's text, replace the `<tr>` rather than its cells |
+| Rows of a sorted table added, removed or replaced | `Almanac.table.resort(tableElement)`, to keep the reader's sort; the next click on a sort button sorts them either way |
+| Rows of a filtered table added, removed or changed; a filter added with words in its box or a pill other than `all` chosen | `Almanac.filter.run(selector)`, `selector` as its `data-filter` carries it. The run fires `almanac:filter` and sets `data-filter-empty` as any other; a page learns what is in sight from the event, not by reading the rows. A filter added with an empty box and `all` chosen needs no call: every row shows until the reader types |
+| A tab row added | `Almanac.tabs.show(navElement)`, which hides the panes not chosen; until then every pane shows, as without JS |
 | A day picker's attributes, or a day picker added | `Almanac.calendar.draw(element)` |
-| A growing textarea's value | `Almanac.autosize(textarea)` |
-| A value to show, or a `[data-value]` added | Set its `textContent` to `Almanac.data.format(value, how, options)`; `data.js` fills `[data-value]` only once |
+| A growing textarea's value, or one added with text in it | `Almanac.autosize(textarea)` |
+| A value to show, or a `[data-value]` added | `Almanac.data.fill(element)` fills the `[data-value]` places in an element added or changed (the element itself too), or the whole page with no argument, after the data has changed; or set an element's `textContent` to `Almanac.data.format(value, how, options)` |
 | A chart's data | `Almanac.plot.get(id).update(config)`, with the whole config |
-| A table, its export buttons, a filter box or pills, tabs, a period control, a popover button added | Not bound after load. Build them before `DOMContentLoaded`, then change only their rows or content |
+| A period control added | `Almanac.period.add(element)`, once its JSON script is in the document |
+| A rich-text field added | `Almanac.editor(textarea)` (9.4) |
 
-Dialogs (`data-open`, `data-close`), menus, popovers, toasts, alerts' `[data-close]`, a day picker's clicks and a growing textarea's typing are handled for the whole document, and work on markup added at any time; a popover button added later SHOULD carry `aria-expanded="false"` (and, with `data-popover`, `aria-controls` naming its popover) itself, since those are set only at load. The contents button reads the cards each time it opens. A chart drawn while hidden (in a tab not chosen, a closed dialog, a `hidden` element) draws itself again when it is shown.
+The contents button reads the cards each time it opens. A chart drawn while hidden (in a tab not chosen, a closed dialog, a `hidden` element) draws itself again when it is shown.
 
 ```js
-// js/project.js: at the top level, so it runs before the kit binds
+// js/project.js: at the top level, so it runs before the kit's pass at load
 var body = document.querySelector('#envelopes-table tbody');
 Almanac.data.get('budget.envelopes').forEach(function (envelope) {
   var over = envelope.spent > envelope.budget;

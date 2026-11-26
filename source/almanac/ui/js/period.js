@@ -51,6 +51,10 @@
  * Both are kept in the address (Almanac.hash), as a chart's view is: the page's as
  * `period=window:month,at:2026-08` when moved, a component's own choice under its id,
  * `kpis=window:day,at:2026-09-24`, only while it has one.
+ *
+ * The components are found at load. One a page builds later, its JSON in place, is
+ * drawn by Almanac.period.add(root), which offers its windows in the page's control
+ * too. A table filter over a component's table (filter.js) runs again on each swap.
  */
 (function () {
   'use strict';
@@ -203,8 +207,16 @@
       });
       body.textContent = '';
       body.appendChild(fragment);
-      /* A sort the reader chose holds across periods. */
+      /* A sort the reader chose holds across periods, and so do the words typed
+         in a filter over the table. */
       if (window.Almanac.table) window.Almanac.table.resort(table);
+      if (window.Almanac.filter) {
+        Array.prototype.forEach.call(document.querySelectorAll('.table-filter[data-filter], .state-filter[data-filter-states]'), function (el) {
+          var selector = el.getAttribute('data-filter') || el.getAttribute('data-filter-states');
+          var target = document.querySelector(selector);
+          if (target && target.contains(table)) window.Almanac.filter.run(selector);
+        });
+      }
       var title = root.querySelector('[data-period-title]');
       if (title && win.title) title.textContent = win.title;
     };
@@ -463,21 +475,43 @@
     tellFollowers();
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-periods]'), function (root) {
-      var c = bind(root);
-      if (c) components.push(c);
-    });
+  /* The page's control, made once the page has a component to offer it, and its
+     choices worked out again whenever one joins. */
+  function setPage() {
     var holder = document.querySelector('[data-page-period]');
-    if (holder && components.length) {
-      page.source = pageSource();
-      var kind = page.source.kinds.indexOf('week') >= 0 ? 'week' : page.source.kinds[0];
-      var list = page.source.labels(kind);
-      page.opening = { kind: kind, label: list[list.length - 1] };
+    if (!holder || !components.length) return;
+    page.source = pageSource();
+    var kind = page.source.kinds.indexOf('week') >= 0 ? 'week' : page.source.kinds[0];
+    var list = page.source.labels(kind);
+    page.opening = { kind: kind, label: list[list.length - 1] };
+    if (!page.toolbar) {
       page.toolbar = document.createElement('div');
       page.toolbar.className = 'chart-toolbar period-toolbar period-page';
       holder.appendChild(page.toolbar);
     }
+  }
+
+  function join(root) {
+    if (root._almanacPeriods) return false;
+    var c = bind(root);
+    if (!c) return false;
+    root._almanacPeriods = true;
+    components.push(c);
+    return true;
+  }
+
+  /* A component the page builds after load, its JSON in place: drawn, and the
+     page's control offering its windows too. */
+  window.Almanac.period.add = function (root) {
+    if (!join(root)) return;
+    setPage();
+    restore();
+    renderAll();
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-periods]'), join);
+    setPage();
     restore();
     renderAll();
     window.addEventListener('hashchange', function () { restore(); renderAll(); });

@@ -18,7 +18,11 @@
  * along the edge to stay inside the window. data-popover-trigger="hover" opens
  * it while the pointer or the focus is on the button. One is open at a time; a
  * click elsewhere, Escape or the button again closes it. The words given in
- * attributes are set as text, never as HTML.
+ * attributes are set as text, never as HTML, and read again at each opening.
+ *
+ * Every event is taken on the document, so a button the page adds after load
+ * works as one written in it; its aria-expanded and aria-controls are set the
+ * first time it takes the focus or the pointer.
  */
 (function () {
   'use strict';
@@ -27,32 +31,47 @@
   var open = null; /* { button, pop } */
   var made = 0;
 
+  /* A popover made from the button's attributes is made on first opening and
+     its words written again at each, so a page that changes them is followed. */
   function popoverOf(button) {
     var id = button.getAttribute('data-popover');
     if (id) return document.getElementById(id);
-    if (!button._almanacPopover) {
-      var pop = document.createElement('div');
+    var pop = button._almanacPopover;
+    if (!pop) {
+      pop = document.createElement('div');
       pop.className = 'popover';
       pop.id = 'almanac-popover-' + (++made);
       pop.setAttribute('role', 'dialog');
       pop.hidden = true;
-      var title = button.getAttribute('data-popover-title');
-      if (title) {
-        var head = document.createElement('div');
-        head.className = 'popover-header';
-        head.textContent = title;
-        pop.appendChild(head);
-        pop.setAttribute('aria-label', title);
-      }
-      var body = document.createElement('div');
-      body.className = 'popover-body';
-      body.textContent = button.getAttribute('data-popover-content') || '';
-      pop.appendChild(body);
       document.body.appendChild(pop);
       button._almanacPopover = pop;
       button.setAttribute('aria-controls', pop.id);
     }
-    return button._almanacPopover;
+    pop.textContent = '';
+    var title = button.getAttribute('data-popover-title');
+    if (title) {
+      var head = document.createElement('div');
+      head.className = 'popover-header';
+      head.textContent = title;
+      pop.appendChild(head);
+      pop.setAttribute('aria-label', title);
+    } else {
+      pop.removeAttribute('aria-label');
+    }
+    var body = document.createElement('div');
+    body.className = 'popover-body';
+    body.textContent = button.getAttribute('data-popover-content') || '';
+    pop.appendChild(body);
+    return pop;
+  }
+
+  /* What a screen reader is told before the button is used: that it opens
+     something, and which. Set at load for the buttons written in the page, and
+     on first focus or pointer for one added later, before it can be pressed. */
+  function prepare(button) {
+    if (!button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', 'false');
+    var id = button.getAttribute('data-popover');
+    if (id && !button.hasAttribute('aria-controls')) button.setAttribute('aria-controls', id);
   }
 
   function place() {
@@ -99,6 +118,7 @@
   function show(button) {
     var pop = popoverOf(button);
     if (!pop) return;
+    prepare(button);
     close();
     open = { button: button, pop: pop };
     pop.hidden = false;
@@ -127,6 +147,7 @@
   ['mouseover', 'focusin'].forEach(function (type) {
     document.addEventListener(type, function (event) {
       var button = trigger(event.target);
+      if (button) prepare(button);
       if (button && hover(button) && !(open && open.button === button)) show(button);
     });
   });
@@ -149,10 +170,7 @@
   window.addEventListener('scroll', place, true);
 
   document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('[data-popover], [data-popover-content]').forEach(function (button) {
-      button.setAttribute('aria-expanded', 'false');
-      if (button.getAttribute('data-popover')) button.setAttribute('aria-controls', button.getAttribute('data-popover'));
-    });
+    document.querySelectorAll('[data-popover], [data-popover-content]').forEach(prepare);
   });
 
   window.Almanac = window.Almanac || {};

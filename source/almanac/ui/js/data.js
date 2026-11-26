@@ -15,7 +15,9 @@
  *
  * window.Almanac.data.get(path) gives the same lookup to a page's own script,
  * and format(value, how, options) the same formatting, options being
- * {currency: 'EUR', decimals: 0} for a currency.
+ * {currency: 'EUR', decimals: 0} for a currency (settings.js's Almanac.money,
+ * which the charts share). fill(root) fills the places under root again, for
+ * markup a page adds after load.
  */
 (function () {
   'use strict';
@@ -28,49 +30,8 @@
     return value;
   }
 
-  /* One Intl formatter per currency and decimals, made on first use. Narrow
-     symbols, so dollars read $ rather than US$; the numbers' own locale, so a
-     sum groups like the counts beside it. A code Intl does not know gives null. */
-  var moneyFormats = {};
-  function moneyFormat(code, decimals) {
-    var key = code + '|' + decimals;
-    if (!(key in moneyFormats)) {
-      var options = { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' };
-      if (decimals !== undefined) {
-        options.minimumFractionDigits = decimals;
-        options.maximumFractionDigits = decimals;
-      }
-      var made = null;
-      try {
-        made = new Intl.NumberFormat('en-GB', options);
-      } catch (error) {
-        /* An older browser without narrowSymbol: the plain symbol. */
-        try {
-          delete options.currencyDisplay;
-          made = new Intl.NumberFormat('en-GB', options);
-        } catch (again) {
-          made = null;
-        }
-      }
-      moneyFormats[key] = made;
-    }
-    return moneyFormats[key];
-  }
-
-  function money(value, options) {
-    var number = typeof value === 'number' ? value : parseFloat(value);
-    if (isNaN(number)) return String(value);
-    var code = String(options.currency || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
-    var decimals = parseInt(options.decimals, 10);
-    decimals = isNaN(decimals) ? undefined : Math.max(0, Math.min(20, decimals));
-    var made = moneyFormat(code, decimals);
-    if (made) return made.format(number);
-    var places = decimals === undefined ? 2 : decimals;
-    return number.toLocaleString('en-GB', { minimumFractionDigits: places, maximumFractionDigits: places }) + ' ' + code;
-  }
-
   function format(value, how, options) {
-    if (how === 'currency') return money(value, options || {});
+    if (how === 'currency') return window.Almanac.money(value, options);
     if (how === 'hex2' || how === 'hex3') {
       var number = typeof value === 'number' ? value : parseInt(value, 16);
       var text = number.toString(16).toUpperCase();
@@ -81,19 +42,31 @@
     return String(value);
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-value]'), function (place) {
+  /* Fill every [data-value] under root (the document unless given). Run once
+     when the page has loaded; a page that adds such places later, or changes
+     the data, runs it again over what it added. */
+  function fill(root) {
+    root = root || document;
+    var places = Array.prototype.slice.call(root.querySelectorAll('[data-value]'));
+    /* A place handed in itself is filled too, not only the places inside it. */
+    if (root.matches && root.matches('[data-value]')) places.unshift(root);
+    places.forEach(function (place) {
       var value = get(place.getAttribute('data-value'));
       if (value === undefined || value === null) {
         place.classList.add('data-missing');
         return;
       }
+      place.classList.remove('data-missing');
       place.textContent = format(value, place.getAttribute('data-format'), {
         currency: place.getAttribute('data-currency'),
         decimals: place.getAttribute('data-decimals')
       });
     });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    fill(document);
   });
 
-  window.Almanac.data = { get: get, format: format };
+  window.Almanac.data = { get: get, format: format, fill: fill };
 })();

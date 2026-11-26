@@ -147,8 +147,8 @@
   Almanac.plot.create('spark-figure', { sparkline: true, height: 48, x: months,
     series: [{ type: 'line', label: 'A figure', y: [1580, 1720, 1650, 1540, 1570, 1630], color: '--body-color' }] });
   Almanac.plot.create('chart-figure', { title: 'By month', x: months,
-    series: [{ type: 'bar', label: 'Spent', y: [1580, 1720, 1650, 1540, 1570, 1630] },
-             { type: 'line', label: 'Budget', y: [1800, 1800, 1800, 1800, 1800, 1800], dashed: true }],
+    series: [{ type: 'bar', label: 'Spent', y: [1580, 1720, 1650, 1540, 1570, 1630], color: '--primary' },
+             { type: 'line', label: 'Budget', y: [1800, 1800, 1800, 1800, 1800, 1800], color: '--secondary', dashed: true }],
     yAxis: { min: 0 } });
 </script>
 </body>

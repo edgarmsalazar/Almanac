@@ -37,38 +37,11 @@
     return out;
   }
 
-  /* Money in the chart's currency: in full, or compact for a tick ($800, $1.5k,
-     $1.2M), in the currency's own layout with the digits swapped in. Narrow
-     symbols, so dollars read $ rather than US$. A code Intl does not know reads
-     as the number and the code. */
+  /* Money in the chart's currency, in full or compact for a tick ($800, $1.5k,
+     $1.2M): settings.js's Almanac.money, shared with plot.js and data.js. */
   function money(code, compact) {
-    code = String(code || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
-    var made = null;
-    try {
-      made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' });
-    } catch (error) {
-      try { made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code }); } catch (again) { made = null; }
-    }
     return function (n) {
-      if (!compact) {
-        return made ? made.format(n)
-          : n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + code;
-      }
-      var size = Math.abs(n);
-      var round = function (x) { return String(Math.round(x * 100) / 100); };
-      var digits = size >= 1e6 ? round(size / 1e6) + 'M' : size >= 1e3 ? round(size / 1e3) + 'k' : round(size);
-      if (!made || !made.formatToParts) return (n < 0 ? '-' : '') + digits + ' ' + code;
-      var text = '';
-      var placed = false;
-      made.formatToParts(n < 0 ? -1 : 1).forEach(function (part) {
-        if (/^(integer|group|decimal|fraction)$/.test(part.type)) {
-          if (!placed) text += digits;
-          placed = true;
-        } else {
-          text += part.value;
-        }
-      });
-      return text;
+      return window.Almanac.money(n, { currency: code, compact: compact });
     };
   }
 

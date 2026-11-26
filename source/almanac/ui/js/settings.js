@@ -361,6 +361,78 @@
     return String(text || 'data').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  /* -------------------------------------------------------------- money */
+  /* Shared by data.js and both chart scripts, so a sum reads the same in prose,
+     on an axis and in a table. Here rather than in data.js because the charts
+     load in <head>, before it.
+
+     In full ($1,630.00, or no decimals for yen) or compact for an axis tick
+     ($800, $1.5k, $1.2M). The currency is options.currency, else the page's
+     <html data-currency>, else US dollars. Narrow symbols, so dollars read $
+     rather than US$; en-GB grouping, so a sum groups like the counts beside it.
+     A code Intl does not know reads as the number and the code. */
+  var moneyFormats = {};
+  function moneyFormat(code, decimals) {
+    var key = code + '|' + decimals;
+    if (!(key in moneyFormats)) {
+      var options = { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' };
+      if (decimals !== undefined) {
+        options.minimumFractionDigits = decimals;
+        options.maximumFractionDigits = decimals;
+      }
+      var made = null;
+      try {
+        made = new Intl.NumberFormat('en-GB', options);
+      } catch (error) {
+        /* An older browser without narrowSymbol: the plain symbol. */
+        try {
+          delete options.currencyDisplay;
+          made = new Intl.NumberFormat('en-GB', options);
+        } catch (again) {
+          made = null;
+        }
+      }
+      moneyFormats[key] = made;
+    }
+    return moneyFormats[key];
+  }
+
+  /* options: { currency: 'EUR', decimals: 0, compact: true }, each optional. A
+     value that is not a number, nor a string of one, comes back as text. */
+  function money(value, options) {
+    options = options || {};
+    var number = typeof value === 'number' ? value : parseFloat(value);
+    if (isNaN(number)) return String(value);
+    var code = String(options.currency || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
+    if (options.compact) return moneyCompact(number, code);
+    var decimals = parseInt(options.decimals, 10);
+    decimals = isNaN(decimals) ? undefined : Math.max(0, Math.min(20, decimals));
+    var made = moneyFormat(code, decimals);
+    if (made) return made.format(number);
+    var places = decimals === undefined ? 2 : decimals;
+    return number.toLocaleString('en-GB', { minimumFractionDigits: places, maximumFractionDigits: places }) + ' ' + code;
+  }
+
+  /* The currency's own layout, sign and symbol, with short digits swapped in. */
+  function moneyCompact(number, code) {
+    var size = Math.abs(number);
+    var round = function (n) { return String(Math.round(n * 100) / 100); };
+    var digits = size >= 1e6 ? round(size / 1e6) + 'M' : size >= 1e3 ? round(size / 1e3) + 'k' : round(size);
+    var made = moneyFormat(code, undefined);
+    if (!made || !made.formatToParts) return (number < 0 ? '-' : '') + digits + ' ' + code;
+    var text = '';
+    var placed = false;
+    made.formatToParts(number < 0 ? -1 : 1).forEach(function (part) {
+      if (/^(integer|group|decimal|fraction)$/.test(part.type)) {
+        if (!placed) text += digits;
+        placed = true;
+      } else {
+        text += part.value;
+      }
+    });
+    return text;
+  }
+
   /* ------------------------------------------------------------ address */
   /* The hash, shared by the scripts that keep a reader's choices in it, so a
      copied link opens the page as it was: bare words are the tab panes shown
@@ -417,6 +489,7 @@
     copyText: copyText,
     download: download,
     slug: slug,
+    money: money,
     knobs: KNOBS,
     chosen: chosen,
     set: set,

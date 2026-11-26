@@ -10,7 +10,9 @@
  * bar series on the left axis plus a line series on the right.
  *
  * Colours come from CSS custom properties (theme.css's chart ramp), so a theme
- * change is a repaint with no config change.
+ * change is a repaint with no config change. A chart with one series draws it
+ * in the accent (--primary) unless it names a colour; two or more take the ramp
+ * in order, --chart-1 first. The legend, the readout and every window agree.
  *
  *   <canvas id="spending" class="plot"></canvas>
  *   <script>
@@ -31,6 +33,9 @@
  *       yAxisRight: { … },           // for a series with axis: 'right'
  *       currency: 'EUR',             // for tickFormat 'currency'; else <html data-currency>, else USD
  *       refLines: [{ axis: 'left', value: 1000, label: 'Limit', color: '--danger', dashed: true }],
+ *                                    // axis 'left' (default) or 'right': a level across the
+ *                                    // plot on that scale (no right axis: the left); 'x':
+ *                                    // a line down it at an x label or value
  *       views: [{ label: 'By month', series: [...] }, …],  // alternative series sets, toggled
  *       sparkline: false,            // the line alone, for a KPI card's foot
  *       offerTable: false            // a Copy / CSV / "show as table" control
@@ -79,8 +84,39 @@
       grid: cssVar('--chart-grid') || cssVar('--border-color'),
       axis: cssVar('--chart-axis') || cssVar('--secondary'),
       text: cssVar('--body-color'),
-      surface: cssVar('--bg-surface')
+      surface: cssVar('--bg-surface'),
+      accent: paintable(cssVar('--primary'))
     };
+  }
+
+  /* Canvas parses a literal colour but not color-mix(); a page may define its
+     accent as one. Such a value goes through an element's computed `color`,
+     which the browser always gives as a literal. */
+  var probe = null;
+  function paintable(value) {
+    if (!value || value.indexOf('(') < 0 || /^(#|rgba?\(|hsla?\()/.test(value)) return value;
+    if (!probe) {
+      probe = document.createElement('span');
+      probe.style.display = 'none';
+    }
+    probe.style.color = '';
+    probe.style.color = value;
+    (document.body || document.documentElement).appendChild(probe);
+    var literal = getComputedStyle(probe).color;
+    probe.remove();
+    return literal || value;
+  }
+
+  /* A series' default encoding. A chart with one series takes the accent, not
+     the ramp's first slot: alone, the ramp's red reads as an alarm, and with
+     nothing to tell apart there is no category to colour. Two or more series
+     take the ramp in order. Decided on the whole list, not the visible part,
+     so hiding a series never recolours the one left. */
+  function encodingIn(palette, series, index, isLine) {
+    if (series.length === 1 && !series[0].color && palette.accent) {
+      return { color: palette.accent, dash: [] };
+    }
+    return encodingFor(palette, index, isLine);
   }
 
   /* Identity is hue x dash, assigned in fixed order and never cycled on hue
@@ -197,58 +233,21 @@
   /* 'currency' labels an axis in money: compact on a tick ($800, $1.5k, $1.2M),
      in full in the readout and the table ($1,630.00, or no decimals for yen).
      The currency is the chart's own (config.currency), else the page's
-     <html data-currency>, else US dollars. Intl gives the symbol and where it
-     goes, narrow so dollars read $ rather than US$; one formatter per currency. */
-  var moneyFormats = {};
-  function money(code) {
-    code = String(code || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
-    if (!(code in moneyFormats)) {
-      var made = null;
-      try {
-        made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' });
-      } catch (error) {
-        try {
-          made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code });
-        } catch (again) {
-          made = null;
-        }
-      }
-      moneyFormats[code] = made;
-    }
-    return { code: code, format: moneyFormats[code] };
-  }
-
+     <html data-currency>, else US dollars; settings.js's Almanac.money does the
+     formatting, so an axis reads like the prose and the tables beside it. */
   function moneyFull(value, currency) {
-    var m = money(currency);
-    if (m.format) return m.format.format(value);
-    return value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + m.code;
+    return window.Almanac.money(value, { currency: currency });
   }
 
   function moneyCompact(value, currency) {
-    var size = Math.abs(value);
-    var round = function (n) { return String(Math.round(n * 100) / 100); };
-    var digits = size >= 1e6 ? round(size / 1e6) + 'M' : size >= 1e3 ? round(size / 1e3) + 'k' : round(size);
-    var m = money(currency);
-    if (!m.format || !m.format.formatToParts) return (value < 0 ? '-' : '') + digits + ' ' + m.code;
-    /* The currency's own layout, sign and symbol, with the digits swapped in. */
-    var text = '';
-    var placed = false;
-    m.format.formatToParts(value < 0 ? -1 : 1).forEach(function (part) {
-      if (/^(integer|group|decimal|fraction)$/.test(part.type)) {
-        if (!placed) text += digits;
-        placed = true;
-      } else {
-        text += part.value;
-      }
-    });
-    return text;
+    return window.Almanac.money(value, { currency: currency, compact: true });
   }
 
   /* A colour in a config is a token name ('--chart-3'), never a literal, so it
      follows the theme; resolved at paint time like the palette itself. */
   function resolveColor(color, fallback) {
     if (!color) return fallback;
-    return color.indexOf('--') === 0 ? cssVar(color) || fallback : color;
+    return color.indexOf('--') === 0 ? paintable(cssVar(color)) || fallback : color;
   }
 
   /* An axis's scale: nice ticks over the data, unless the config pins either
@@ -276,7 +275,9 @@
        it, so the line reads as above or below target without an axis. */
     (refLines || []).forEach(function (line) {
       var v = Number(line.value);
-      if (line.axis !== 'y' || isNaN(v)) return;
+      /* A sparkline has the one scale: a level on it is a line on the left
+         (or no axis named, or the older 'y'); 'x' and 'right' are not levels here. */
+      if (line.axis === 'x' || line.axis === 'right' || isNaN(v)) return;
       found = { min: Math.min(found.min, v), max: Math.max(found.max, v) };
     });
     var air = (found.max - found.min) * 0.15 || Math.abs(found.max) * 0.1 || 1;
@@ -552,12 +553,12 @@
       if (hidden[s.label]) return;
       var scale = s.axis === 'right' && right ? right : left;
       if (s.type === 'box') {
-        var boxEncoding = encodingFor(palette, index, false);
+        var boxEncoding = encodingIn(palette, series, index, false);
         drawBox(ctx, s, scale, resolveColor(s.color, boxEncoding.color), xFor, yFor, plotW);
         return;
       }
       var isLine = (s.type || 'bar') !== 'bar';
-      var encoding = encodingFor(palette, index, isLine);
+      var encoding = encodingIn(palette, series, index, isLine);
       var colour = resolveColor(s.color, encoding.color);
       var values = s.y || [];
       var n = Math.max(values.length, 1);
@@ -663,7 +664,9 @@
         y1 = pad.top;
         y2 = pad.top + plotH;
       } else {
-        var y = yFor(Number(line.value), left);
+        /* A level on the right scale where there is one; without a right axis
+           the left is the only scale, so the line is read against it. */
+        var y = yFor(Number(line.value), line.axis === 'right' && right ? right : left);
         if (y < pad.top || y > pad.top + plotH) return;
         y1 = y2 = Math.round(y) + 0.5;
         x1 = pad.left;
@@ -895,13 +898,15 @@
   }
 
   /* Repaint every chart when a theme attribute changes: the colours live in
-     CSS, so the config is untouched and only the paint is stale. */
+     CSS, so the config is untouched and only the paint is stale. The accent
+     counts too, since a chart with one series is drawn in it. */
   function observeTheme() {
     if (observing) return;
     observing = true;
     new MutationObserver(function (mutations) {
       var themed = mutations.some(function (m) {
-        return m.attributeName === 'data-theme' || m.attributeName === 'data-theme-base';
+        return m.attributeName === 'data-theme' || m.attributeName === 'data-theme-base' ||
+          m.attributeName === 'data-theme-primary';
       });
       if (!themed) return;
       Object.keys(charts).forEach(function (id) {
@@ -909,7 +914,7 @@
       });
     }).observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme', 'data-theme-base']
+      attributeFilter: ['data-theme', 'data-theme-base', 'data-theme-primary']
     });
   }
 
@@ -932,7 +937,7 @@
 
     series.forEach(function (s, index) {
       var isLine = (s.type || 'bar') === 'line';
-      var encoding = encodingFor(palette, index, isLine);
+      var encoding = encodingIn(palette, series, index, isLine);
       var off = !!instance.hidden[s.label];
       var item = document.createElement('button');
       item.type = 'button';
@@ -1700,7 +1705,7 @@
         rows.push({
           label: s.label,
           text: text,
-          colour: resolveColor(s.color, encodingFor(palette, index, isLine).color)
+          colour: resolveColor(s.color, encodingIn(palette, cfg.series || [], index, isLine).color)
         });
       });
       if (!rows.length) return hide();
