@@ -777,9 +777,19 @@ nav.offcanvas {
 
 .nav-segmented .nav-link.active,
 .nav-segmented .nav-link-input:checked + .nav-link {
-  color: var(--primary);
+  color: color-mix(in oklab, var(--primary) 65%, var(--black));
   background: var(--primary-lt);
   border-color: var(--primary);
+}
+
+/* The chosen option's text is the primary taken toward black in light and toward
+   white in dark, the tint doubled there: the bare primary on its own tint read
+   at 4.0 : 1 for blue in light, 1.8 in yellow, and 1.8 for blue in dark. Now
+   5.2 : 1 or better in light and 4.8 in dark, for every primary on offer. */
+[data-theme="dark"] .nav-segmented .nav-link.active,
+[data-theme="dark"] .nav-segmented .nav-link-input:checked + .nav-link {
+  color: color-mix(in oklab, var(--primary) 45%, var(--white));
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
 }
 
 /* Tabler's radio form of the control: an input before each label. Hidden but not
