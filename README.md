@@ -76,13 +76,13 @@ The stylesheets, scripts and fonts are a kit of their own, `source/almanac/ui/`,
 scripts/export-ui.sh ../budget
 ```
 
-then start from `almanac/starter.html`. The kit's `README.md` says what each file binds and what data a page supplies.
+then start from `almanac/starter.html`. The kit's `README.md` says what each file binds and what data a page supplies; the guide's "Pages by hand" page says the same for a reader.
 
 ## Layout of the repository
 
 | Path | Holds |
 | --- | --- |
-| `source/almanac/ui/` | The kit: the CSS, scripts and fonts every page loads, a site's or a page written by hand. `css/theme.css` and `css/components.css` are a hand-written port of Tabler; `css/almanac.css` and `js/almanac.js` are Almanac's own layout; `vendor/` holds Mermaid and KaTeX. A site serves it under `almanac/`. See its `README.md`. |
+| `source/almanac/ui/` | The kit: the CSS, scripts and fonts every page loads, a site's or a page written by hand. `css/theme.css`, `css/components.css`, `css/layout.css` and `css/app.css` are a hand-written port of Tabler and the Bootstrap it builds on; `css/dashboard.css` and its scripts come from Portal; `css/almanac.css` and `js/almanac.js` are Almanac's own layout; `vendor/` holds Mermaid and KaTeX. A site serves it under `almanac/`. See its `README.md`. |
 | `source/almanac/theme/main.html` | The page shell, the one template. |
 | `source/almanac/theme/assets/mkdocs.css` | The rules for markup other tools write (Pygments, pymdownx.tabbed, toc's permalinks), which a page written by hand never holds. |
 | `source/almanac/plugin.py` | Cards from a cards page's sections, the theme's classes on Markdown tables, the lexicon as `data/lexicon.js`, the search index as `search/search_index.js`, each page's standing, and the template's icon helpers. |

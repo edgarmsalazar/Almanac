@@ -68,6 +68,7 @@ nav:
   - Guide:
       - Setting up: setting-up.md
       - Writing pages: writing-pages.md
+      - Pages by hand: kit.md
   - Components:
       - Content: components/content.md
       - Data: components/data.md
