@@ -39,7 +39,7 @@ Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js`
 | `plot.js` | Nothing by itself: `Almanac.plot.create(canvasId, {...})`, canvas charts of bars, lines and boxes, with a legend, readout, table view and calendar windows. Every key is described at the top of the file. Load it in `<head>`, after `settings.js`. | Colours from theme.css's chart ramp. |
 | `period.js` | `[data-periods]`: a row of KPI cards or a table, stepped by month, week or day; `[data-page-period]`, a control for the whole page. | A `<script type="application/json">` holding every window's text, described at the top of the file. |
 | `tabs.js` | `.nav-link[data-tab]` in a `.card-tabs`: one `.tab-pane` shown at a time, the address naming it. | |
-| `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state. | Each row's `data-state`, and its `data-search` or text. |
+| `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state, `almanac:filter` fired after each run, a `[data-filter-empty]` shown when no row matches. | Each row's `data-state`, and its `data-search` or text. |
 | `dropdown.js` | `.dropdown-toggle[aria-controls]` outside the navbar: its `.dropdown-menu` opened below it, or above, fixed to the window; the arrow keys, Escape, a click elsewhere. | |
 | `toast.js` | Nothing by itself: `Almanac.toast(text)` or `Almanac.toast({title, text, meta, color, delay})`, a note in the window's corner; a `.toast`'s `[data-close]`. | |
 | `popover.js` | `[data-popover="id"]` and `[data-popover-content]` buttons: a bubble opened beside them, flipped to stay in the window. | |

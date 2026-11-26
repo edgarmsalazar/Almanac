@@ -7,7 +7,7 @@
  *   <div class="table-responsive">
  *     <table class="table">
  *       <thead><tr>
- *         <th><button class="table-sort" data-sort="sort-key">Key</button></th>
+ *         <th><button class="table-sort" type="button" data-sort="sort-key">Key</button></th>
  *       </tr></thead>
  *       <tbody class="table-tbody">
  *         <tr><td class="sort-key">…</td></tr>

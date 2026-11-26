@@ -213,6 +213,8 @@ window.ALMANAC_DATA.budget = {
 
 In a script: `Almanac.data.format(1630, 'currency')`, or with options, `Almanac.data.format(1630, 'currency', { currency: 'EUR', decimals: 0 })`; the options argument is optional.
 
+There is no percent and no date `data-format`. A page shows those itself: its script formats the value (`new Intl.NumberFormat('en-GB', { style: 'percent' }).format(0.42)`, `new Date('2026-11-26').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })`) and sets the element's `textContent`.
+
 7.4. Dates in data MUST be ISO 8601 (`2026-11-26`, `2026-11` for a month). Amounts MUST be numbers, not formatted strings; formatting happens when shown.
 
 7.5. A page that keeps what the reader enters SHOULD store it in `localStorage` under a project prefix (`budget:transactions`), and SHOULD offer a way out of the browser: a file saved with `Almanac.download(name, text)` and read back from a file input or a drop zone (9.2).
@@ -230,14 +232,16 @@ In a script: `Almanac.data.format(1630, 'currency')`, or with options, `Almanac.
 | Component | Contract | Script |
 | --- | --- | --- |
 | Card | 6.1; status strip `.card-status-top`/`-start`/`-bottom` with a `.bg-*`; `.card-sm`, `.card-borderless`, `.card-active`, `a.card.card-link(.card-link-pop)`, `.card-stacked` | |
-| Table | `.table-responsive#id > table.table`; to sort, `th > button.table-sort[data-sort="col-x"]` and `td.col-x` cells, `data-sort-value` for a value that is not the text; to copy or save, `button[data-table-export="copy"\|"csv"][data-table="id"]`, `data-table` being the bare id of the wrapper (no `#`) | table.js |
-| Row filter | 8.10: `.table-filter[data-filter="#id"]` and `.state-filter[data-filter-states="#id"]`, each a CSS selector | filter.js |
+| Table | `.table-responsive#id > table.table > thead + tbody`; to sort, `th > button.table-sort[type="button"][data-sort="col-x"]` and `td.col-x` cells, `data-sort-value` for a value that is not the text; to copy or save, `button[data-table-export="copy"\|"csv"][data-table="id"]`, `data-table` being the bare id of the wrapper (no `#`). Export below. Tabler's `.table-tbody` on the `tbody` MAY be written and does nothing | table.js |
+| Row filter | 8.10: `.table-filter[data-filter="#id"]` and `.state-filter[data-filter-states="#id"]`, each a CSS selector; `[data-filter-empty="#id"]` for its empty state; fires `almanac:filter` | filter.js |
 | Status | `.status.status-{colour}` (with `.status-dot`; `.status-lite` for the plain chip), `.badge`, `.alert.alert-{colour}` (`[data-close]` inside removes it); colours in 8.7 | navbar.js |
 | Tabs | `.card-tabs` holding `ul.nav.nav-tabs > li.nav-item > a.nav-link[data-tab][href="#pane"]` and `.tab-content > .tab-pane#pane`; the address keeps the open tab | tabs.js |
 | Accordion | `.accordion > details.accordion-item[name="group"] > summary.accordion-button + .accordion-body`; the chevron in `.accordion-button-toggle` | none |
 | Loading | `.spinner-border(-sm)`, `.spinner-grow(-sm)`, `.animated-dots`; `.placeholder.col-*` inside `.placeholder-glow` | |
 | Empty state | 8.12: `.empty > .empty-icon? + .empty-title + .empty-subtitle + .empty-action?` | |
 | Small pieces | `.hr-text`, `nav > ol.breadcrumb > li.breadcrumb-item(.active)`, `.avatar` (sizes `-xs` to `-2xl`, `.avatar-rounded`, an empty `.badge.bg-*` as its status, `.avatar-list-stacked`), `.ribbon(.ribbon-top/-start/-bookmark).bg-*`, `.steps`, `.timeline`, `.progress`, `.datagrid`, `ul.pagination > li.page-item(.active) > a.page-link` | |
+
+**Table export.** The Copy and CSV buttons take the first `table` inside the wrapper `data-table` names, as it stands: its header row (each `thead th`'s text), then every `tbody` row in the current sort. Rows a filter has hidden (8.10) are included: the export is the whole table, not what is in sight. A cell gives its `data-sort-value` when it has one, else its text, trimmed; a cell holding only `—` gives an empty value. `data-date` and `data-value`, which sorting also reads, are not used: a cell whose file value is not its text carries `data-sort-value`. CSV is comma-separated, a value quoted when it holds a comma, a quote or a line break, lines ended by `\n`, UTF-8 without a byte-order mark; the file is named from the wrapper's id (`Almanac.slug(id) + '.csv'`, so `envelopes-table.csv`), and the id is how to name it. Copy puts the same rows on the clipboard separated by tabs, unquoted, which a spreadsheet pastes as columns, and the button reads "Copied" for a moment. A page that wants another file (only the rows in sight, other columns) builds the rows itself and calls `Almanac.download(name, Almanac.delimited(rows, ','))`.
 
 **Figures**
 
@@ -288,7 +292,7 @@ In a script: `Almanac.data.format(1630, 'currency')`, or with options, `Almanac.
 
 `plot`, `charts` and the helpers in the last two rows exist once the `<head>` scripts have run; the rest exist only once the foot scripts have, so a script in the middle of `<body>` may call `plot.create` but not `data.format` or `toast`.
 
-8.6. **Events.** `almanac:date` on a day picker, bubbling (`detail.date`, `YYYY-MM-DD`); `almanac:dropdown` on a menu's toggle (`detail.open`); `input` from a rich-text field's textarea as it changes; `close` from a `<dialog>`, with its `returnValue`.
+8.6. **Events.** `almanac:date` on a day picker, bubbling (`detail.date`, `YYYY-MM-DD`); `almanac:filter` on a row filter's target after each run, bubbling (`detail.shown`, `total`, `query`, `state`; 8.10); `almanac:dropdown` on a menu's toggle (`detail.open`); `input` from a rich-text field's textarea as it changes; `close` from a `<dialog>`, with its `returnValue`.
 
 8.7. **Allowed values.**
 
@@ -320,7 +324,7 @@ In a script: `Almanac.data.format(1630, 'currency')`, or with options, `Almanac.
     height: 260,                              // px, optional
     x: budget.months,                         // one label a point
     series: [
-      { type: 'bar', label: 'Spent', y: budget.groceries.spent }  // null in y is a gap
+      { type: 'bar', label: 'Spent', y: budget.groceries.spent, color: '--primary' }  // null in y is a gap
     ],
     xAxis: { title: 'Month' },
     yAxis: { title: 'Spent', min: 0, tickFormat: 'currency' },
@@ -333,7 +337,7 @@ In a script: `Almanac.data.format(1630, 'currency')`, or with options, `Almanac.
 </script>
 ```
 
-A series takes `type`, `label`, `y`, and MAY take `axis` (`'right'`, with `yAxisRight`), `color` (a token name such as `'--chart-3'`; a single-series chart MAY pass its own), `dashed` and `hidden`. Series without `color` take `--chart-1`, `--chart-2`, … in turn. A reference line takes `value` and MAY take `label` (drawn outside the plot), `axis`, `color` (a token name; the axis colour unless given) and `dashed` (dashed unless `false`). With `tickFormat: 'currency'` the axis shows compact ticks (`$1.5k`, `$1.2M`) and the readout and table show values in full (`$445.00`); the currency is the config's `currency` (`currency: 'EUR'`), else `<html data-currency>`, else USD. `plot.js`'s header documents the other keys (`views`, `sparkline`, calendar windows).
+A series takes `type`, `label`, `y`, and MAY take `axis` (`'right'`, with `yAxisRight`), `color`, `dashed` and `hidden`. A colour is a token's name as a string, leading `--` included (`'--primary'`, `'--chart-3'`), never `'var(--primary)'` or a literal. Series without `color` take `--chart-1`, `--chart-2`, … by their place in `series`, and `--chart-1` is red: a single-series chart SHOULD pass `color: '--primary'`, so one series does not read as a warning, and a series SHOULD NOT share its colour with a reference line beside it. A reference line takes `value` and MAY take `label` (drawn outside the plot), `axis`, `color` (a token name; the axis colour unless given) and `dashed` (dashed unless `false`). With `tickFormat: 'currency'` the axis shows compact ticks (`$1.5k`, `$1.2M`) and the readout and table show values in full (`$445.00`); the currency is the config's `currency` (`currency: 'EUR'`), else `<html data-currency>`, else USD. `plot.js`'s header documents the other keys (`views`, `sparkline`, calendar windows).
 
 8.9. **KPI tile.** The value MAY be bound (7.3). The delta holds the change in words for a screen reader, the change as shown, and an arrow; the class says whether it is better or worse, the arrow which way it moved. The kit has no arrow classes: the arrow is an inline icon, up, down or a dash. The sparkline is a `canvas.plot.kpi-spark` inside `.kpi-card`, after `.card-body`, drawn with `sparkline: true`.
 
@@ -366,6 +370,17 @@ The other two deltas, in the same place:
 
 8.10. **Row filter.** A search box, a row of state pills, or both, over one table or over an element holding several. `data-filter` and `data-filter-states` take a CSS selector (`"#envelopes-table"`, with the `#`), and the two MUST carry the identical string to work together; `data-table` on an export button takes a bare id (`"envelopes-table"`, 8.2). The `.input-icon` wrapper and its icon are optional; the box needs only its `.form-control`. `.table-filter-count` is optional and says "3 of 12 rows" or "No rows match", empty when every row shows. Each pill's `data-state` is matched against each row's `data-state`; `all` lets every row through. The page writes the first pill `.is-active` with `aria-pressed="true"` and the others `aria-pressed="false"`; the script moves both on a click. A row is matched on its `data-search` if it has one, else on its text, every word typed found somewhere in it.
 
+The script filters once when the page has loaded, then on every key typed and every pill clicked. Each run ends with `almanac:filter` on the element the selector names (here the `.table-responsive`, not the `tbody`), bubbling, with `event.detail`:
+
+| Field | Holds |
+| --- | --- |
+| `shown` | rows in sight after the run |
+| `total` | rows in the target, `tbody tr` of every table in it |
+| `query` | the search box's text as typed, `''` without a box |
+| `state` | the chosen pill's `data-state`, `all` without pills |
+
+A page that reacts to the filter (a total of the rows in sight, its own empty state) SHOULD listen for this event rather than read the rows' classes, and SHOULD add the listener at its script's top level (8.14), so the run at load reaches it. An element with `data-filter-empty` carrying the identical selector is the filter's empty state: written `hidden`, the script shows it while the target has rows and none matches, and hides it otherwise. A target with no rows at all leaves it hidden; that empty state is the page's (8.12). The target also carries `.is-filtered-empty` while no row matches; the kit gives it no style.
+
 ```html
 <div class="table-filter" data-filter="#envelopes-table">
   <div class="input-icon">
@@ -388,6 +403,15 @@ The other two deltas, in the same place:
     </tbody>
   </table>
 </div>
+<div class="empty" data-filter-empty="#envelopes-table" hidden>
+  <p class="empty-title">No envelopes match</p>
+  <p class="empty-subtitle">Clear the box or choose All to see every envelope.</p>
+</div>
+<script>
+  document.getElementById('envelopes-table').addEventListener('almanac:filter', function (event) {
+    showTotal(event.detail.shown);   // the page's own function
+  });
+</script>
 ```
 
 The chosen pill is drawn as its full coloured chip, ringed; the others outlined, their dot alone in colour. The rows would be built from the data (8.14); they are typed here to show the markup.
@@ -406,7 +430,9 @@ The chosen pill is drawn as its full coloured chip, ringed; the others outlined,
 
 To change a picker from a script, set its attributes, then call `Almanac.calendar.draw(element)`.
 
-8.12. **Empty state.** Where a list, a table or a chart has nothing to show, the page shows why, and what to do about it if anything. `.empty-icon` and `.empty-action` are optional. A table's empty state sits in place of the `.table-responsive`, or beside it, hidden while rows show (6.6).
+The drawn month, for a test or a page's CSS to find: `.calendar-nav` holds `button.btn-action[data-step="-1"]` and `[data-step="1"]` (Previous and Next month) either side of `.calendar-title`; `.calendar-body` holds a `.calendar-date` cell a day, whole weeks, each with one `button.date-item[data-date="YYYY-MM-DD"]`. The chosen day's button has `aria-pressed="true"` (every other `"false"`) and no class of its own; today's has `.date-today` and `aria-current="date"`; a marked day's has `.date-marked` and ", marked" at the end of its `aria-label`. Days of the months before and after are on the cell, not the button: `.calendar-date.prev-month`, `.next-month`; they can be clicked, and choose the day and move to its month. Days in `data-range` are `.calendar-range` cells, the ends `.range-start` and `.range-end`. Every draw replaces the buttons, so a test finds a button again after each click: `picker.querySelector('[data-date="2026-11-20"]').click()`.
+
+8.12. **Empty state.** Where a list, a table or a chart has nothing to show, the page shows why, and what to do about it if anything. `.empty-icon` and `.empty-action` are optional. A table's empty state sits in place of the `.table-responsive`, or beside it, hidden while rows show (6.6). For a table with no rows the page shows it itself; for a filter that matches none, `data-filter-empty` (8.10) has the kit show it, and a page that needs more listens for `almanac:filter`.
 
 ```html
 <div class="empty">
@@ -492,7 +518,7 @@ A form MAY use `.was-validated` instead, added on submit, which shows the browse
 | Changed later | Tell the kit |
 | --- | --- |
 | Rows of a sorted table added, removed or replaced | `Almanac.table.resort(tableElement)`; a sort button bound at load sorts the new rows on its next click either way |
-| Rows of a filtered table | Run the filter again: `input.dispatchEvent(new Event('input'))` on its search box, or, with pills alone, `.click()` on the active pill. A row's text is read once, the first time it is filtered: to change a row's text, replace the `<tr>` rather than its cells |
+| Rows of a filtered table | Run the filter again: `input.dispatchEvent(new Event('input'))` on its search box, or, with pills alone, `.click()` on the active pill. The run fires `almanac:filter` and sets `data-filter-empty` as any other; a page learns what is in sight from the event, not by reading the rows. A row's text is read once, the first time it is filtered: to change a row's text, replace the `<tr>` rather than its cells |
 | A day picker's attributes, or a day picker added | `Almanac.calendar.draw(element)` |
 | A growing textarea's value | `Almanac.autosize(textarea)` |
 | A value to show, or a `[data-value]` added | Set its `textContent` to `Almanac.data.format(value, how, options)`; `data.js` fills `[data-value]` only once |
@@ -520,6 +546,8 @@ Almanac.data.get('budget.envelopes').forEach(function (envelope) {
 ```
 
 Text from data or from the reader goes in with `textContent`, never `innerHTML`.
+
+A page's listeners for the kit's events (8.6) SHOULD be added at the top level too. The filter runs once on `DOMContentLoaded`, so a listener added later, in the page's own `DOMContentLoaded` handler, misses that first `almanac:filter`.
 
 ## 9. Libraries
 
@@ -572,3 +600,5 @@ A page conforms when every item holds:
 9. No starter placeholder is left: every navbar entry and menu item leads to a page of the project (4.6).
 
 Choices made in the address are remembered (5.4): a check, by hand or automated, MUST name the mode in the address of every page it opens (`?theme=light` or `?theme=dark`), and the accent too when it matters (`?theme-primary=blue`), rather than rely on what an earlier visit left behind.
+
+Two notes for checks in headless Chrome. It does not size a window below 500 px wide, so the phone width (item 3) is checked by loading the page in a 390 px `<iframe>`. Under `--virtual-time-budget` a `<dialog>`'s `close` event does not fire, so a check that closes a dialog dispatches it by hand, `dialog.dispatchEvent(new Event('close'))`, after `dialog.close()`.

@@ -234,6 +234,18 @@ A block with no state keeps the border's gray: nothing yet, rather than an outco
     </tbody>
   </table>
 </div>
+<div class="empty" data-filter-empty="#filter-example" hidden>
+  <p class="empty-title">No envelopes match</p>
+  <p class="empty-subtitle">Clear the box or choose All to see every envelope.</p>
+</div>
 ```
 
 `data-filter` and `data-filter-states` name the same table, or an element holding several; each row's `data-state` is what a pill matches, and a `data-search` on a row, if it has one, is matched in place of its text.
+
+An element with the same selector in `data-filter-empty` is shown while no row matches and hidden otherwise; it is written `hidden`. A table with no rows at all leaves it hidden, since that empty state is the page's to write. After every run, once at load and on each key and pill, the element the selector names fires `almanac:filter`, bubbling, with `event.detail.shown` and `total` (rows in sight, rows in all), `query` (the box's text) and `state` (the chosen pill's `data-state`, `all` without pills):
+
+```js
+document.getElementById('filter-example').addEventListener('almanac:filter', function (event) {
+  console.log(event.detail.shown + ' of ' + event.detail.total);
+});
+```

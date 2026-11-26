@@ -24,6 +24,21 @@
  * A row is matched on its data-search if it has one, else on its text, case
  * aside, every word typed found somewhere in it; on its data-state for a pill.
  * Both at once narrow together. Without this script every row stays in sight.
+ *
+ * The rows are filtered once when the page has loaded, then on every key typed
+ * and every pill clicked. Each run ends with "almanac:filter" on the element
+ * the selector names, bubbling, so a page can react to what is left in sight:
+ *
+ *   detail.shown  rows in sight          detail.query  the box's text, as typed
+ *   detail.total  rows in the target     detail.state  the chosen pill's data-state
+ *
+ * An element carrying the same selector in data-filter-empty is the empty
+ * state for when no row matches: shown while rows exist and none is in sight,
+ * hidden otherwise. A target with no rows at all is the page's own case.
+ *
+ *   <div class="empty" data-filter-empty="#spending" hidden>
+ *     <p class="empty-title">No envelopes match</p>
+ *   </div>
  */
 (function () {
   'use strict';
@@ -46,6 +61,7 @@
     var pills = document.querySelector('.state-filter[data-filter-states="' + selector + '"]');
     var input = box && box.querySelector('.form-control');
     var count = box && box.querySelector('.table-filter-count');
+    var empties = document.querySelectorAll('[data-filter-empty="' + selector + '"]');
 
     function state() {
       var active = pills && pills.querySelector('.state-filter-pill.is-active');
@@ -64,11 +80,19 @@
         row.classList.toggle(HIDDEN, !hit);
         if (hit) shown++;
       });
-      target.classList.toggle('is-filtered-empty', rows.length > 0 && shown === 0);
+      /* Nothing matched, as against nothing there to match. */
+      var none = rows.length > 0 && shown === 0;
+      target.classList.toggle('is-filtered-empty', none);
       if (count) {
         count.textContent = shown === rows.length ? ''
           : shown === 0 ? 'No rows match' : shown + ' of ' + rows.length + ' rows';
       }
+      empties.forEach(function (empty) {
+        empty.hidden = !none;
+      });
+      target.dispatchEvent(new CustomEvent('almanac:filter', { bubbles: true, detail: {
+        shown: shown, total: rows.length, query: input ? input.value : '', state: wanted
+      } }));
     }
 
     if (input) input.addEventListener('input', apply);
@@ -84,8 +108,9 @@
         });
       });
     }
-    /* A box the browser refilled on going back filters at once. */
-    if (input && input.value) apply();
+    /* Once at load, so a box the browser refilled on going back, a pill the
+       page wrote chosen, and a page waiting on the event all start in step. */
+    apply();
   }
 
   document.addEventListener('DOMContentLoaded', function () {

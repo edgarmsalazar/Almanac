@@ -13,7 +13,7 @@
   page may load all of them. Those that read data take it from a script loaded
   before them (almanac/README.md says what each expects).
 -->
-<html lang="en">
+<html lang="en" data-currency="USD">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -103,10 +103,10 @@
           <div class="table-responsive">
             <table class="table">
               <thead><tr>
-                <th><button class="table-sort" data-sort="sort-name">Name</button></th>
-                <th><button class="table-sort" data-sort="sort-amount">Amount</button></th>
+                <th><button class="table-sort" type="button" data-sort="sort-name">Name</button></th>
+                <th><button class="table-sort" type="button" data-sort="sort-amount">Amount</button></th>
               </tr></thead>
-              <tbody class="table-tbody">
+              <tbody>
                 <tr><td class="sort-name">Rent</td><td class="sort-amount" data-sort-value="1200">1,200</td></tr>
                 <tr><td class="sort-name">Food</td><td class="sort-amount" data-sort-value="430">430</td></tr>
               </tbody>
