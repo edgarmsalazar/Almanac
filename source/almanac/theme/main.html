@@ -110,6 +110,7 @@
 <link rel="stylesheet" href="{{ 'almanac/css/theme.css' | url }}">
 <link rel="stylesheet" href="{{ 'almanac/css/components.css' | url }}">
 <link rel="stylesheet" href="{{ 'almanac/css/almanac.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/css/dashboard.css' | url }}">
 <link rel="stylesheet" href="{{ 'assets/mkdocs.css' | url }}">
 {%- if 'class="doc doc-object' in page.content %}
 <link rel="stylesheet" href="{{ 'almanac/css/reference.css' | url }}">
@@ -123,6 +124,7 @@
 {%- endfor %}
 <script src="{{ 'almanac/js/settings.js' | url }}"></script>
 <script src="{{ 'almanac/js/charts.js' | url }}"></script>
+<script src="{{ 'almanac/js/plot.js' | url }}"></script>
 <script src="{{ 'data/lexicon.js' | url }}"></script>
 {%- for path in page.meta.data or [] %}
 <script src="{{ path | url }}"></script>
@@ -292,6 +294,9 @@
 <script src="{{ 'almanac/js/code.js' | url }}"></script>
 <script src="{{ 'almanac/js/data.js' | url }}"></script>
 <script src="{{ 'almanac/js/table.js' | url }}"></script>
+<script src="{{ 'almanac/js/period.js' | url }}"></script>
+<script src="{{ 'almanac/js/tabs.js' | url }}"></script>
+<script src="{{ 'almanac/js/filter.js' | url }}"></script>
 <script src="{{ 'almanac/js/terms.js' | url }}"></script>
 <script src="{{ 'almanac/js/search.js' | url }}"></script>
 {%- if page.meta.lexicon %}

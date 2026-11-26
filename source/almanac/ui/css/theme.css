@@ -12,6 +12,7 @@
  *                       the text face
  *   3. derived variants -lt / -fg per hue, for chips and callouts
  *   4. semantic tokens  what components read; dark mode redefines these
+ *   5. chart ramp       the series colours plot.js draws with, light and dark
  *
  * components.css reads these and never redefines them. settings.js sets the attributes.
  */
@@ -323,4 +324,71 @@
 
   --checker-a: var(--gray-800);
   --checker-b: var(--gray-900);
+}
+
+/* ------------------------------------------------------------ 5. chart ramp */
+/* Almanac's own, from Portal: Tabler exposes named hues but no ordered
+ * categorical scale.
+ *
+ * EIGHT slots, assigned in fixed order and NEVER cycled. Both ramps were
+ * validated (OKLab dE x100, Machado CVD simulation) against their own surface:
+ * lightness band, chroma floor, adjacent-pair protan/deutan separation, the
+ * normal-vision floor, and WCAG contrast. Worst adjacent CVD: 11.3 light,
+ * 11.1 dark, against a target of 8.
+ *
+ * Eight distinct hue families in the same order in both themes — red, blue,
+ * orange, teal, violet, yellow, magenta, green — so a series keeps its identity
+ * when the theme changes. An earlier attempt maximised CVD distance alone and
+ * produced three near-identical blues and three greens: safe by the numbers,
+ * unreadable in practice. Spread across the hue circle is a constraint, not a
+ * nicety.
+ *
+ * Re-validate after ANY edit — a hand-picked "nicer" hue is how a palette
+ * silently becomes unreadable for ~8% of male readers.
+ *
+ * A 9th series does not get a 9th colour. See --chart-dash-* below and
+ * plot.js: a chart with more series than slots must use composite encoding
+ * (hue x dash), facet into small multiples, or fold the tail into "Other".
+ *
+ * Read by plot.js via getComputedStyle, so these must be literal colours —
+ * never color-mix(), which resolves to a value canvas cannot parse. */
+
+:root {
+  --chart-1: #f03e3e;  /* red     */
+  --chart-2: #066fd1;  /* blue    */
+  --chart-3: #f76707;  /* orange  */
+  --chart-4: #0ca678;  /* teal    */
+  --chart-5: #7048e8;  /* violet  */
+  --chart-6: #b8860b;  /* yellow  */
+  --chart-7: #ae3ec9;  /* magenta */
+  --chart-8: #2f9e44;  /* green   */
+
+  --chart-grid: var(--gray-200);
+  --chart-axis: var(--gray-500);
+
+  /* Secondary encoding for line marks: identity = hue x dash, so 8 hues carry
+   * 24 distinguishable lines. Canvas setLineDash() patterns, in slot order. */
+  --chart-dash-1: none;
+  --chart-dash-2: 6 3;
+  --chart-dash-3: 2 3;
+
+  /* Series beyond what hue x dash can carry. Deliberately neutral: it reads as
+   * "everything else", not as another category. */
+  --chart-other: var(--gray-400);
+}
+
+[data-theme="dark"] {
+  --chart-1: #ce4a3b;  /* red     */
+  --chart-2: #256cd0;  /* blue    */
+  --chart-3: #da5f2f;  /* orange  */
+  --chart-4: #38a889;  /* teal    */
+  --chart-5: #5c57c7;  /* violet  */
+  --chart-6: #b98d27;  /* yellow  */
+  --chart-7: #bb66cc;  /* magenta */
+  --chart-8: #52a838;  /* green   */
+
+  --chart-grid: var(--gray-700);
+  --chart-axis: var(--gray-400);
+
+  --chart-other: var(--gray-600);
 }

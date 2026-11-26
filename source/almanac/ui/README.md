@@ -11,15 +11,16 @@ To use it in a project, copy it there with `scripts/export-ui.sh <project>` from
 | `css/theme.css` | The design tokens: palette, gray ramps, radii, fonts, light and dark. The `data-theme-*` attributes on `<html>` pick among them. |
 | `css/components.css` | Tabler's components, ported by hand: cards, tables, alerts, badges, status, steps, the navbar, the offcanvas panel and the rest. |
 | `css/almanac.css` | Almanac's own layout: the header band's lead, the docs layout and its contents column, the pager, search, examples, maths, and the lexicon and roadmap pages. |
+| `css/dashboard.css` | The dashboard pieces from Portal: the canvas charts' legend, toolbar and readout, KPI cards, the period control, card tabs, the tracking strip and the table filter. |
 | `css/reference.css` | API reference pages, as mkdocstrings writes them. Load it only where one is. |
 | `js/` | One script a behaviour. Each looks for its own markup and does nothing without it. |
 | `fonts/` | Lexend, Exo 2, Barlow and Fira Code, each with its licence. |
 | `vendor/` | Mermaid and KaTeX, unchanged. Load them only on a page with a diagram or maths. |
-| `starter.html` | A page shell to copy: navbar, header band, a body of cards. |
+| `starter.html` | A page shell to copy: navbar, header band, a KPI card, a chart, a card and a sortable table. |
 
 ## Loading order
 
-Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js` before anything is painted, since it sets the theme; `js/charts.js` there too, so a page's own script can draw a chart. `js/navbar.js` straight after the navbar. Every other script at the foot of `<body>`. `starter.html` does all of this.
+Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js` before anything is painted, since it sets the theme; `js/charts.js` and `js/plot.js` there too, so a page's own script can draw a chart. `js/navbar.js` straight after the navbar. Every other script at the foot of `<body>`. `starter.html` does all of this.
 
 ## The scripts
 
@@ -30,7 +31,11 @@ Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js`
 | `toc.js` | The floating contents button `#toc-toggle` and its panel `#toc`, for a page of cards. | The cards' `.card-title`s. |
 | `almanac.js` | The docs layout's contents column, `[data-almanac-toc]`. | |
 | `table.js` | `.table-sort` buttons, `data-table-export` copy and CSV buttons. | Each cell's `data-sort-value`, else its text. |
-| `charts.js` | Nothing by itself: `Almanac.charts.bars(element, {...})`, described at the top of the file. | |
+| `charts.js` | Nothing by itself: `Almanac.charts.bars(element, {...})`, HTML bars of fixed figures, described at the top of the file. | |
+| `plot.js` | Nothing by itself: `Almanac.plot.create(canvasId, {...})`, canvas charts of bars, lines and boxes, with a legend, readout, table view and calendar windows. Every key is described at the top of the file. Load it in `<head>`, after `settings.js`. | Colours from theme.css's chart ramp. |
+| `period.js` | `[data-periods]`: a row of KPI cards or a table, stepped by month, week or day; `[data-page-period]`, a control for the whole page. | A `<script type="application/json">` holding every window's text, described at the top of the file. |
+| `tabs.js` | `.nav-link[data-tab]` in a `.card-tabs`: one `.tab-pane` shown at a time, the address naming it. | |
+| `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state. | Each row's `data-state`, and its `data-search` or text. |
 | `data.js` | `[data-value="path"]`, filled from `window.ALMANAC_DATA`. | A script that sets `window.ALMANAC_DATA`, loaded first. |
 | `code.js` | `pre.highlight[data-lang]` and `.code-block`: colours, headers, copy buttons. | |
 | `terms.js` | The first use of each lexicon term in `.page-body`, given a tooltip. | `window.ALMANAC_DATA.lexicon`. |

@@ -21,9 +21,11 @@
 <link rel="stylesheet" href="almanac/css/theme.css">
 <link rel="stylesheet" href="almanac/css/components.css">
 <link rel="stylesheet" href="almanac/css/almanac.css">
+<link rel="stylesheet" href="almanac/css/dashboard.css">
 <!-- Not deferred: it sets the theme before the page is painted. -->
 <script src="almanac/js/settings.js"></script>
 <script src="almanac/js/charts.js"></script>
+<script src="almanac/js/plot.js"></script>
 </head>
 <body>
 <div class="page">
@@ -61,6 +63,25 @@
     </header>
     <main class="page-body">
       <div class="container-xl">
+
+        <div class="kpi-grid">
+          <div class="card kpi-card">
+            <div class="card-body">
+              <div class="kpi-title">A figure</div>
+              <div class="kpi-row">
+                <div class="kpi-value">1,630</div>
+                <span class="kpi-delta kpi-delta--worse"><span class="visually-hidden">Up </span>+4%<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5l0 14"/><path d="M18 11l-6 -6"/><path d="M6 11l6 -6"/></svg></span>
+              </div>
+              <div class="kpi-meta">against last month</div>
+            </div>
+            <canvas id="spark-figure" class="plot kpi-spark"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="chart">A chart</h2></div></div>
+          <div class="card-body"><canvas id="chart-figure" class="plot"></canvas></div>
+        </div>
 
         <div class="card">
           <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="first">A section</h2></div></div>
@@ -104,5 +125,18 @@
 <script src="almanac/js/code.js"></script>
 <script src="almanac/js/data.js"></script>
 <script src="almanac/js/table.js"></script>
+<script src="almanac/js/period.js"></script>
+<script src="almanac/js/tabs.js"></script>
+<script src="almanac/js/filter.js"></script>
+<script>
+  /* The page's own figures. plot.js describes every key a chart takes. */
+  var months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+  Almanac.plot.create('spark-figure', { sparkline: true, height: 48, x: months,
+    series: [{ type: 'line', label: 'A figure', y: [1580, 1720, 1650, 1540, 1570, 1630], color: '--body-color' }] });
+  Almanac.plot.create('chart-figure', { title: 'By month', x: months,
+    series: [{ type: 'bar', label: 'Spent', y: [1580, 1720, 1650, 1540, 1570, 1630] },
+             { type: 'line', label: 'Budget', y: [1800, 1800, 1800, 1800, 1800, 1800], dashed: true }],
+    yAxis: { min: 0 } });
+</script>
 </body>
 </html>

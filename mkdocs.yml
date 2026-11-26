@@ -71,6 +71,7 @@ nav:
   - Components:
       - Content: components/content.md
       - Data: components/data.md
+      - Dashboard: components/dashboard.md
       - Controls: components/controls.md
       - Layout: components/layout.md
       - Code and diagrams: components/code.md
