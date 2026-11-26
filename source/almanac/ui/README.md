@@ -11,6 +11,7 @@ To use it in a project, copy it there with `scripts/export-ui.sh <project>` from
 | `css/theme.css` | The design tokens: palette, gray ramps, radii, fonts, light and dark. The `data-theme-*` attributes on `<html>` pick among them. |
 | `css/components.css` | Tabler's components, ported by hand: cards, tables, alerts, badges, status, steps, the navbar, the offcanvas panel and the rest. |
 | `css/layout.css` | The grid and the utilities, Bootstrap's names as Tabler uses them: `.row`, `.col-md-6`, `.row-cards`, `.d-flex`, `.gap-2`, `.mt-3`, `.text-end` and the rest. For arranging a page; the components do not lean on them, save the KPI cards' `.visually-hidden`. |
+| `css/app.css` | What a page that takes input needs, from Tabler: buttons in every colour, outline and ghost, groups and lists; checkboxes, radios, input groups and validation; modal dialogs, toasts, menus and pagination. |
 | `css/almanac.css` | Almanac's own layout: the header band's lead, the docs layout and its contents column, the pager, search, examples, maths, and the lexicon and roadmap pages. |
 | `css/dashboard.css` | The dashboard pieces from Portal: the canvas charts' legend, toolbar and readout, KPI cards, the period control, card tabs, the tracking strip and the table filter. |
 | `css/reference.css` | API reference pages, as mkdocstrings writes them. Load it only where one is. |
@@ -28,7 +29,7 @@ Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js`
 | Script | Binds | Reads |
 | --- | --- | --- |
 | `settings.js` | `#theme-toggle`, `#theme-settings-open`, and the theme settings panel it builds. Gives the other scripts `Almanac` helpers: copy, download, the address hash. | The `?theme-…=` address, then the browser's saved choices. |
-| `navbar.js` | `.navbar` menus and toggler, `[data-open]` buttons for a `<dialog>`, `[data-close]`, `[data-almanac-icon]`. | |
+| `navbar.js` | `.navbar` menus and toggler, `[data-open]` buttons for a `<dialog>`, `[data-close]`, a click on a `.modal`'s backdrop, `[data-almanac-icon]`. | |
 | `toc.js` | The floating contents button `#toc-toggle` and its panel `#toc`, for a page of cards. | The cards' `.card-title`s. |
 | `almanac.js` | The docs layout's contents column, `[data-almanac-toc]`. | |
 | `table.js` | `.table-sort` buttons, `data-table-export` copy and CSV buttons. | Each cell's `data-sort-value`, else its text. |
@@ -37,6 +38,8 @@ Stylesheets in the order above, `theme.css` first. In `<head>`, `js/settings.js`
 | `period.js` | `[data-periods]`: a row of KPI cards or a table, stepped by month, week or day; `[data-page-period]`, a control for the whole page. | A `<script type="application/json">` holding every window's text, described at the top of the file. |
 | `tabs.js` | `.nav-link[data-tab]` in a `.card-tabs`: one `.tab-pane` shown at a time, the address naming it. | |
 | `filter.js` | `.table-filter[data-filter]` and `.state-filter[data-filter-states]`: rows narrowed by words and by state. | Each row's `data-state`, and its `data-search` or text. |
+| `dropdown.js` | `.dropdown-toggle[aria-controls]` outside the navbar: its `.dropdown-menu` opened below it, or above, fixed to the window; the arrow keys, Escape, a click elsewhere. | |
+| `toast.js` | Nothing by itself: `Almanac.toast(text)` or `Almanac.toast({title, text, meta, color, delay})`, a note in the window's corner; a `.toast`'s `[data-close]`. | |
 | `data.js` | `[data-value="path"]`, filled from `window.ALMANAC_DATA`. | A script that sets `window.ALMANAC_DATA`, loaded first. |
 | `code.js` | `pre.highlight[data-lang]` and `.code-block`: colours, headers, copy buttons. | |
 | `terms.js` | The first use of each lexicon term in `.page-body`, given a tooltip. | `window.ALMANAC_DATA.lexicon`. |
