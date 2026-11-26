@@ -24,9 +24,9 @@ Written as an ordinary Markdown table. A table written in HTML keeps its own cla
 <div class="table-responsive">
   <table class="table">
     <thead><tr>
-      <th><button class="table-sort" data-sort="sort-setup">Setup</button></th>
-      <th><button class="table-sort" data-sort="sort-rate">Pages a second</button></th>
-      <th><button class="table-sort" data-sort="sort-date">Measured</button></th>
+      <th><button class="table-sort" type="button" data-sort="sort-setup">Setup</button></th>
+      <th><button class="table-sort" type="button" data-sort="sort-rate">Pages a second</button></th>
+      <th><button class="table-sort" type="button" data-sort="sort-date">Measured</button></th>
     </tr></thead>
     <tbody class="table-tbody">
       <tr><td class="sort-setup">One process</td><td class="sort-rate">2,140</td><td class="sort-date" data-date="2026-10-18">18 October</td></tr>

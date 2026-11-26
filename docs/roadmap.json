@@ -35,6 +35,19 @@
    ]
   },
   {
+   "name": "kit",
+   "title": "The kit",
+   "status": "reached",
+   "version": "v0.2",
+   "date": "2026-11-26",
+   "items": [
+    "The stylesheets and scripts as a kit for [pages written by hand](kit.md), copied into a project by `scripts/export-ui.sh`.",
+    "Portal's [dashboard](components/dashboard.md) pieces: canvas charts, KPI cards, the period control, card tabs, the tracking strip and a table filter.",
+    "The [grid and utilities](components/grid.md), and [buttons, forms, dialogs, toasts, menus and pagination](components/forms.md).",
+    "[Card extras, accordions, loading states, avatars and ribbons](components/cards.md), select boxes, a mini calendar and popovers, and [three libraries](components/libraries.md): Dropzone, FullCalendar and HugeRTE."
+   ]
+  },
+  {
    "name": "roadmap",
    "title": "The roadmap",
    "status": "under way",
@@ -74,7 +87,6 @@
    {
     "title": "Components",
     "items": [
-     "Tabler's charts beyond the bar chart.",
      "A changelog page drawn from its file."
     ]
    },

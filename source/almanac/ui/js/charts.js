@@ -12,12 +12,16 @@
  *     rows: [{ label: 'a page', caption: '…', value: 222, reference: false }],
  *     title: 'By section',         // the chart's title, centred over its plot, optional
  *     axis: 'pages',               // the axis's title, optional
- *     format: function (n) { … }   // a value as shown, optional
+ *     format: function (n) { … }   // a value as shown, optional; or 'currency'
+ *     tickFormat: function (n) { … }  // an axis tick as shown, optional, else format;
+ *                                  // 'currency' gives compact ticks ($1.5k)
+ *     currency: 'EUR',             // for 'currency'; else <html data-currency>, else USD
  *     log: { low: 0.1, high: 1e5 } // a log scale between two powers of ten, optional
  *   });
  *
  * A row marked reference is drawn in gray: something the others are measured
- * against rather than one of them.
+ * against rather than one of them. With format 'currency' a value reads in full
+ * ($1,630.00) and a tick compact ($1.5k), the symbol from Intl.
  */
 (function () {
   'use strict';
@@ -33,13 +37,22 @@
     return out;
   }
 
+  /* Money in the chart's currency, in full or compact for a tick ($800, $1.5k,
+     $1.2M): settings.js's Almanac.money, shared with plot.js and data.js. */
+  function money(code, compact) {
+    return function (n) {
+      return window.Almanac.money(n, { currency: code, compact: compact });
+    };
+  }
+
   function escape(text) {
     return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function bars(element, options) {
     var rows = options.rows;
-    var format = options.format || function (n) { return n.toLocaleString('en-GB'); };
+    var format = options.format === 'currency' ? money(options.currency, false)
+      : options.format || function (n) { return n.toLocaleString('en-GB'); };
     var top = Math.max.apply(null, rows.map(function (row) { return row.value; }));
     var scale = ticks(top);
     var end = scale[scale.length - 1];
@@ -58,7 +71,8 @@
       scale.map(function (t) { return '<span style="left: ' + at(t) + '%"></span>'; }).join('') + '</div>';
     /* Each row placed by number: the gridlines span every row's plot cell, so nothing may be
        left to auto-placement, which would push a row's plot below them. */
-    var tickFormat = options.tickFormat || format;
+    var tickFormat = options.tickFormat === 'currency' || (!options.tickFormat && options.format === 'currency')
+      ? money(options.currency, true) : options.tickFormat || format;
     rows.forEach(function (row, i) {
       var place = ' style="grid-row: ' + (first + i) + '"';
       html += '<div class="chart-label"' + place + '>' + (row.html || escape(row.label)) +

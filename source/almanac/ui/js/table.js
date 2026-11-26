@@ -7,7 +7,7 @@
  *   <div class="table-responsive">
  *     <table class="table">
  *       <thead><tr>
- *         <th><button class="table-sort" data-sort="sort-key">Key</button></th>
+ *         <th><button class="table-sort" type="button" data-sort="sort-key">Key</button></th>
  *       </tr></thead>
  *       <tbody class="table-tbody">
  *         <tr><td class="sort-key">…</td></tr>
@@ -23,6 +23,10 @@
  *
  * Sorting is comparison-only and never re-renders a cell, so a row keeps
  * whatever markup the page gave it — a status chip, a link, an icon.
+ *
+ * The sort and export buttons are found when clicked, not bound at load, so a
+ * table a page builds later sorts and exports as one written in the page. Its
+ * rows replaced under a chosen sort, Almanac.table.resort(table) sorts them again.
  */
 (function () {
   'use strict';
@@ -98,35 +102,31 @@
     body.appendChild(fragment);
   }
 
-  function bind(button) {
+  function choose(button) {
     var cellClass = button.getAttribute('data-sort');
-    if (!cellClass) return;
-
     var table = button.closest('table');
-    if (!table) return;
+    if (!cellClass || !table) return;
 
-    button.addEventListener('click', function () {
-      var descending = button.classList.contains('asc');
+    var descending = button.classList.contains('asc');
 
-      /* Only one column carries a direction at a time: two lit arrows would
-         claim the table is sorted by both. aria-sort is cleared from the th,
-         which is where it was set — clearing it from the button instead leaves
-         the previous column still announcing itself as sorted. */
-      table.querySelectorAll('.table-sort').forEach(function (other) {
-        other.classList.remove('asc', 'desc');
-      });
-      table.querySelectorAll('th[aria-sort]').forEach(function (th) {
-        th.removeAttribute('aria-sort');
-      });
-
-      button.classList.add(descending ? 'desc' : 'asc');
-
-      /* aria-sort belongs on the th, not the button inside it. */
-      var header = button.closest('th');
-      if (header) header.setAttribute('aria-sort', descending ? 'descending' : 'ascending');
-
-      sortBy(table, cellClass, descending);
+    /* Only one column carries a direction at a time: two lit arrows would
+       claim the table is sorted by both. aria-sort is cleared from the th,
+       which is where it was set — clearing it from the button instead leaves
+       the previous column still announcing itself as sorted. */
+    table.querySelectorAll('.table-sort').forEach(function (other) {
+      other.classList.remove('asc', 'desc');
     });
+    table.querySelectorAll('th[aria-sort]').forEach(function (th) {
+      th.removeAttribute('aria-sort');
+    });
+
+    button.classList.add(descending ? 'desc' : 'asc');
+
+    /* aria-sort belongs on the th, not the button inside it. */
+    var header = button.closest('th');
+    if (header) header.setAttribute('aria-sort', descending ? 'descending' : 'ascending');
+
+    sortBy(table, cellClass, descending);
   }
 
   /* A table's rows as shown — in its current sort — for a copy or a CSV: the
@@ -149,24 +149,29 @@
   }
 
   /* Copy and CSV above a table: data-table-export names the
-     action, data-table the table's wrapper. settings.js holds the copy and the
-     download, so every table's file is made the same way. */
-  function bindExport(button) {
+     action, data-table the table's wrapper, looked up at the click, so a
+     table or a button the page builds later is found the same way.
+     settings.js holds the copy and the download, so every table's file is
+     made the same way. */
+  function exportFrom(button) {
     var wrapper = document.getElementById(button.getAttribute('data-table'));
     var table = wrapper && wrapper.querySelector('table');
-    if (!table || !window.Almanac) return;
+    if (!table) return;
+    if (button.getAttribute('data-table-export') === 'csv') {
+      window.Almanac.download(window.Almanac.slug(wrapper.id) + '.csv',
+        window.Almanac.delimited(tableRows(table), ','));
+      return;
+    }
     var label = button.lastChild;
-    button.addEventListener('click', function () {
-      if (button.getAttribute('data-table-export') === 'csv') {
-        window.Almanac.download(window.Almanac.slug(wrapper.id) + '.csv',
-          window.Almanac.delimited(tableRows(table), ','));
-        return;
-      }
-      window.Almanac.copyText(window.Almanac.delimited(tableRows(table), '\t'), function () {
-        var was = label.textContent;
-        label.textContent = 'Copied';
-        setTimeout(function () { label.textContent = was; }, 1500);
-      });
+    window.Almanac.copyText(window.Almanac.delimited(tableRows(table), '\t'), function () {
+      /* A second click while "Copied" shows must not keep "Copied" as the label. */
+      if (button._almanacLabel === undefined) button._almanacLabel = label.textContent;
+      label.textContent = 'Copied';
+      clearTimeout(button._almanacCopied);
+      button._almanacCopied = setTimeout(function () {
+        label.textContent = button._almanacLabel;
+        button._almanacLabel = undefined;
+      }, 1500);
     });
   }
 
@@ -179,8 +184,12 @@
     }
   };
 
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.table-sort').forEach(bind);
-    document.querySelectorAll('[data-table-export]').forEach(bindExport);
+  /* One listener for the document rather than one a button, so a table or an
+     export button the page builds after load works as one written in it. */
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest && event.target.closest('.table-sort, [data-table-export]');
+    if (!button) return;
+    if (button.classList.contains('table-sort')) choose(button);
+    else exportFrom(button);
   });
 })();

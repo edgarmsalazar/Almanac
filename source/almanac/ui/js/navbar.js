@@ -9,7 +9,8 @@
  * Also, on every page: a site icon drawn inline takes the page's colours, so
  * the tab's icon is made from it too, again whenever the theme changes; and a
  * button with data-open="id" opens that <dialog>, a [data-close] inside one
- * closes it, and a [data-close] inside an alert takes the alert away.
+ * closes it, a click on a .modal's backdrop closes it, and a [data-close]
+ * inside an alert takes the alert away.
  */
 (function () {
   'use strict';
@@ -90,6 +91,15 @@
     }
     var dismiss = event.target.closest('.alert [data-close]');
     if (dismiss) dismiss.closest('.alert').remove();
+  });
+
+  /* The backdrop is the dialog itself as far as a click can tell: a press and a
+     release both on it, not a drag out of a field inside, is a click outside. */
+  var pressed = null;
+  document.addEventListener('mousedown', function (event) { pressed = event.target; });
+  document.addEventListener('click', function (event) {
+    var dialog = event.target;
+    if (dialog === pressed && dialog.matches && dialog.matches('dialog.modal[open]')) dialog.close();
   });
 
   document.addEventListener('DOMContentLoaded', function () {

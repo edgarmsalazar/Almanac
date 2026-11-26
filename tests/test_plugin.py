@@ -3,7 +3,9 @@ from almanac.fences import example_format
 from almanac.plugin import (
     drop_title,
     icon_svg,
+    UI,
     inline_svg,
+    kit_files,
     lexicon_entries,
     lexicon_script,
     search_script,
@@ -142,3 +144,9 @@ def test_search_script_keeps_the_entries_and_drops_the_configuration():
     assert search_script(index) == (
         'window.ALMANAC_SEARCH = {"docs": [{"location": "a.html#b", "title": "B", "text": "words"}]};\n'
     )
+
+
+def test_kit_files_serve_the_kit_but_not_its_shell_or_notes():
+    served = {path.relative_to(UI).as_posix() for path in kit_files()}
+    assert {"css/theme.css", "js/settings.js", "vendor/mermaid.min.js"} <= served
+    assert not served & {"starter.html", "README.md", "GUIDELINES.md", "VERSION"}

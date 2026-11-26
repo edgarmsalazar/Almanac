@@ -1,0 +1,843 @@
+/*
+ * Almanac's layout and utilities: the grid and the small single-purpose classes
+ * a page written by hand lays itself out with. Tabler gets them from Bootstrap
+ * 5; these are Bootstrap's names and values (Tabler's spacer scale, its
+ * breakpoints, its .row-cards and .row-deck), cut to what a dashboard or an app
+ * page reaches for, written out with no build step.
+ *
+ * The kit's own components never lean on these, save the KPI cards' words for a
+ * screen reader (.visually-hidden): a component's look lives in its own rules,
+ * and these are for arranging components on a page.
+ * As in Bootstrap, a utility is !important, so it wins over the component it
+ * sits on; the grid is not.
+ *
+ *   1. containers      .container-fluid, -narrow, -tight, -slim, beside .container-xl
+ *   2. grid            .row, .col, .col-6, .col-md-4, .col-auto, .row-cols-3,
+ *                      gutters .g-3 .gx-0 .gy-4, .row-cards, .row-deck
+ *   3. stacks          .space-y-3, .space-x-2, .divide-y, .divide-x
+ *   4. display         .d-none .d-flex .d-md-block ..., at each breakpoint
+ *   5. flex            direction, wrap, grow, align, justify, order, gap
+ *   6. spacing         .m-3 .mt-0 .mx-auto .p-4 .py-2 ..., 0 to 6
+ *   7. text            align, wrap, weight, case, colour, .small, .tabular-nums
+ *   8. sizing          .w-50 .w-100 .h-100 .mw-100
+ *   9. borders         .border .border-top .border-0 .rounded .rounded-pill
+ *  10. position        .position-relative .overflow-hidden .visually-hidden
+ *  11. colour          .bg-red .bg-success .bg-green-lt .text-green .text-primary-fg
+ *
+ * Breakpoints, as Tabler's: sm 576px, md 768px, lg 992px, xl 1200px, xxl 1400px.
+ * A class with one, .col-md-6, applies from that width up.
+ *
+ * Spacers, as Tabler's: 0 0, 1 0.25rem, 2 0.5rem, 3 1rem, 4 1.5rem, 5 2rem,
+ * 6 2.5rem.
+ */
+
+/* ----------------------------------------------------------- 1. containers */
+/* The page shell's .container-xl (components.css) has a sibling for each width
+   Tabler offers: the full window, and three narrow columns for a form or a sign-in.
+   The sidebar's own .container-fluid is the navbar's to lay out, not this. */
+
+:not(.navbar-vertical) > .container-fluid,
+.container-narrow,
+.container-tight,
+.container-slim {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  margin: 0 auto;
+}
+
+.container-narrow { max-width: 61.875rem; }
+.container-tight { max-width: 32rem; }
+.container-slim { max-width: 16rem; }
+
+/* ----------------------------------------------------------------- 2. grid */
+/* Bootstrap's flex grid: twelve columns in a .row, gutters as padding on each
+   column and a negative margin on the row. The gutter defaults to the page's own
+   padding, so columns of cards sit as far apart as cards stacked down a page.
+   A column with no width class (.col) shares what is left equally.
+
+   A row among the cards of a page takes the same space above it that a card
+   does, as the KPI grid does (dashboard.css). */
+
+.row {
+  --gutter-x: var(--page-padding);
+  --gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--gutter-y));
+  margin-right: calc(-0.5 * var(--gutter-x));
+  margin-left: calc(-0.5 * var(--gutter-x));
+}
+
+.row > * {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-right: calc(var(--gutter-x) * 0.5);
+  padding-left: calc(var(--gutter-x) * 0.5);
+  margin-top: var(--gutter-y);
+}
+
+.card + .row,
+.kpi-grid + .row,
+.row + .row {
+  margin-top: calc(var(--page-padding) - var(--gutter-y));
+}
+
+.row + .card,
+.row + .kpi-grid {
+  margin-top: var(--page-padding);
+}
+
+/* Tabler's rows of cards: a gutter both ways, so cards that wrap keep their
+   distance below as well as beside. In a .row-deck each card fills its column's
+   height, so a row of cards ends level. */
+.row-cards {
+  --gutter-x: var(--page-padding);
+  --gutter-y: var(--page-padding);
+}
+
+.row-deck > .col,
+.row-deck > [class*="col-"] {
+  display: flex;
+  align-items: stretch;
+}
+
+.row-deck > .col > .card,
+.row-deck > [class*="col-"] > .card {
+  flex: 1 1 auto;
+}
+
+/* A rule between two columns, as Tabler's .col-separator. */
+.col-separator {
+  border-left: var(--border-width) solid var(--border-color);
+}
+
+.col { flex: 1 0 0; }
+.col-auto { flex: 0 0 auto; width: auto; }
+.row-cols-1 > * { flex: 0 0 auto; width: 100%; }
+.row-cols-2 > * { flex: 0 0 auto; width: 50%; }
+.row-cols-3 > * { flex: 0 0 auto; width: 33.3333%; }
+.row-cols-4 > * { flex: 0 0 auto; width: 25%; }
+.row-cols-5 > * { flex: 0 0 auto; width: 20%; }
+.row-cols-6 > * { flex: 0 0 auto; width: 16.6667%; }
+.col-1 { flex: 0 0 auto; width: 8.33333%; }
+.col-2 { flex: 0 0 auto; width: 16.6667%; }
+.col-3 { flex: 0 0 auto; width: 25%; }
+.col-4 { flex: 0 0 auto; width: 33.3333%; }
+.col-5 { flex: 0 0 auto; width: 41.6667%; }
+.col-6 { flex: 0 0 auto; width: 50%; }
+.col-7 { flex: 0 0 auto; width: 58.3333%; }
+.col-8 { flex: 0 0 auto; width: 66.6667%; }
+.col-9 { flex: 0 0 auto; width: 75%; }
+.col-10 { flex: 0 0 auto; width: 83.3333%; }
+.col-11 { flex: 0 0 auto; width: 91.6667%; }
+.col-12 { flex: 0 0 auto; width: 100%; }
+
+@media (min-width: 576px) {
+  .col-sm { flex: 1 0 0; }
+  .col-sm-auto { flex: 0 0 auto; width: auto; }
+  .row-cols-sm-1 > * { flex: 0 0 auto; width: 100%; }
+  .row-cols-sm-2 > * { flex: 0 0 auto; width: 50%; }
+  .row-cols-sm-3 > * { flex: 0 0 auto; width: 33.3333%; }
+  .row-cols-sm-4 > * { flex: 0 0 auto; width: 25%; }
+  .row-cols-sm-5 > * { flex: 0 0 auto; width: 20%; }
+  .row-cols-sm-6 > * { flex: 0 0 auto; width: 16.6667%; }
+  .col-sm-1 { flex: 0 0 auto; width: 8.33333%; }
+  .col-sm-2 { flex: 0 0 auto; width: 16.6667%; }
+  .col-sm-3 { flex: 0 0 auto; width: 25%; }
+  .col-sm-4 { flex: 0 0 auto; width: 33.3333%; }
+  .col-sm-5 { flex: 0 0 auto; width: 41.6667%; }
+  .col-sm-6 { flex: 0 0 auto; width: 50%; }
+  .col-sm-7 { flex: 0 0 auto; width: 58.3333%; }
+  .col-sm-8 { flex: 0 0 auto; width: 66.6667%; }
+  .col-sm-9 { flex: 0 0 auto; width: 75%; }
+  .col-sm-10 { flex: 0 0 auto; width: 83.3333%; }
+  .col-sm-11 { flex: 0 0 auto; width: 91.6667%; }
+  .col-sm-12 { flex: 0 0 auto; width: 100%; }
+}
+
+@media (min-width: 768px) {
+  .col-md { flex: 1 0 0; }
+  .col-md-auto { flex: 0 0 auto; width: auto; }
+  .row-cols-md-1 > * { flex: 0 0 auto; width: 100%; }
+  .row-cols-md-2 > * { flex: 0 0 auto; width: 50%; }
+  .row-cols-md-3 > * { flex: 0 0 auto; width: 33.3333%; }
+  .row-cols-md-4 > * { flex: 0 0 auto; width: 25%; }
+  .row-cols-md-5 > * { flex: 0 0 auto; width: 20%; }
+  .row-cols-md-6 > * { flex: 0 0 auto; width: 16.6667%; }
+  .col-md-1 { flex: 0 0 auto; width: 8.33333%; }
+  .col-md-2 { flex: 0 0 auto; width: 16.6667%; }
+  .col-md-3 { flex: 0 0 auto; width: 25%; }
+  .col-md-4 { flex: 0 0 auto; width: 33.3333%; }
+  .col-md-5 { flex: 0 0 auto; width: 41.6667%; }
+  .col-md-6 { flex: 0 0 auto; width: 50%; }
+  .col-md-7 { flex: 0 0 auto; width: 58.3333%; }
+  .col-md-8 { flex: 0 0 auto; width: 66.6667%; }
+  .col-md-9 { flex: 0 0 auto; width: 75%; }
+  .col-md-10 { flex: 0 0 auto; width: 83.3333%; }
+  .col-md-11 { flex: 0 0 auto; width: 91.6667%; }
+  .col-md-12 { flex: 0 0 auto; width: 100%; }
+}
+
+@media (min-width: 992px) {
+  .col-lg { flex: 1 0 0; }
+  .col-lg-auto { flex: 0 0 auto; width: auto; }
+  .row-cols-lg-1 > * { flex: 0 0 auto; width: 100%; }
+  .row-cols-lg-2 > * { flex: 0 0 auto; width: 50%; }
+  .row-cols-lg-3 > * { flex: 0 0 auto; width: 33.3333%; }
+  .row-cols-lg-4 > * { flex: 0 0 auto; width: 25%; }
+  .row-cols-lg-5 > * { flex: 0 0 auto; width: 20%; }
+  .row-cols-lg-6 > * { flex: 0 0 auto; width: 16.6667%; }
+  .col-lg-1 { flex: 0 0 auto; width: 8.33333%; }
+  .col-lg-2 { flex: 0 0 auto; width: 16.6667%; }
+  .col-lg-3 { flex: 0 0 auto; width: 25%; }
+  .col-lg-4 { flex: 0 0 auto; width: 33.3333%; }
+  .col-lg-5 { flex: 0 0 auto; width: 41.6667%; }
+  .col-lg-6 { flex: 0 0 auto; width: 50%; }
+  .col-lg-7 { flex: 0 0 auto; width: 58.3333%; }
+  .col-lg-8 { flex: 0 0 auto; width: 66.6667%; }
+  .col-lg-9 { flex: 0 0 auto; width: 75%; }
+  .col-lg-10 { flex: 0 0 auto; width: 83.3333%; }
+  .col-lg-11 { flex: 0 0 auto; width: 91.6667%; }
+  .col-lg-12 { flex: 0 0 auto; width: 100%; }
+}
+
+@media (min-width: 1200px) {
+  .col-xl { flex: 1 0 0; }
+  .col-xl-auto { flex: 0 0 auto; width: auto; }
+  .row-cols-xl-1 > * { flex: 0 0 auto; width: 100%; }
+  .row-cols-xl-2 > * { flex: 0 0 auto; width: 50%; }
+  .row-cols-xl-3 > * { flex: 0 0 auto; width: 33.3333%; }
+  .row-cols-xl-4 > * { flex: 0 0 auto; width: 25%; }
+  .row-cols-xl-5 > * { flex: 0 0 auto; width: 20%; }
+  .row-cols-xl-6 > * { flex: 0 0 auto; width: 16.6667%; }
+  .col-xl-1 { flex: 0 0 auto; width: 8.33333%; }
+  .col-xl-2 { flex: 0 0 auto; width: 16.6667%; }
+  .col-xl-3 { flex: 0 0 auto; width: 25%; }
+  .col-xl-4 { flex: 0 0 auto; width: 33.3333%; }
+  .col-xl-5 { flex: 0 0 auto; width: 41.6667%; }
+  .col-xl-6 { flex: 0 0 auto; width: 50%; }
+  .col-xl-7 { flex: 0 0 auto; width: 58.3333%; }
+  .col-xl-8 { flex: 0 0 auto; width: 66.6667%; }
+  .col-xl-9 { flex: 0 0 auto; width: 75%; }
+  .col-xl-10 { flex: 0 0 auto; width: 83.3333%; }
+  .col-xl-11 { flex: 0 0 auto; width: 91.6667%; }
+  .col-xl-12 { flex: 0 0 auto; width: 100%; }
+}
+
+@media (min-width: 1400px) {
+  .col-xxl { flex: 1 0 0; }
+  .col-xxl-auto { flex: 0 0 auto; width: auto; }
+  .row-cols-xxl-1 > * { flex: 0 0 auto; width: 100%; }
+  .row-cols-xxl-2 > * { flex: 0 0 auto; width: 50%; }
+  .row-cols-xxl-3 > * { flex: 0 0 auto; width: 33.3333%; }
+  .row-cols-xxl-4 > * { flex: 0 0 auto; width: 25%; }
+  .row-cols-xxl-5 > * { flex: 0 0 auto; width: 20%; }
+  .row-cols-xxl-6 > * { flex: 0 0 auto; width: 16.6667%; }
+  .col-xxl-1 { flex: 0 0 auto; width: 8.33333%; }
+  .col-xxl-2 { flex: 0 0 auto; width: 16.6667%; }
+  .col-xxl-3 { flex: 0 0 auto; width: 25%; }
+  .col-xxl-4 { flex: 0 0 auto; width: 33.3333%; }
+  .col-xxl-5 { flex: 0 0 auto; width: 41.6667%; }
+  .col-xxl-6 { flex: 0 0 auto; width: 50%; }
+  .col-xxl-7 { flex: 0 0 auto; width: 58.3333%; }
+  .col-xxl-8 { flex: 0 0 auto; width: 66.6667%; }
+  .col-xxl-9 { flex: 0 0 auto; width: 75%; }
+  .col-xxl-10 { flex: 0 0 auto; width: 83.3333%; }
+  .col-xxl-11 { flex: 0 0 auto; width: 91.6667%; }
+  .col-xxl-12 { flex: 0 0 auto; width: 100%; }
+}
+
+/* Gutters: .g- both ways, .gx- across, .gy- down, on the spacer scale. */
+.g-0, .gx-0 { --gutter-x: 0; }
+.g-0, .gy-0 { --gutter-y: 0; }
+.g-1, .gx-1 { --gutter-x: 0.25rem; }
+.g-1, .gy-1 { --gutter-y: 0.25rem; }
+.g-2, .gx-2 { --gutter-x: 0.5rem; }
+.g-2, .gy-2 { --gutter-y: 0.5rem; }
+.g-3, .gx-3 { --gutter-x: 1rem; }
+.g-3, .gy-3 { --gutter-y: 1rem; }
+.g-4, .gx-4 { --gutter-x: 1.5rem; }
+.g-4, .gy-4 { --gutter-y: 1.5rem; }
+.g-5, .gx-5 { --gutter-x: 2rem; }
+.g-5, .gy-5 { --gutter-y: 2rem; }
+.g-6, .gx-6 { --gutter-x: 2.5rem; }
+.g-6, .gy-6 { --gutter-y: 2.5rem; }
+
+/* --------------------------------------------------------------- 3. stacks */
+/* Tabler's stacks: children set apart by a gap down (.space-y) or across
+   (.space-x), or by a rule and padding (.divide-y, .divide-x), with no margins
+   on the children themselves. Without a number, the spacer, 1rem. */
+
+.space-y { display: flex; flex-direction: column; gap: 1rem; }
+.space-x { display: flex; gap: 1rem; }
+.space-y-0 { display: flex; flex-direction: column; gap: 0; }
+.space-x-0 { display: flex; gap: 0; }
+.space-y-1 { display: flex; flex-direction: column; gap: 0.25rem; }
+.space-x-1 { display: flex; gap: 0.25rem; }
+.space-y-2 { display: flex; flex-direction: column; gap: 0.5rem; }
+.space-x-2 { display: flex; gap: 0.5rem; }
+.space-y-3 { display: flex; flex-direction: column; gap: 1rem; }
+.space-x-3 { display: flex; gap: 1rem; }
+.space-y-4 { display: flex; flex-direction: column; gap: 1.5rem; }
+.space-x-4 { display: flex; gap: 1.5rem; }
+.space-y-5 { display: flex; flex-direction: column; gap: 2rem; }
+.space-x-5 { display: flex; gap: 2rem; }
+.space-y-6 { display: flex; flex-direction: column; gap: 2.5rem; }
+.space-x-6 { display: flex; gap: 2.5rem; }
+
+.divide-y > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y > :not(template):not(:first-child) { padding-top: 1rem !important; }
+.divide-y > :not(template):not(:last-child) { padding-bottom: 1rem !important; }
+.divide-x > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x > :not(template):not(:first-child) { padding-left: 1rem !important; }
+.divide-x > :not(template):not(:last-child) { padding-right: 1rem !important; }
+.divide-y-0 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-0 > :not(template):not(:first-child) { padding-top: 0 !important; }
+.divide-y-0 > :not(template):not(:last-child) { padding-bottom: 0 !important; }
+.divide-x-0 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-0 > :not(template):not(:first-child) { padding-left: 0 !important; }
+.divide-x-0 > :not(template):not(:last-child) { padding-right: 0 !important; }
+.divide-y-1 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-1 > :not(template):not(:first-child) { padding-top: 0.25rem !important; }
+.divide-y-1 > :not(template):not(:last-child) { padding-bottom: 0.25rem !important; }
+.divide-x-1 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-1 > :not(template):not(:first-child) { padding-left: 0.25rem !important; }
+.divide-x-1 > :not(template):not(:last-child) { padding-right: 0.25rem !important; }
+.divide-y-2 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-2 > :not(template):not(:first-child) { padding-top: 0.5rem !important; }
+.divide-y-2 > :not(template):not(:last-child) { padding-bottom: 0.5rem !important; }
+.divide-x-2 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-2 > :not(template):not(:first-child) { padding-left: 0.5rem !important; }
+.divide-x-2 > :not(template):not(:last-child) { padding-right: 0.5rem !important; }
+.divide-y-3 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-3 > :not(template):not(:first-child) { padding-top: 1rem !important; }
+.divide-y-3 > :not(template):not(:last-child) { padding-bottom: 1rem !important; }
+.divide-x-3 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-3 > :not(template):not(:first-child) { padding-left: 1rem !important; }
+.divide-x-3 > :not(template):not(:last-child) { padding-right: 1rem !important; }
+.divide-y-4 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-4 > :not(template):not(:first-child) { padding-top: 1.5rem !important; }
+.divide-y-4 > :not(template):not(:last-child) { padding-bottom: 1.5rem !important; }
+.divide-x-4 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-4 > :not(template):not(:first-child) { padding-left: 1.5rem !important; }
+.divide-x-4 > :not(template):not(:last-child) { padding-right: 1.5rem !important; }
+.divide-y-5 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-5 > :not(template):not(:first-child) { padding-top: 2rem !important; }
+.divide-y-5 > :not(template):not(:last-child) { padding-bottom: 2rem !important; }
+.divide-x-5 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-5 > :not(template):not(:first-child) { padding-left: 2rem !important; }
+.divide-x-5 > :not(template):not(:last-child) { padding-right: 2rem !important; }
+.divide-y-6 > :not(template) ~ :not(template) { border-top: var(--border-width) solid var(--border-color) !important; }
+.divide-y-6 > :not(template):not(:first-child) { padding-top: 2.5rem !important; }
+.divide-y-6 > :not(template):not(:last-child) { padding-bottom: 2.5rem !important; }
+.divide-x-6 > :not(template) ~ :not(template) { border-left: var(--border-width) solid var(--border-color) !important; }
+.divide-x-6 > :not(template):not(:first-child) { padding-left: 2.5rem !important; }
+.divide-x-6 > :not(template):not(:last-child) { padding-right: 2.5rem !important; }
+
+/* ---------------- 4. display, flex direction, alignment and text alignment */
+/* These five sets come at every breakpoint as well, .d-md-flex, .flex-lg-row,
+   .text-md-end, since they are what a page changes as the window narrows. The
+   rest do not. */
+
+.d-none { display: none !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-block { display: block !important; }
+.d-grid { display: grid !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-row-reverse { flex-direction: row-reverse !important; }
+.flex-column-reverse { flex-direction: column-reverse !important; }
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+.justify-content-evenly { justify-content: space-evenly !important; }
+.align-items-start { align-items: flex-start !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-center { align-items: center !important; }
+.align-items-baseline { align-items: baseline !important; }
+.align-items-stretch { align-items: stretch !important; }
+.text-start { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-end { text-align: right !important; }
+
+@media (min-width: 576px) {
+  .d-sm-none { display: none !important; }
+  .d-sm-inline { display: inline !important; }
+  .d-sm-inline-block { display: inline-block !important; }
+  .d-sm-block { display: block !important; }
+  .d-sm-grid { display: grid !important; }
+  .d-sm-flex { display: flex !important; }
+  .d-sm-inline-flex { display: inline-flex !important; }
+  .flex-sm-row { flex-direction: row !important; }
+  .flex-sm-column { flex-direction: column !important; }
+  .flex-sm-row-reverse { flex-direction: row-reverse !important; }
+  .flex-sm-column-reverse { flex-direction: column-reverse !important; }
+  .justify-content-sm-start { justify-content: flex-start !important; }
+  .justify-content-sm-end { justify-content: flex-end !important; }
+  .justify-content-sm-center { justify-content: center !important; }
+  .justify-content-sm-between { justify-content: space-between !important; }
+  .justify-content-sm-around { justify-content: space-around !important; }
+  .justify-content-sm-evenly { justify-content: space-evenly !important; }
+  .align-items-sm-start { align-items: flex-start !important; }
+  .align-items-sm-end { align-items: flex-end !important; }
+  .align-items-sm-center { align-items: center !important; }
+  .align-items-sm-baseline { align-items: baseline !important; }
+  .align-items-sm-stretch { align-items: stretch !important; }
+  .text-sm-start { text-align: left !important; }
+  .text-sm-center { text-align: center !important; }
+  .text-sm-end { text-align: right !important; }
+}
+
+@media (min-width: 768px) {
+  .d-md-none { display: none !important; }
+  .d-md-inline { display: inline !important; }
+  .d-md-inline-block { display: inline-block !important; }
+  .d-md-block { display: block !important; }
+  .d-md-grid { display: grid !important; }
+  .d-md-flex { display: flex !important; }
+  .d-md-inline-flex { display: inline-flex !important; }
+  .flex-md-row { flex-direction: row !important; }
+  .flex-md-column { flex-direction: column !important; }
+  .flex-md-row-reverse { flex-direction: row-reverse !important; }
+  .flex-md-column-reverse { flex-direction: column-reverse !important; }
+  .justify-content-md-start { justify-content: flex-start !important; }
+  .justify-content-md-end { justify-content: flex-end !important; }
+  .justify-content-md-center { justify-content: center !important; }
+  .justify-content-md-between { justify-content: space-between !important; }
+  .justify-content-md-around { justify-content: space-around !important; }
+  .justify-content-md-evenly { justify-content: space-evenly !important; }
+  .align-items-md-start { align-items: flex-start !important; }
+  .align-items-md-end { align-items: flex-end !important; }
+  .align-items-md-center { align-items: center !important; }
+  .align-items-md-baseline { align-items: baseline !important; }
+  .align-items-md-stretch { align-items: stretch !important; }
+  .text-md-start { text-align: left !important; }
+  .text-md-center { text-align: center !important; }
+  .text-md-end { text-align: right !important; }
+}
+
+@media (min-width: 992px) {
+  .d-lg-none { display: none !important; }
+  .d-lg-inline { display: inline !important; }
+  .d-lg-inline-block { display: inline-block !important; }
+  .d-lg-block { display: block !important; }
+  .d-lg-grid { display: grid !important; }
+  .d-lg-flex { display: flex !important; }
+  .d-lg-inline-flex { display: inline-flex !important; }
+  .flex-lg-row { flex-direction: row !important; }
+  .flex-lg-column { flex-direction: column !important; }
+  .flex-lg-row-reverse { flex-direction: row-reverse !important; }
+  .flex-lg-column-reverse { flex-direction: column-reverse !important; }
+  .justify-content-lg-start { justify-content: flex-start !important; }
+  .justify-content-lg-end { justify-content: flex-end !important; }
+  .justify-content-lg-center { justify-content: center !important; }
+  .justify-content-lg-between { justify-content: space-between !important; }
+  .justify-content-lg-around { justify-content: space-around !important; }
+  .justify-content-lg-evenly { justify-content: space-evenly !important; }
+  .align-items-lg-start { align-items: flex-start !important; }
+  .align-items-lg-end { align-items: flex-end !important; }
+  .align-items-lg-center { align-items: center !important; }
+  .align-items-lg-baseline { align-items: baseline !important; }
+  .align-items-lg-stretch { align-items: stretch !important; }
+  .text-lg-start { text-align: left !important; }
+  .text-lg-center { text-align: center !important; }
+  .text-lg-end { text-align: right !important; }
+}
+
+@media (min-width: 1200px) {
+  .d-xl-none { display: none !important; }
+  .d-xl-inline { display: inline !important; }
+  .d-xl-inline-block { display: inline-block !important; }
+  .d-xl-block { display: block !important; }
+  .d-xl-grid { display: grid !important; }
+  .d-xl-flex { display: flex !important; }
+  .d-xl-inline-flex { display: inline-flex !important; }
+  .flex-xl-row { flex-direction: row !important; }
+  .flex-xl-column { flex-direction: column !important; }
+  .flex-xl-row-reverse { flex-direction: row-reverse !important; }
+  .flex-xl-column-reverse { flex-direction: column-reverse !important; }
+  .justify-content-xl-start { justify-content: flex-start !important; }
+  .justify-content-xl-end { justify-content: flex-end !important; }
+  .justify-content-xl-center { justify-content: center !important; }
+  .justify-content-xl-between { justify-content: space-between !important; }
+  .justify-content-xl-around { justify-content: space-around !important; }
+  .justify-content-xl-evenly { justify-content: space-evenly !important; }
+  .align-items-xl-start { align-items: flex-start !important; }
+  .align-items-xl-end { align-items: flex-end !important; }
+  .align-items-xl-center { align-items: center !important; }
+  .align-items-xl-baseline { align-items: baseline !important; }
+  .align-items-xl-stretch { align-items: stretch !important; }
+  .text-xl-start { text-align: left !important; }
+  .text-xl-center { text-align: center !important; }
+  .text-xl-end { text-align: right !important; }
+}
+
+@media (min-width: 1400px) {
+  .d-xxl-none { display: none !important; }
+  .d-xxl-inline { display: inline !important; }
+  .d-xxl-inline-block { display: inline-block !important; }
+  .d-xxl-block { display: block !important; }
+  .d-xxl-grid { display: grid !important; }
+  .d-xxl-flex { display: flex !important; }
+  .d-xxl-inline-flex { display: inline-flex !important; }
+  .flex-xxl-row { flex-direction: row !important; }
+  .flex-xxl-column { flex-direction: column !important; }
+  .flex-xxl-row-reverse { flex-direction: row-reverse !important; }
+  .flex-xxl-column-reverse { flex-direction: column-reverse !important; }
+  .justify-content-xxl-start { justify-content: flex-start !important; }
+  .justify-content-xxl-end { justify-content: flex-end !important; }
+  .justify-content-xxl-center { justify-content: center !important; }
+  .justify-content-xxl-between { justify-content: space-between !important; }
+  .justify-content-xxl-around { justify-content: space-around !important; }
+  .justify-content-xxl-evenly { justify-content: space-evenly !important; }
+  .align-items-xxl-start { align-items: flex-start !important; }
+  .align-items-xxl-end { align-items: flex-end !important; }
+  .align-items-xxl-center { align-items: center !important; }
+  .align-items-xxl-baseline { align-items: baseline !important; }
+  .align-items-xxl-stretch { align-items: stretch !important; }
+  .text-xxl-start { text-align: left !important; }
+  .text-xxl-center { text-align: center !important; }
+  .text-xxl-end { text-align: right !important; }
+}
+
+/* ----------------------------------------------------------------- 5. flex */
+
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-fill { flex: 1 1 auto !important; }
+.flex-grow-0 { flex-grow: 0 !important; }
+.flex-grow-1 { flex-grow: 1 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+.flex-shrink-1 { flex-shrink: 1 !important; }
+.align-self-start { align-self: flex-start !important; }
+.align-self-end { align-self: flex-end !important; }
+.align-self-center { align-self: center !important; }
+.align-self-baseline { align-self: baseline !important; }
+.align-self-stretch { align-self: stretch !important; }
+.align-self-auto { align-self: auto !important; }
+.align-content-start { align-content: flex-start !important; }
+.align-content-end { align-content: flex-end !important; }
+.align-content-center { align-content: center !important; }
+.align-content-between { align-content: space-between !important; }
+.align-content-around { align-content: space-around !important; }
+.align-content-stretch { align-content: stretch !important; }
+.order-first { order: -1 !important; }
+.order-last { order: 6 !important; }
+.order-0 { order: 0 !important; }
+.order-1 { order: 1 !important; }
+.order-2 { order: 2 !important; }
+.order-3 { order: 3 !important; }
+.order-4 { order: 4 !important; }
+.order-5 { order: 5 !important; }
+
+.gap-0 { gap: 0 !important; }
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 1rem !important; }
+.gap-4 { gap: 1.5rem !important; }
+.gap-5 { gap: 2rem !important; }
+.gap-6 { gap: 2.5rem !important; }
+.row-gap-0 { row-gap: 0 !important; }
+.row-gap-1 { row-gap: 0.25rem !important; }
+.row-gap-2 { row-gap: 0.5rem !important; }
+.row-gap-3 { row-gap: 1rem !important; }
+.row-gap-4 { row-gap: 1.5rem !important; }
+.row-gap-5 { row-gap: 2rem !important; }
+.row-gap-6 { row-gap: 2.5rem !important; }
+.column-gap-0 { column-gap: 0 !important; }
+.column-gap-1 { column-gap: 0.25rem !important; }
+.column-gap-2 { column-gap: 0.5rem !important; }
+.column-gap-3 { column-gap: 1rem !important; }
+.column-gap-4 { column-gap: 1.5rem !important; }
+.column-gap-5 { column-gap: 2rem !important; }
+.column-gap-6 { column-gap: 2.5rem !important; }
+
+/* -------------------------------------------------------------- 6. spacing */
+/* Margin (m) and padding (p): all sides, t top, b bottom, s start (left), e end
+   (right), x across, y down; the spacer scale, and auto for a margin. */
+
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 0.25rem !important; }
+.m-2 { margin: 0.5rem !important; }
+.m-3 { margin: 1rem !important; }
+.m-4 { margin: 1.5rem !important; }
+.m-5 { margin: 2rem !important; }
+.m-6 { margin: 2.5rem !important; }
+.m-auto { margin: auto !important; }
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.mt-5 { margin-top: 2rem !important; }
+.mt-6 { margin-top: 2.5rem !important; }
+.mt-auto { margin-top: auto !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 2rem !important; }
+.mb-6 { margin-bottom: 2.5rem !important; }
+.mb-auto { margin-bottom: auto !important; }
+.ms-0 { margin-left: 0 !important; }
+.ms-1 { margin-left: 0.25rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
+.ms-3 { margin-left: 1rem !important; }
+.ms-4 { margin-left: 1.5rem !important; }
+.ms-5 { margin-left: 2rem !important; }
+.ms-6 { margin-left: 2.5rem !important; }
+.ms-auto { margin-left: auto !important; }
+.me-0 { margin-right: 0 !important; }
+.me-1 { margin-right: 0.25rem !important; }
+.me-2 { margin-right: 0.5rem !important; }
+.me-3 { margin-right: 1rem !important; }
+.me-4 { margin-right: 1.5rem !important; }
+.me-5 { margin-right: 2rem !important; }
+.me-6 { margin-right: 2.5rem !important; }
+.me-auto { margin-right: auto !important; }
+.mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+.mx-1 { margin-left: 0.25rem !important; margin-right: 0.25rem !important; }
+.mx-2 { margin-left: 0.5rem !important; margin-right: 0.5rem !important; }
+.mx-3 { margin-left: 1rem !important; margin-right: 1rem !important; }
+.mx-4 { margin-left: 1.5rem !important; margin-right: 1.5rem !important; }
+.mx-5 { margin-left: 2rem !important; margin-right: 2rem !important; }
+.mx-6 { margin-left: 2.5rem !important; margin-right: 2.5rem !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+.my-1 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
+.my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+.my-3 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+.my-4 { margin-top: 1.5rem !important; margin-bottom: 1.5rem !important; }
+.my-5 { margin-top: 2rem !important; margin-bottom: 2rem !important; }
+.my-6 { margin-top: 2.5rem !important; margin-bottom: 2.5rem !important; }
+.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-5 { padding: 2rem !important; }
+.p-6 { padding: 2.5rem !important; }
+.pt-0 { padding-top: 0 !important; }
+.pt-1 { padding-top: 0.25rem !important; }
+.pt-2 { padding-top: 0.5rem !important; }
+.pt-3 { padding-top: 1rem !important; }
+.pt-4 { padding-top: 1.5rem !important; }
+.pt-5 { padding-top: 2rem !important; }
+.pt-6 { padding-top: 2.5rem !important; }
+.pb-0 { padding-bottom: 0 !important; }
+.pb-1 { padding-bottom: 0.25rem !important; }
+.pb-2 { padding-bottom: 0.5rem !important; }
+.pb-3 { padding-bottom: 1rem !important; }
+.pb-4 { padding-bottom: 1.5rem !important; }
+.pb-5 { padding-bottom: 2rem !important; }
+.pb-6 { padding-bottom: 2.5rem !important; }
+.ps-0 { padding-left: 0 !important; }
+.ps-1 { padding-left: 0.25rem !important; }
+.ps-2 { padding-left: 0.5rem !important; }
+.ps-3 { padding-left: 1rem !important; }
+.ps-4 { padding-left: 1.5rem !important; }
+.ps-5 { padding-left: 2rem !important; }
+.ps-6 { padding-left: 2.5rem !important; }
+.pe-0 { padding-right: 0 !important; }
+.pe-1 { padding-right: 0.25rem !important; }
+.pe-2 { padding-right: 0.5rem !important; }
+.pe-3 { padding-right: 1rem !important; }
+.pe-4 { padding-right: 1.5rem !important; }
+.pe-5 { padding-right: 2rem !important; }
+.pe-6 { padding-right: 2.5rem !important; }
+.px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-3 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-4 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.px-5 { padding-left: 2rem !important; padding-right: 2rem !important; }
+.px-6 { padding-left: 2.5rem !important; padding-right: 2.5rem !important; }
+.py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-3 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.py-5 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+.py-6 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+
+/* ----------------------------------------------------------------- 7. text */
+/* Colours are the theme's own, so they follow light and dark and the chosen
+   primary. .text-muted is Tabler's name for .text-secondary. .tabular-nums gives
+   each digit one width, so a column of amounts lines up. */
+
+.text-wrap { white-space: normal !important; }
+.text-nowrap { white-space: nowrap !important; }
+.text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text-break { word-wrap: break-word !important; word-break: break-word !important; }
+.text-lowercase { text-transform: lowercase !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+.text-decoration-none { text-decoration: none !important; }
+.text-decoration-underline { text-decoration: underline !important; }
+.fw-normal { font-weight: var(--font-weight-normal) !important; }
+.fw-medium { font-weight: var(--font-weight-medium) !important; }
+.fw-bold { font-weight: var(--font-weight-bold) !important; }
+.fst-italic { font-style: italic !important; }
+.fst-normal { font-style: normal !important; }
+.font-monospace { font-family: var(--font-monospace) !important; }
+.tabular-nums { font-variant-numeric: tabular-nums !important; }
+.small { font-size: 0.8125rem !important; }
+.lh-1 { line-height: 1 !important; }
+.lh-base { line-height: var(--line-height-base) !important; }
+
+.text-reset { color: inherit !important; }
+.text-body { color: var(--body-color) !important; }
+.text-secondary, .text-muted { color: var(--secondary) !important; }
+.text-primary { color: var(--primary) !important; }
+.text-success { color: var(--success) !important; }
+.text-info { color: var(--info) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+
+/* --------------------------------------------------------------- 8. sizing */
+
+.w-25 { width: 25% !important; }
+.w-50 { width: 50% !important; }
+.w-75 { width: 75% !important; }
+.w-100 { width: 100% !important; }
+.w-auto { width: auto !important; }
+.h-25 { height: 25% !important; }
+.h-50 { height: 50% !important; }
+.h-75 { height: 75% !important; }
+.h-100 { height: 100% !important; }
+.h-auto { height: auto !important; }
+.mw-100 { max-width: 100% !important; }
+.mh-100 { max-height: 100% !important; }
+.min-w-0 { min-width: 0 !important; }
+
+/* -------------------------------------------------------------- 9. borders */
+
+.border { border: var(--border-width) solid var(--border-color) !important; }
+.border-top { border-top: var(--border-width) solid var(--border-color) !important; }
+.border-bottom { border-bottom: var(--border-width) solid var(--border-color) !important; }
+.border-start { border-left: var(--border-width) solid var(--border-color) !important; }
+.border-end { border-right: var(--border-width) solid var(--border-color) !important; }
+.border-0 { border: 0 !important; }
+.border-top-0 { border-top: 0 !important; }
+.border-bottom-0 { border-bottom: 0 !important; }
+.border-start-0 { border-left: 0 !important; }
+.border-end-0 { border-right: 0 !important; }
+.rounded { border-radius: var(--border-radius) !important; }
+.rounded-0 { border-radius: 0 !important; }
+.rounded-1 { border-radius: var(--border-radius-sm) !important; }
+.rounded-2 { border-radius: var(--border-radius) !important; }
+.rounded-3 { border-radius: var(--border-radius-lg) !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-pill { border-radius: var(--border-radius-pill) !important; }
+
+/* ----------------------------------- 10. position, overflow and visibility */
+/* .visually-hidden keeps words for a screen reader that the eye gets another
+   way; -focusable shows them again when they take focus, for a skip link. */
+
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-sticky { position: sticky !important; }
+.top-0 { top: 0 !important; }
+.bottom-0 { bottom: 0 !important; }
+.start-0 { left: 0 !important; }
+.end-0 { right: 0 !important; }
+.overflow-auto { overflow: auto !important; }
+.overflow-hidden { overflow: hidden !important; }
+.overflow-visible { overflow: visible !important; }
+.invisible { visibility: hidden !important; }
+.visible { visibility: visible !important; }
+
+.visually-hidden,
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ------------------------------------------------------------- 11. colour */
+/* Tabler's colour utilities: a background in any semantic colour or hue of the
+   palette (.bg-success, .bg-orange), its pale tint with the hue as the text's
+   colour (.bg-orange-lt, opaque, so it hides what is behind it), a hue for the
+   text (.text-orange), and the text that
+   reads on a filled semantic background (.text-primary-fg). For a card's status
+   strip, a ribbon, an avatar or its status dot, a filled card. */
+
+.bg-primary { background-color: var(--primary) !important; }
+.bg-secondary { background-color: var(--secondary) !important; }
+.bg-success { background-color: var(--success) !important; }
+.bg-info { background-color: var(--info) !important; }
+.bg-warning { background-color: var(--warning) !important; }
+.bg-danger { background-color: var(--danger) !important; }
+.bg-blue { background-color: var(--blue) !important; }
+.bg-azure { background-color: var(--azure) !important; }
+.bg-indigo { background-color: var(--indigo) !important; }
+.bg-purple { background-color: var(--purple) !important; }
+.bg-pink { background-color: var(--pink) !important; }
+.bg-red { background-color: var(--red) !important; }
+.bg-orange { background-color: var(--orange) !important; }
+.bg-yellow { background-color: var(--yellow) !important; }
+.bg-lime { background-color: var(--lime) !important; }
+.bg-green { background-color: var(--green) !important; }
+.bg-teal { background-color: var(--teal) !important; }
+.bg-cyan { background-color: var(--cyan) !important; }
+
+.bg-primary-lt { color: var(--primary) !important; background-color: color-mix(in srgb, var(--primary) 10%, var(--bg-surface)) !important; }
+.bg-success-lt { color: var(--success) !important; background-color: color-mix(in srgb, var(--success) 10%, var(--bg-surface)) !important; }
+.bg-info-lt { color: var(--info) !important; background-color: color-mix(in srgb, var(--info) 10%, var(--bg-surface)) !important; }
+.bg-warning-lt { color: var(--warning) !important; background-color: color-mix(in srgb, var(--warning) 10%, var(--bg-surface)) !important; }
+.bg-danger-lt { color: var(--danger) !important; background-color: color-mix(in srgb, var(--danger) 10%, var(--bg-surface)) !important; }
+.bg-blue-lt { color: var(--blue) !important; background-color: color-mix(in srgb, var(--blue) 10%, var(--bg-surface)) !important; }
+.bg-azure-lt { color: var(--azure) !important; background-color: color-mix(in srgb, var(--azure) 10%, var(--bg-surface)) !important; }
+.bg-indigo-lt { color: var(--indigo) !important; background-color: color-mix(in srgb, var(--indigo) 10%, var(--bg-surface)) !important; }
+.bg-purple-lt { color: var(--purple) !important; background-color: color-mix(in srgb, var(--purple) 10%, var(--bg-surface)) !important; }
+.bg-pink-lt { color: var(--pink) !important; background-color: color-mix(in srgb, var(--pink) 10%, var(--bg-surface)) !important; }
+.bg-red-lt { color: var(--red) !important; background-color: color-mix(in srgb, var(--red) 10%, var(--bg-surface)) !important; }
+.bg-orange-lt { color: var(--orange) !important; background-color: color-mix(in srgb, var(--orange) 10%, var(--bg-surface)) !important; }
+.bg-yellow-lt { color: var(--yellow) !important; background-color: color-mix(in srgb, var(--yellow) 10%, var(--bg-surface)) !important; }
+.bg-lime-lt { color: var(--lime) !important; background-color: color-mix(in srgb, var(--lime) 10%, var(--bg-surface)) !important; }
+.bg-green-lt { color: var(--green) !important; background-color: color-mix(in srgb, var(--green) 10%, var(--bg-surface)) !important; }
+.bg-teal-lt { color: var(--teal) !important; background-color: color-mix(in srgb, var(--teal) 10%, var(--bg-surface)) !important; }
+.bg-cyan-lt { color: var(--cyan) !important; background-color: color-mix(in srgb, var(--cyan) 10%, var(--bg-surface)) !important; }
+.bg-secondary-lt { color: var(--secondary) !important; background-color: var(--bg-surface-tertiary) !important; }
+
+.text-blue { color: var(--blue) !important; }
+.text-azure { color: var(--azure) !important; }
+.text-indigo { color: var(--indigo) !important; }
+.text-purple { color: var(--purple) !important; }
+.text-pink { color: var(--pink) !important; }
+.text-red { color: var(--red) !important; }
+.text-orange { color: var(--orange) !important; }
+.text-yellow { color: var(--yellow) !important; }
+.text-lime { color: var(--lime) !important; }
+.text-green { color: var(--green) !important; }
+.text-teal { color: var(--teal) !important; }
+.text-cyan { color: var(--cyan) !important; }
+
+.text-primary-fg { color: var(--primary-fg) !important; }
+.text-success-fg { color: var(--success-fg) !important; }
+.text-info-fg { color: var(--info-fg) !important; }
+.text-warning-fg { color: var(--warning-fg) !important; }
+.text-danger-fg { color: var(--danger-fg) !important; }
+.text-secondary-fg { color: var(--text-inverted) !important; }
+
+.bg-surface { background-color: var(--bg-surface) !important; }
+.bg-surface-secondary { background-color: var(--bg-surface-secondary) !important; }
+.bg-surface-tertiary { background-color: var(--bg-surface-tertiary) !important; }
+.bg-transparent { background-color: transparent !important; }

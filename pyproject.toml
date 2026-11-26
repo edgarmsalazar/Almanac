@@ -32,7 +32,7 @@ almanac = "almanac.plugin:AlmanacPlugin"
 where = ["source"]
 
 [tool.setuptools.package-data]
-almanac = ["theme/*.html", "theme/*.yml", "theme/assets/**/*", "icons/*"]
+almanac = ["theme/*.html", "theme/*.yml", "theme/assets/**/*", "ui/**/*", "icons/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

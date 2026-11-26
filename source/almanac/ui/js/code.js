@@ -24,7 +24,8 @@
  * Copy: Tabler's clipboard contract (core/js/src/clipboard.ts): a button with
  * data-copy naming what to copy by selector, holding a .clipboard-label and a
  * .clipboard-feedback, carries .copied for two seconds after. settings.js does the
- * copying, from file:// too.
+ * copying, from file:// too. The copy buttons are found when clicked, so one a
+ * page adds later works; the colours and headers are made once, at load.
  */
 (function () {
   'use strict';
@@ -149,15 +150,17 @@
       }
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function (button) {
-      button.addEventListener('click', function () {
-        var source = document.querySelector(button.getAttribute('data-copy'));
-        if (!source || !window.Almanac) return;
-        window.Almanac.copyText(source.textContent, function () {
-          button.classList.add('copied');
-          setTimeout(function () { button.classList.remove('copied'); }, 2000);
-        });
-      });
+  });
+
+  /* Taken on the document, so a copy button added after load copies too. */
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest && event.target.closest('[data-copy]');
+    var source = button && document.querySelector(button.getAttribute('data-copy'));
+    if (!source || !window.Almanac) return;
+    window.Almanac.copyText(source.textContent, function () {
+      button.classList.add('copied');
+      clearTimeout(button._almanacCopied);
+      button._almanacCopied = setTimeout(function () { button.classList.remove('copied'); }, 2000);
     });
   });
 })();

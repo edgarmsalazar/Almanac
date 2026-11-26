@@ -55,7 +55,7 @@ Name `pymdownx.tabbed` with `alternate_style: true` in `mkdocs.yml`. A tab holds
 
 ## Buttons
 
-*A bordered button, the primary one filled, and an icon button.*
+*A bordered button, the primary one filled, and an icon button. [Forms and actions](forms.md) has the other colours, sizes and groups.*
 
 ```example
 <button class="btn" type="button">Draw again</button>

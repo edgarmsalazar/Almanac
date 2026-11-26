@@ -83,6 +83,14 @@
       "example": "`window.ALMANAC_DATA.showcase = {pages: 4}` fills every place a page names showcase.pages",
       "note": "A script rather than JSON, so a site opened from disk reads it with no server.",
       "added": "2026-10-20"
+    },
+    {
+      "term": "kit",
+      "group": "site",
+      "definition": "The stylesheets, scripts and fonts every Almanac page loads: a site serves them under almanac/, and a project of pages written by hand holds its own copy.",
+      "form": "`scripts/export-ui.sh <project>`",
+      "see": ["data script"],
+      "added": "2026-11-26"
     }
   ]
 }
