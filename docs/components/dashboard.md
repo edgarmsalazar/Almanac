@@ -41,12 +41,14 @@ description: "Pieces for a page of figures, from Portal: canvas charts, KPI card
       { type: 'bar', label: 'Saved', y: [300, 150, 420, 380, 260, 350] },
       { type: 'line', label: 'Share of income', y: [0.09, 0.05, 0.13, 0.12, 0.08, 0.11], axis: 'right' }
     ],
-    yAxis: { title: 'Saved', min: 0 },
+    yAxis: { title: 'Saved', tickFormat: 'currency', min: 0 },
     yAxisRight: { title: 'Of income', tickFormat: 'percent', min: 0 },
     offerTable: true
   });
 </script>
 ```
+
+An axis's `tickFormat` is `percent` for a rate from 0 to 1, or `currency` for money: compact on the ticks (`$1.5k`), in full in the readout and the table (`$350.00`). The currency is the chart's `currency: 'EUR'`, else the page's `<html data-currency>`, else US dollars.
 
 ## KPI cards
 

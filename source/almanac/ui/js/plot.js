@@ -27,7 +27,9 @@
  *       ],
  *       xAxis: { title: 'Month', rotate: false, hideLabels: false, unit: '' },
  *       yAxis: { title: 'Amount', tickFormat: 'percent', min: 0, max: 1, scale: 'log' },
+ *                                    // tickFormat 'percent' (a 0-1 rate) or 'currency'
  *       yAxisRight: { … },           // for a series with axis: 'right'
+ *       currency: 'EUR',             // for tickFormat 'currency'; else <html data-currency>, else USD
  *       refLines: [{ axis: 'left', value: 1000, label: 'Limit', color: '--danger', dashed: true }],
  *       views: [{ label: 'By month', series: [...] }, …],  // alternative series sets, toggled
  *       sparkline: false,            // the line alone, for a KPI card's foot
@@ -185,10 +187,61 @@
 
   /* 'percent' labels a 0-1 axis as 0-100 %: the values stay rates, only the
      label changes, so a tooltip or a reference line reads the same numbers. */
-  function formatTick(value, format) {
+  function formatTick(value, format, currency) {
     if (format === 'percent') return String(Math.round(value * 1000) / 10) + '%';
+    if (format === 'currency') return moneyCompact(value, currency);
     if (Math.abs(value) >= 1000) return value / 1000 + 'k';
     return String(Math.round(value * 100) / 100);
+  }
+
+  /* 'currency' labels an axis in money: compact on a tick ($800, $1.5k, $1.2M),
+     in full in the readout and the table ($1,630.00, or no decimals for yen).
+     The currency is the chart's own (config.currency), else the page's
+     <html data-currency>, else US dollars. Intl gives the symbol and where it
+     goes, narrow so dollars read $ rather than US$; one formatter per currency. */
+  var moneyFormats = {};
+  function money(code) {
+    code = String(code || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
+    if (!(code in moneyFormats)) {
+      var made = null;
+      try {
+        made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' });
+      } catch (error) {
+        try {
+          made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code });
+        } catch (again) {
+          made = null;
+        }
+      }
+      moneyFormats[code] = made;
+    }
+    return { code: code, format: moneyFormats[code] };
+  }
+
+  function moneyFull(value, currency) {
+    var m = money(currency);
+    if (m.format) return m.format.format(value);
+    return value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + m.code;
+  }
+
+  function moneyCompact(value, currency) {
+    var size = Math.abs(value);
+    var round = function (n) { return String(Math.round(n * 100) / 100); };
+    var digits = size >= 1e6 ? round(size / 1e6) + 'M' : size >= 1e3 ? round(size / 1e3) + 'k' : round(size);
+    var m = money(currency);
+    if (!m.format || !m.format.formatToParts) return (value < 0 ? '-' : '') + digits + ' ' + m.code;
+    /* The currency's own layout, sign and symbol, with the digits swapped in. */
+    var text = '';
+    var placed = false;
+    m.format.formatToParts(value < 0 ? -1 : 1).forEach(function (part) {
+      if (/^(integer|group|decimal|fraction)$/.test(part.type)) {
+        if (!placed) text += digits;
+        placed = true;
+      } else {
+        text += part.value;
+      }
+    });
+    return text;
   }
 
   /* A colour in a config is a token name ('--chart-3'), never a literal, so it
@@ -345,12 +398,26 @@
       bottom: 14 + labelBand + (xAxis.title ? 16 : 0),
       left: 44 + (yAxis.title ? 16 : 0)
     };
-    var plotW = width - pad.left - pad.right;
     var plotH = height - pad.top - pad.bottom;
-    if (plotW <= 0 || plotH <= 0) return null;
+    if (plotH <= 0) return null;
 
     var left = spark ? sparkScale(visible, config.refLines) : scaleFor(visible, 'left', yAxis, plotH);
     var right = hasRight ? scaleFor(visible, 'right', yAxisRight, plotH) : null;
+
+    /* A tick label wider than its margin ("CHF 1.5k") widens the margin. */
+    function widest(scale, format) {
+      var most = 0;
+      scale.ticks.forEach(function (tick) {
+        most = Math.max(most, ctx.measureText(formatTick(tick, format, config.currency)).width);
+      });
+      return most;
+    }
+    if (!spark) {
+      pad.left += Math.max(0, widest(left, yAxis.tickFormat) + 10 - 44);
+      if (right) pad.right += Math.max(0, widest(right, yAxisRight.tickFormat) + 10 - 48);
+    }
+    var plotW = width - pad.left - pad.right;
+    if (plotW <= 0) return null;
 
     function yFor(value, scale) {
       /* On a log axis a value at or under the floor — a zero count — sits on it:
@@ -396,14 +463,14 @@
       ctx.moveTo(pad.left, y);
       ctx.lineTo(pad.left + plotW, y);
       ctx.stroke();
-      ctx.fillText(formatTick(tick, yAxis.tickFormat), pad.left - 6, y);
+      ctx.fillText(formatTick(tick, yAxis.tickFormat, config.currency), pad.left - 6, y);
     });
 
     if (right) {
       ctx.textAlign = 'left';
       right.ticks.forEach(function (tick) {
         ctx.fillText(
-          formatTick(tick, yAxisRight.tickFormat),
+          formatTick(tick, yAxisRight.tickFormat, config.currency),
           pad.left + plotW + 6,
           Math.round(yFor(tick, right))
         );
@@ -1423,7 +1490,7 @@
           text: function (i) {
             var v = values[i];
             if (!isValue(v)) return '—';
-            return isCount ? Math.round(v).toLocaleString() : formatValue(v, axis.tickFormat);
+            return isCount ? Math.round(v).toLocaleString() : formatValue(v, axis.tickFormat, cfg.currency);
           },
           number: true
         });
@@ -1553,11 +1620,12 @@
 
   /* ------------------------------------------------------------- readout */
 
-  /* A value as its axis labels it: a rate as a percentage, anything else to one
-     decimal (none past 100, where the decimal is noise). */
-  function formatValue(v, format) {
+  /* A value as its axis labels it: a rate as a percentage, money in full,
+     anything else to one decimal (none past 100, where the decimal is noise). */
+  function formatValue(v, format, currency) {
     if (!isValue(v)) return '\u2014';
     if (format === 'percent') return (Math.round(v * 1000) / 10).toFixed(1) + '%';
+    if (format === 'currency') return moneyFull(v, currency);
     /* A count is a whole number and reads as one: "12", not "12.0". */
     if (Number.isInteger(v)) return v.toLocaleString();
     return Math.abs(v) >= 100 ? Math.round(v).toLocaleString() : (Math.round(v * 10) / 10).toFixed(1);
@@ -1565,25 +1633,25 @@
 
   /* One series' line in the readout at index i: its value, its interval, its
      count. A box reads as its median with the two spans around it. */
-  function readoutText(s, i, format) {
+  function readoutText(s, i, format, currency) {
     var text;
     if (s.type === 'box') {
       var median = (s.median || [])[i];
       if (!isValue(median)) return null;
-      text = 'median ' + formatValue(median, format) +
-        ' \u00b7 P25\u2013P75 ' + formatValue((s.p25 || [])[i], format) + '\u2013' + formatValue((s.p75 || [])[i], format) +
-        ' \u00b7 P10\u2013P90 ' + formatValue((s.p10 || [])[i], format) + '\u2013' + formatValue((s.p90 || [])[i], format);
+      text = 'median ' + formatValue(median, format, currency) +
+        ' \u00b7 P25\u2013P75 ' + formatValue((s.p25 || [])[i], format, currency) + '\u2013' + formatValue((s.p75 || [])[i], format, currency) +
+        ' \u00b7 P10\u2013P90 ' + formatValue((s.p10 || [])[i], format, currency) + '\u2013' + formatValue((s.p90 || [])[i], format, currency);
     } else {
       var v = (s.y || [])[i];
       if (!isValue(v)) return null;
-      text = formatValue(v, format);
+      text = formatValue(v, format, currency);
       if (s.lo && isValue(s.lo[i]) && isValue(s.hi[i])) {
-        text += ' (' + formatValue(s.lo[i], format) + '\u2013' + formatValue(s.hi[i], format) + ')';
+        text += ' (' + formatValue(s.lo[i], format, currency) + '\u2013' + formatValue(s.hi[i], format, currency) + ')';
       }
     }
     (s.bands || []).forEach(function (band) {
       if (isValue(band.lo[i]) && isValue(band.hi[i])) {
-        text += ' \u00b7 ' + band.label + ' ' + formatValue(band.lo[i], format) + '\u2013' + formatValue(band.hi[i], format);
+        text += ' \u00b7 ' + band.label + ' ' + formatValue(band.lo[i], format, currency) + '\u2013' + formatValue(band.hi[i], format, currency);
       }
     });
     if (s.n && isValue(s.n[i])) text += ' \u00b7 n = ' + Math.round(s.n[i]).toLocaleString();
@@ -1626,7 +1694,7 @@
       (cfg.series || []).forEach(function (s, index) {
         if (instance.hidden[s.label]) return;
         var axis = s.axis === 'right' ? cfg.yAxisRight || {} : cfg.yAxis || {};
-        var text = readoutText(s, i, axis.tickFormat);
+        var text = readoutText(s, i, axis.tickFormat, cfg.currency);
         if (text === null) return;
         var isLine = (s.type || 'bar') === 'line';
         rows.push({
@@ -1865,6 +1933,8 @@
           var views = viewsOf(base);
           var shown = {};
           Object.keys(base).forEach(function (key) { shown[key] = base[key]; });
+          /* A window's chart or a step keeps the whole chart's currency. */
+          if (shown.currency === undefined) shown.currency = config.currency;
           shown.series = views[Math.min(instance.view, views.length - 1)].series;
           renderViews(canvas, views, instance);
           /* A log y axis comes with its switch; the reader's choice rides on a

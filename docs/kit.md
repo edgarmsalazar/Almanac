@@ -64,7 +64,7 @@ window.ALMANAC_DATA = window.ALMANAC_DATA || {};
 window.ALMANAC_DATA.budget = { total: 1630 };
 ```
 
-`<span data-value="budget.total"></span>` then shows the number, as [Numbers from data](writing-pages.md#numbers-from-data) describes for a site. Charts take their figures from the page's own script, and the period control from a JSON block in the page.
+`<span data-value="budget.total"></span>` then shows the number, and `<span data-value="budget.total" data-format="currency"></span>` shows it as `$1,630.00`, as [Numbers from data](writing-pages.md#numbers-from-data) describes for a site. Charts take their figures from the page's own script, and the period control from a JSON block in the page.
 
 ## What only a site has
 

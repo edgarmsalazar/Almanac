@@ -12,12 +12,16 @@
  *     rows: [{ label: 'a page', caption: '…', value: 222, reference: false }],
  *     title: 'By section',         // the chart's title, centred over its plot, optional
  *     axis: 'pages',               // the axis's title, optional
- *     format: function (n) { … }   // a value as shown, optional
+ *     format: function (n) { … }   // a value as shown, optional; or 'currency'
+ *     tickFormat: function (n) { … }  // an axis tick as shown, optional, else format;
+ *                                  // 'currency' gives compact ticks ($1.5k)
+ *     currency: 'EUR',             // for 'currency'; else <html data-currency>, else USD
  *     log: { low: 0.1, high: 1e5 } // a log scale between two powers of ten, optional
  *   });
  *
  * A row marked reference is drawn in gray: something the others are measured
- * against rather than one of them.
+ * against rather than one of them. With format 'currency' a value reads in full
+ * ($1,630.00) and a tick compact ($1.5k), the symbol from Intl.
  */
 (function () {
   'use strict';
@@ -33,13 +37,49 @@
     return out;
   }
 
+  /* Money in the chart's currency: in full, or compact for a tick ($800, $1.5k,
+     $1.2M), in the currency's own layout with the digits swapped in. Narrow
+     symbols, so dollars read $ rather than US$. A code Intl does not know reads
+     as the number and the code. */
+  function money(code, compact) {
+    code = String(code || document.documentElement.getAttribute('data-currency') || 'USD').toUpperCase();
+    var made = null;
+    try {
+      made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' });
+    } catch (error) {
+      try { made = new Intl.NumberFormat('en-GB', { style: 'currency', currency: code }); } catch (again) { made = null; }
+    }
+    return function (n) {
+      if (!compact) {
+        return made ? made.format(n)
+          : n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + code;
+      }
+      var size = Math.abs(n);
+      var round = function (x) { return String(Math.round(x * 100) / 100); };
+      var digits = size >= 1e6 ? round(size / 1e6) + 'M' : size >= 1e3 ? round(size / 1e3) + 'k' : round(size);
+      if (!made || !made.formatToParts) return (n < 0 ? '-' : '') + digits + ' ' + code;
+      var text = '';
+      var placed = false;
+      made.formatToParts(n < 0 ? -1 : 1).forEach(function (part) {
+        if (/^(integer|group|decimal|fraction)$/.test(part.type)) {
+          if (!placed) text += digits;
+          placed = true;
+        } else {
+          text += part.value;
+        }
+      });
+      return text;
+    };
+  }
+
   function escape(text) {
     return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function bars(element, options) {
     var rows = options.rows;
-    var format = options.format || function (n) { return n.toLocaleString('en-GB'); };
+    var format = options.format === 'currency' ? money(options.currency, false)
+      : options.format || function (n) { return n.toLocaleString('en-GB'); };
     var top = Math.max.apply(null, rows.map(function (row) { return row.value; }));
     var scale = ticks(top);
     var end = scale[scale.length - 1];
@@ -58,7 +98,8 @@
       scale.map(function (t) { return '<span style="left: ' + at(t) + '%"></span>'; }).join('') + '</div>';
     /* Each row placed by number: the gridlines span every row's plot cell, so nothing may be
        left to auto-placement, which would push a row's plot below them. */
-    var tickFormat = options.tickFormat || format;
+    var tickFormat = options.tickFormat === 'currency' || (!options.tickFormat && options.format === 'currency')
+      ? money(options.currency, true) : options.tickFormat || format;
     rows.forEach(function (row, i) {
       var place = ' style="grid-row: ' + (first + i) + '"';
       html += '<div class="chart-label"' + place + '>' + (row.html || escape(row.label)) +

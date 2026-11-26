@@ -19,6 +19,13 @@
   box-sizing: border-box;
 }
 
+/* An element a script hides stays hidden, even a component that sets its own
+   display, such as a card, an empty state or a flex row. :root lifts it over
+   the display utilities (.d-flex), which are !important too and come later. */
+:root [hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans-serif);

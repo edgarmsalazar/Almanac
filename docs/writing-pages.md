@@ -33,7 +33,7 @@ A number the project measures is never typed into a page. The page names it by i
 <span data-value="showcase.sections"></span>
 ```
 
-That gives <span data-value="showcase.sections"></span>. `data-format` says how to show it: `number`, the default, `hex2`, `hex3` or `text`.
+That gives <span data-value="showcase.sections"></span>. `data-format` says how to show it: `number`, the default, `currency`, `hex2`, `hex3` or `text`. A `currency` value is in the element's `data-currency`, else the page's `<html data-currency>`, else US dollars, with that currency's own decimals unless `data-decimals` gives others: `data-currency="EUR"` shows 1630 as €1,630.00.
 
 ## A card in a docs page
 
