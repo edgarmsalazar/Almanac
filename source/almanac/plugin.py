@@ -44,7 +44,7 @@ STANDINGS = ("built", "designed", "drifted", "disagrees")
 ICONS = Path(__file__).parent / "icons" / "tabler-nodes-outline.json"
 # The kit, and what in it a site does not serve: the page shell to copy and the kit's own notes.
 UI = Path(__file__).parent / "ui"
-UI_UNSERVED = ("starter.html", "README.md", "VERSION")
+UI_UNSERVED = ("starter.html", "README.md", "GUIDELINES.md", "VERSION")
 ICON_ATTRIBUTES = ('viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
                    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"')
 

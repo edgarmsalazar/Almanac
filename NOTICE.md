@@ -66,6 +66,18 @@ SOFTWARE.
 
 `source/almanac/ui/vendor/katex/` holds KaTeX 0.16.11 (https://katex.org): `katex.min.js`, `katex.min.css` and its fonts in WOFF2, unchanged, under the MIT License, Copyright (c) 2013-2020 Khan Academy and other contributors. The licence is beside them as `LICENSE`. The fonts' other formats, which the stylesheet names after WOFF2, are left out.
 
+## Dropzone
+
+`source/almanac/ui/vendor/dropzone/` holds Dropzone 6.0.0-beta.2 (https://www.dropzone.dev): `dropzone-min.js` and `dropzone.css`, unchanged, under the MIT License, Copyright (c) 2021 Matias Meno. The licence is beside them as `LICENSE`.
+
+## FullCalendar
+
+`source/almanac/ui/vendor/fullcalendar/fullcalendar.min.js` is FullCalendar's standard bundle 6.1.21 (https://fullcalendar.io), `index.global.min.js` renamed, unchanged, under the MIT License, Copyright (c) 2021 Adam Shaw. The licence is beside it as `LICENSE`. FullCalendar's premium plugins, under another licence, are not carried.
+
+## HugeRTE
+
+`source/almanac/ui/vendor/hugerte/` holds HugeRTE 1.0.12 (https://hugerte.org), unchanged: the editor, its silver theme, DOM model and default icons, the oxide and oxide-dark skins with the default and dark content styles, and the lists, link and autolink plugins; its other plugins and skins are left out. It is under the MIT License, Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc. and Copyright (c) 2026 HugeRTE contributors. The licence is beside it as `license.txt`.
+
 ## Fonts
 
 Lexend, Exo 2, Barlow and Fira Code, in `source/almanac/ui/fonts/`, are under the SIL Open Font License 1.1. Each font's folder holds its licence as `OFL.txt`.

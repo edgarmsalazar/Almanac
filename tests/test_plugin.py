@@ -149,4 +149,4 @@ def test_search_script_keeps_the_entries_and_drops_the_configuration():
 def test_kit_files_serve_the_kit_but_not_its_shell_or_notes():
     served = {path.relative_to(UI).as_posix() for path in kit_files()}
     assert {"css/theme.css", "js/settings.js", "vendor/mermaid.min.js"} <= served
-    assert not served & {"starter.html", "README.md", "VERSION"}
+    assert not served & {"starter.html", "README.md", "GUIDELINES.md", "VERSION"}

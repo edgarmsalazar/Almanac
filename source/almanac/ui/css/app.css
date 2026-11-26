@@ -1,9 +1,10 @@
 /*
- * Almanac's pieces for an app page: what a page that takes input needs beyond
- * reading. Ported by hand from Tabler (https://tabler.io, MIT, Copyright (c)
- * 2020-2026 Paweł Kuna) and the Bootstrap 5 it builds on, written against
- * theme.css's tokens, with no Bootstrap JS: the behaviours are the kit's own
- * scripts, dropdown.js, toast.js and navbar.js's dialogs.
+ * Almanac's pieces for an app page: what a page written by hand reaches for
+ * beyond the site's components. Ported by hand from Tabler (https://tabler.io,
+ * MIT, Copyright (c) 2020-2026 Paweł Kuna) and the Bootstrap 5 it builds on,
+ * written against theme.css's tokens, with no Bootstrap JS: the behaviours are
+ * the kit's own scripts, dropdown.js, toast.js, popover.js, calendar.js,
+ * autosize.js and navbar.js's dialogs.
  *
  * components.css has the plain .btn, .btn-primary, .btn-sm, .btn-icon and
  * .btn-close, and .form-label, .form-hint, .form-control, .form-select,
@@ -18,6 +19,19 @@
  *   4. toast           a note in the window's corner, Almanac.toast()
  *   5. dropdown        a menu under any toggle outside the navbar
  *   6. pagination
+ *   7. card extras     footer, actions, status strip, sizes, borderless,
+ *                      active, a card as a link, stacked
+ *   8. spinner         ring, growing dot, animated dots
+ *   9. placeholder     grey blocks while content loads
+ *  10. divider         a rule with words on it
+ *  11. breadcrumb
+ *  12. avatar          initials, icon or picture; status dot; lists
+ *  13. ribbon          a banner round a card's edge
+ *  14. accordion       on native <details>
+ *  15. selectgroup     boxes and pills
+ *  16. mini calendar   a month to pick a day from (calendar.js)
+ *  17. popover         a bubble from a button (popover.js)
+ *  18. autosize        a textarea that grows (autosize.js)
  */
 
 /* -------------------------------------------------------------- 1. buttons */
@@ -1031,4 +1045,1049 @@ dialog.modal > form {
 
 @media print {
   .pagination { display: none; }
+}
+
+/* ---------------------------------------------------------- 7. card extras */
+/* Tabler's card parts and variants (ui/_cards.scss over Bootstrap's): a footer
+   for the card's buttons or a note, actions at the header's end, a coloured
+   status strip along an edge (its colour a .bg-* utility), tighter or roomier
+   padding, no border, the chosen card, a whole card as a link, and a card with
+   a second sheet behind it. */
+
+.card-footer {
+  padding: 0.75rem var(--page-padding);
+  margin-top: auto;
+  background: var(--bg-surface-secondary);
+  border-top: var(--border-width) solid var(--border-color);
+  border-radius: 0 0 calc(var(--border-radius-md) - var(--border-width)) calc(var(--border-radius-md) - var(--border-width));
+}
+
+.card-footer-transparent {
+  padding-top: 0;
+  background: transparent;
+  border-color: transparent;
+}
+
+.table-responsive + .card-footer { border-top: 0; }
+
+/* A card with a footer lays out down the page, so the footer sits at the foot
+   of a card stretched by .row-deck. */
+.card:has(> .card-footer) {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.25rem;
+  align-items: center;
+  margin: -0.5rem 0 -0.5rem auto;
+  padding-left: 0.5rem;
+}
+
+.card-actions a { text-decoration: none; }
+
+/* The strip: 2px along the top, the start or the bottom. */
+.card:has(> .card-status-top, > .card-status-start, > .card-status-bottom, > .ribbon) {
+  position: relative;
+}
+
+.card-status-top,
+.card-status-start,
+.card-status-bottom {
+  position: absolute;
+  background: var(--secondary);
+}
+
+.card-status-top {
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+.card-status-start {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  border-radius: var(--border-radius-md) 0 0 var(--border-radius-md);
+}
+
+.card-status-bottom {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+}
+
+.card-sm > .card-body { padding: 1rem; }
+
+@media (min-width: 768px) {
+  .card-lg > .card-body { padding: 2rem; }
+}
+
+@media (min-width: 992px) {
+  .card-lg > .card-body { padding: 4rem; }
+}
+
+.card-borderless,
+.card-borderless > .card-header,
+.card-borderless > .card-footer {
+  border-color: transparent;
+}
+
+.card-borderless { box-shadow: none; }
+
+.card-active {
+  background: var(--active-bg);
+  border-color: var(--primary);
+}
+
+/* A card that is one link: its text keeps its colours, and it rises under the
+   pointer — a shadow, or with .card-link-pop a lift too. */
+a.card,
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+a.card:has(> .card-footer) { display: flex; }
+
+a.card:hover,
+.card-link:hover {
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.08);
+}
+
+.card-link-pop:hover { transform: translateY(-2px); }
+
+a.card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.card-stacked {
+  position: relative;
+  margin-top: 0.25rem;
+}
+
+.card-stacked::after {
+  position: absolute;
+  top: -0.25rem;
+  right: 0.25rem;
+  left: 0.25rem;
+  height: 0.25rem;
+  content: "";
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-bottom: 0;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.card, .card-link { transition: none; }
+  .card-link-pop:hover { transform: none; }
+}
+
+/* -------------------------------------------------------------- 8. spinner */
+/* Bootstrap's spinners as Tabler has them: a turning ring or a growing dot in
+   the text's colour (a .text-* utility colours it), small with -sm; and Tabler's
+   three dots that count up after a word, "Loading…". A spinner in a button sits
+   before its label: the button's own gap spaces them. */
+
+.spinner-border,
+.spinner-grow {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: -0.125em;
+  border-radius: 50%;
+}
+
+.spinner-border {
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: almanac-spin 0.75s linear infinite;
+}
+
+.spinner-grow {
+  background-color: currentColor;
+  opacity: 0;
+  animation: almanac-grow 0.75s linear infinite;
+}
+
+.spinner-border-sm,
+.spinner-grow-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.spinner-border-sm { border-width: 1px; }
+
+@keyframes almanac-grow {
+  0% { transform: scale(0); }
+  50% { opacity: 1; transform: none; }
+}
+
+.animated-dots {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.animated-dots::after {
+  display: inline-block;
+  content: "...";
+  animation: almanac-dots 1.2s steps(4, jump-none) infinite;
+}
+
+@keyframes almanac-dots {
+  0% { transform: translateX(-100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner-border, .spinner-grow { animation-duration: 1.5s; }
+}
+
+/* ---------------------------------------------------------- 9. placeholder */
+/* Bootstrap's placeholders: grey blocks the shape of what is still loading, in
+   the text's colour faded. Width from a .col-* or .w-* class, height from the
+   text or -xs, -sm, -lg; the parent's .placeholder-glow pulses them, its
+   .placeholder-wave runs a sheen across. A .btn can be one too. */
+
+.placeholder {
+  display: inline-block;
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait;
+  background-color: currentColor;
+  border-radius: var(--border-radius);
+  opacity: 0.2;
+}
+
+.placeholder.btn::before {
+  display: inline-block;
+  content: "";
+}
+
+.placeholder.btn { background-color: var(--secondary); border-color: transparent; }
+
+
+.placeholder-xs { min-height: 0.6em; }
+.placeholder-sm { min-height: 0.8em; }
+.placeholder-lg { min-height: 1.2em; }
+
+.placeholder-glow .placeholder {
+  animation: almanac-glow 2s ease-in-out infinite;
+}
+
+@keyframes almanac-glow {
+  50% { opacity: 0.1; }
+}
+
+.placeholder-wave {
+  -webkit-mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+  mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  animation: almanac-wave 2s linear infinite;
+}
+
+@keyframes almanac-wave {
+  100% { -webkit-mask-position: -200% 0%; mask-position: -200% 0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placeholder-glow .placeholder, .placeholder-wave { animation: none; }
+}
+
+/* -------------------------------------------------- 10. divider with text */
+/* Tabler's .hr-text: a rule with words on it, centred, or at the start or the
+   end; a .text-* utility colours the words. */
+
+.hr-text {
+  display: flex;
+  align-items: center;
+  height: 1px;
+  margin: 2rem 0;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1rem;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hr-text::before,
+.hr-text::after {
+  flex: 1 1 auto;
+  height: 1px;
+  content: "";
+  background-color: var(--border-color);
+}
+
+.hr-text::before { margin-right: 0.5rem; }
+.hr-text::after { margin-left: 0.5rem; }
+
+.hr-text-start::before { content: none; }
+.hr-text-end::after { content: none; }
+
+.hr-text-spaceless { margin: -0.5rem 0; }
+.card > .hr-text { margin: 0; }
+
+/* --------------------------------------------------------- 11. breadcrumb */
+/* Bootstrap's breadcrumb as Tabler has it: the way down to the page, the page
+   itself last and bold; slashes between, or dots, arrows or bullets; links
+   quiet with -muted.
+
+     <nav aria-label="Breadcrumb"><ol class="breadcrumb">
+       <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+       <li class="breadcrumb-item active" aria-current="page">November</li>
+     </ol></nav> */
+
+.breadcrumb {
+  --breadcrumb-divider: "/";
+  --breadcrumb-link-color: var(--link-color);
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.breadcrumb-item { margin: 0; }
+
+.breadcrumb a { color: var(--breadcrumb-link-color); }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.breadcrumb-item + .breadcrumb-item { padding-left: 0.5rem; }
+
+.breadcrumb-item + .breadcrumb-item::before {
+  float: left;
+  padding-right: 0.5rem;
+  color: var(--tertiary);
+  content: var(--breadcrumb-divider);
+}
+
+.breadcrumb-item a .icon {
+  width: 1rem;
+  height: 1rem;
+  vertical-align: -0.1875rem;
+}
+
+.breadcrumb-item.active {
+  font-weight: var(--font-weight-bold);
+  color: inherit;
+}
+
+.breadcrumb-item.disabled,
+.breadcrumb-item.disabled a {
+  color: var(--disabled-color);
+  pointer-events: none;
+}
+
+.breadcrumb-muted { --breadcrumb-link-color: var(--secondary); }
+.breadcrumb-dots { --breadcrumb-divider: "·"; }
+.breadcrumb-arrows { --breadcrumb-divider: "›"; }
+.breadcrumb-bullets { --breadcrumb-divider: "•"; }
+
+/* In the header band, over the title. */
+.page-header .breadcrumb { margin-bottom: 0.25rem; font-size: 0.8125rem; }
+
+/* ------------------------------------------------------------- 12. avatar */
+/* Tabler's avatar (ui/_avatars.scss): a square or a circle holding initials,
+   an icon or a picture (a background-image), in six sizes; an empty .badge in
+   it is a status dot at its corner, coloured by a .bg-* utility, and a badge
+   with a number a count. .avatar-list sets several apart, -stacked overlaps
+   them. */
+
+.avatar {
+  --avatar-size: var(--avatar-list-size, 2.5rem);
+  --avatar-status-size: 0.75rem;
+  --avatar-font-size: 1rem;
+  --avatar-icon-size: 1.5rem;
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  font-size: var(--avatar-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  color: var(--secondary);
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: bottom;
+  user-select: none;
+  background: var(--bg-surface-secondary) no-repeat center / cover;
+  border-radius: var(--border-radius);
+  box-shadow: inset 0 0 0 1px var(--avatar-ring, color-mix(in srgb, var(--border-color) 60%, transparent));
+  transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.avatar .icon {
+  width: var(--avatar-icon-size);
+  height: var(--avatar-icon-size);
+}
+
+a.avatar { cursor: pointer; }
+a.avatar:hover { --avatar-ring: var(--primary); color: var(--primary); text-decoration: none; }
+
+.avatar .badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--border-radius-pill);
+  box-shadow: 0 0 0 calc(var(--avatar-status-size) / 4) var(--bg-surface);
+}
+
+.avatar .badge:empty {
+  width: var(--avatar-status-size);
+  height: var(--avatar-status-size);
+  padding: 0;
+}
+
+.avatar-rounded { border-radius: var(--border-radius-pill); }
+
+.avatar-xxs { --avatar-size: 1rem; --avatar-status-size: 0.25rem; --avatar-font-size: 0.5rem; --avatar-icon-size: 0.5rem; }
+.avatar-xs { --avatar-size: 1.25rem; --avatar-status-size: 0.375rem; --avatar-font-size: 0.625rem; --avatar-icon-size: 0.75rem; }
+.avatar-sm { --avatar-size: 2rem; --avatar-status-size: 0.5rem; --avatar-font-size: 0.75rem; --avatar-icon-size: 1.25rem; }
+.avatar-md { --avatar-size: 2.5rem; --avatar-status-size: 0.75rem; --avatar-font-size: 0.875rem; --avatar-icon-size: 1.5rem; }
+.avatar-lg { --avatar-size: 3rem; --avatar-status-size: 0.75rem; --avatar-font-size: 1.25rem; --avatar-icon-size: 2rem; }
+.avatar-xl { --avatar-size: 5rem; --avatar-status-size: 1rem; --avatar-font-size: 2rem; --avatar-icon-size: 3rem; }
+.avatar-2xl { --avatar-size: 7rem; --avatar-status-size: 1rem; --avatar-font-size: 3rem; --avatar-icon-size: 5rem; }
+
+.avatar-list {
+  --avatar-list-size: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.avatar-list a.avatar:hover { z-index: 1; }
+
+.avatar-list-stacked {
+  display: block;
+}
+
+.avatar-list-stacked .avatar {
+  margin-right: calc(-0.5 * var(--avatar-size));
+  box-shadow: inset 0 0 0 1px var(--avatar-ring, color-mix(in srgb, var(--border-color) 60%, transparent)), 0 0 0 2px var(--bg-surface);
+}
+
+.avatar-list-sm { --avatar-list-size: 2rem; }
+.avatar-list-lg { --avatar-list-size: 3rem; }
+
+/* An avatar standing in while its picture loads. */
+.avatar.placeholder { background: currentColor; box-shadow: none; }
+
+/* ------------------------------------------------------------- 13. ribbon */
+/* Tabler's ribbon (ui/_ribbons.scss): a small banner wrapped round a card's
+   edge, an icon or a word on it; at the top, the start or the bottom, or a
+   bookmark. Its colour is a .bg-* utility, which also colours its fold. */
+
+.ribbon {
+  --ribbon-color: var(--primary);
+  position: absolute;
+  top: 0.75rem;
+  right: -0.25rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  color: var(--white);
+  text-align: center;
+  text-transform: uppercase;
+  background: var(--ribbon-color);
+  border-color: var(--ribbon-color);
+  border-radius: var(--border-radius) 0 var(--border-radius) var(--border-radius);
+}
+
+/* The fold behind the card's edge, a shade darker. */
+.ribbon::before {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  width: 0;
+  height: 0;
+  content: "";
+  filter: brightness(70%);
+  border: 0.125rem solid;
+  border-color: inherit;
+  border-top-color: transparent;
+  border-right-color: transparent;
+}
+
+.ribbon .icon { width: 1.25rem; height: 1.25rem; }
+
+/* Each .bg-* sets the ribbon's colour, so its fold takes it too. */
+.ribbon.bg-primary { --ribbon-color: var(--primary); }
+.ribbon.bg-secondary { --ribbon-color: var(--secondary); }
+.ribbon.bg-success { --ribbon-color: var(--success); }
+.ribbon.bg-info { --ribbon-color: var(--info); }
+.ribbon.bg-warning { --ribbon-color: var(--warning); }
+.ribbon.bg-danger { --ribbon-color: var(--danger); }
+.ribbon.bg-blue { --ribbon-color: var(--blue); }
+.ribbon.bg-azure { --ribbon-color: var(--azure); }
+.ribbon.bg-indigo { --ribbon-color: var(--indigo); }
+.ribbon.bg-purple { --ribbon-color: var(--purple); }
+.ribbon.bg-pink { --ribbon-color: var(--pink); }
+.ribbon.bg-red { --ribbon-color: var(--red); }
+.ribbon.bg-orange { --ribbon-color: var(--orange); }
+.ribbon.bg-yellow { --ribbon-color: var(--yellow); }
+.ribbon.bg-lime { --ribbon-color: var(--lime); }
+.ribbon.bg-green { --ribbon-color: var(--green); }
+.ribbon.bg-teal { --ribbon-color: var(--teal); }
+.ribbon.bg-cyan { --ribbon-color: var(--cyan); }
+
+.ribbon-top {
+  top: -0.25rem;
+  right: 0.75rem;
+  width: 2rem;
+  padding: 0.5rem 0;
+  border-radius: 0 var(--border-radius) var(--border-radius) var(--border-radius);
+}
+
+.ribbon-top::before {
+  top: 0;
+  right: 100%;
+  bottom: auto;
+  border-color: inherit;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.ribbon-start {
+  right: auto;
+  left: -0.25rem;
+  border-radius: 0 var(--border-radius) var(--border-radius) var(--border-radius);
+}
+
+.ribbon-start::before {
+  top: auto;
+  right: auto;
+  bottom: 100%;
+  left: 0;
+  border-color: inherit;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.ribbon-top.ribbon-start { right: auto; left: 0.75rem; }
+.ribbon-top.ribbon-start::before { top: 0; right: 100%; left: auto; }
+
+.ribbon-bottom { top: auto; bottom: 0.75rem; }
+
+.ribbon-bookmark {
+  padding-left: 0.25rem;
+  border-radius: 0 0 var(--border-radius) 0;
+}
+
+.ribbon-bookmark::after {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  display: block;
+  width: 0;
+  height: 0;
+  content: "";
+  border: 1rem solid;
+  border-color: inherit;
+  border-right-width: 0;
+  border-left-color: transparent;
+  border-left-width: 0.5rem;
+}
+
+.ribbon-bookmark.ribbon-top {
+  padding: 0 0 0.25rem;
+  border-radius: 0 var(--border-radius) 0 0;
+}
+
+.ribbon-bookmark.ribbon-top::after {
+  top: 100%;
+  right: 0;
+  left: 0;
+  border-color: inherit;
+  border-width: 1rem;
+  border-top-width: 0;
+  border-bottom-color: transparent;
+  border-bottom-width: 0.5rem;
+}
+
+/* ---------------------------------------------------------- 14. accordion */
+/* Tabler's accordion (ui/_accordion.scss) on native <details>, so it opens with
+   no script: each item a <details class="accordion-item">, its <summary> the
+   button, and the items sharing a name open one at a time.
+
+     <div class="accordion">
+       <details class="accordion-item" name="faq" open>
+         <summary class="accordion-button">Rent<span class="accordion-button-toggle">(chevron)</span></summary>
+         <div class="accordion-body">…</div>
+       </details>
+     </div>
+
+   -flush drops the outer border, for inside a card; -tabs sets the items apart;
+   -inverted puts the toggle first. An .accordion-button-icon leads the title;
+   an .accordion-button-toggle-plus is a plus that turns into a minus. */
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--accordion-gap, 0);
+}
+
+.accordion-item {
+  color: var(--body-color);
+  border: var(--border-width) solid var(--border-color);
+}
+
+.accordion-item:not(:first-child) { border-top: 0; }
+.accordion-item:first-child { border-radius: var(--border-radius) var(--border-radius) 0 0; }
+.accordion-item:last-child { border-radius: 0 0 var(--border-radius) var(--border-radius); }
+.accordion-item:only-child { border-radius: var(--border-radius); }
+
+.accordion-button {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.accordion-button::-webkit-details-marker { display: none; }
+
+.accordion-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: inherit;
+}
+
+.accordion-button-icon {
+  display: flex;
+  color: var(--secondary);
+}
+
+.accordion-button-icon .icon { width: 1.25rem; height: 1.25rem; }
+
+.accordion-button-toggle {
+  display: flex;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: auto;
+  color: var(--secondary);
+  transition: transform 0.3s;
+}
+
+.accordion-button-toggle .icon { width: 1.25rem; height: 1.25rem; }
+.accordion-button-toggle path { transition: opacity 0.3s; }
+
+details[open] > .accordion-button .accordion-button-toggle { transform: rotate(-180deg); }
+details[open] > .accordion-button .accordion-button-toggle-plus path:first-child { opacity: 0; }
+
+.accordion-body {
+  padding: 0 1.25rem 1rem;
+  color: var(--secondary);
+}
+
+.accordion-body > :last-child { margin-bottom: 0; }
+
+.accordion-flush > .accordion-item {
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+}
+
+.accordion-flush > .accordion-item:first-child { border-top: 0; }
+.accordion-flush > .accordion-item:last-child { border-bottom: 0; }
+
+.accordion-tabs { --accordion-gap: 0.75rem; }
+
+.accordion-tabs > .accordion-item,
+.accordion-tabs > .accordion-item:not(:first-child) {
+  border-top: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.accordion-inverted .accordion-button-toggle {
+  order: -1;
+  margin-left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-button-toggle, .accordion-button-toggle path { transition: none; }
+}
+
+/* -------------------------------------------------------- 15. selectgroup */
+/* Tabler's select group (ui/forms/_form-selectgroup.scss), in two of its forms:
+   boxes, where each choice is a box holding a radio or checkbox mark, a title
+   and a line of detail — an account, an envelope — and pills, rounded labels
+   that, with checkboxes, take several at once — categories to filter by. The
+   input is hidden and the label drawn in its place:
+
+     <div class="form-selectgroup form-selectgroup-boxes">
+       <label class="form-selectgroup-item flex-fill">
+         <input class="form-selectgroup-input" type="radio" name="account" value="checking" checked>
+         <span class="form-selectgroup-label d-flex align-items-center gap-3">
+           <span class="form-selectgroup-check"></span>
+           <span class="form-selectgroup-label-content"><span class="form-selectgroup-title">Checking</span> …</span>
+         </span>
+       </label>
+     </div>
+
+   .form-selectgroup-vertical stacks the boxes. */
+
+.form-selectgroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form-selectgroup-vertical { flex-direction: column; }
+
+.form-selectgroup-item {
+  position: relative;
+  display: block;
+}
+
+.form-selectgroup-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+}
+
+.form-selectgroup-label {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0.4375rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--secondary);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: border-color 0.3s, background 0.3s, color 0.3s;
+}
+
+.form-selectgroup-label:hover { color: var(--body-color); }
+
+.form-selectgroup-input:checked + .form-selectgroup-label {
+  z-index: 1;
+  color: color-mix(in oklab, var(--primary) 65%, var(--body-color));
+  background: color-mix(in oklab, var(--primary) 6%, var(--bg-surface));
+  border-color: var(--primary);
+}
+
+.form-selectgroup-input:focus-visible + .form-selectgroup-label {
+  z-index: 2;
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.form-selectgroup-input:disabled + .form-selectgroup-label {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* The mark inside a box: a square for a checkbox, a circle for a radio, filled
+   with a white tick or dot when chosen. */
+.form-selectgroup-check {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: middle;
+  background: var(--bg-surface) no-repeat center / 1.25rem;
+  border: var(--border-width) solid color-mix(in oklab, var(--border-color) 60%, var(--secondary));
+}
+
+.form-selectgroup-input[type="checkbox"] + .form-selectgroup-label .form-selectgroup-check { border-radius: var(--border-radius); }
+.form-selectgroup-input[type="radio"] + .form-selectgroup-label .form-selectgroup-check { border-radius: 50%; }
+
+.form-selectgroup-input:checked + .form-selectgroup-label .form-selectgroup-check {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.form-selectgroup-input[type="checkbox"]:checked + .form-selectgroup-label .form-selectgroup-check {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8.5l2.5 2.5l5.5 -5.5'/></svg>");
+}
+
+.form-selectgroup-input[type="radio"]:checked + .form-selectgroup-label .form-selectgroup-check {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle r='3' fill='white' cx='8' cy='8'/></svg>");
+}
+
+.form-selectgroup-check-floated {
+  position: absolute;
+  top: 0.5625rem;
+  right: 0.5625rem;
+}
+
+.form-selectgroup-boxes .form-selectgroup-label {
+  padding: 1rem;
+  color: inherit;
+  text-align: left;
+}
+
+.form-selectgroup-boxes .form-selectgroup-input:checked + .form-selectgroup-label {
+  color: inherit;
+}
+
+.form-selectgroup-title {
+  display: block;
+  font-weight: var(--font-weight-medium);
+}
+
+.form-selectgroup-boxes .form-selectgroup-input:checked + .form-selectgroup-label .form-selectgroup-title {
+  color: color-mix(in oklab, var(--primary) 65%, var(--body-color));
+}
+
+.form-selectgroup-label-content { color: var(--secondary); }
+.form-selectgroup-label-content .form-selectgroup-title { color: var(--body-color); }
+
+.form-selectgroup-pills { align-items: flex-start; }
+.form-selectgroup-pills .form-selectgroup-label { border-radius: var(--border-radius-pill); }
+
+/* A pill with a checkbox shows a tick before its word when chosen. */
+.form-selectgroup-pills .form-selectgroup-input[type="checkbox"]:checked + .form-selectgroup-label::before {
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: 0 0.25rem -0.125rem -0.25rem;
+  content: "";
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3.5 8.5l3 3l6 -6'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3.5 8.5l3 3l6 -6'/></svg>") center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-selectgroup-label { transition: none; }
+}
+
+/* ----------------------------------------------------- 16. mini calendar */
+/* Tabler's calendar (ui/_calendars.scss): a month of dates to pick a day from,
+   today ringed, the chosen one filled, a range shaded. calendar.js draws it
+   into a [data-calendar]; the markup it writes is Tabler's. A day with
+   something on it — a bill, a payday — carries a dot under its number. */
+
+.calendar {
+  display: block;
+  max-width: 22rem;
+  font-size: 0.8125rem;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0;
+}
+
+.calendar-title {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.calendar-header,
+.calendar-body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0.5rem 0;
+}
+
+.calendar-header {
+  padding-bottom: 0;
+  font-size: 0.6875rem;
+  color: var(--secondary);
+  text-transform: uppercase;
+}
+
+.calendar-date {
+  flex: 0 0 calc(100% / 7);
+  max-width: calc(100% / 7);
+  padding: 0.125rem;
+  text-align: center;
+}
+
+.calendar-date.prev-month,
+.calendar-date.next-month { opacity: 0.35; }
+
+.calendar-date .date-item {
+  position: relative;
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font: inherit;
+  line-height: calc(2rem - 2 * var(--border-width));
+  color: var(--body-color);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background: transparent;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius-pill);
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+/* Over a range's shading. */
+.calendar-date .date-item { z-index: 1; }
+
+.calendar-date .date-item:hover {
+  color: var(--primary);
+  background: var(--active-bg);
+  border-color: var(--border-color);
+}
+
+.calendar-date .date-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.calendar-date .date-today {
+  color: var(--primary);
+  border-color: var(--border-color);
+}
+
+.calendar-date .date-item[aria-pressed="true"],
+.calendar-range.range-start .date-item,
+.calendar-range.range-end .date-item {
+  color: var(--primary-fg);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.calendar-date .date-marked::after {
+  position: absolute;
+  bottom: 0.1875rem;
+  left: calc(50% - 0.125rem);
+  width: 0.25rem;
+  height: 0.25rem;
+  content: "";
+  background: var(--date-mark, var(--danger));
+  border-radius: 50%;
+}
+
+.calendar-date .date-item[aria-pressed="true"].date-marked::after { background: var(--primary-fg); }
+
+.calendar-range { position: relative; }
+
+.calendar-range::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 2rem;
+  content: "";
+  background: var(--primary-lt);
+  transform: translateY(-50%);
+}
+
+.calendar-range.range-start::before { left: 50%; }
+.calendar-range.range-end::before { right: 50%; }
+
+.calendar-nav .btn-action { width: 1.75rem; height: 1.75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-date .date-item { transition: none; }
+}
+
+/* ----------------------------------------------------------- 17. popover */
+/* Tabler's popover over Bootstrap's: a bubble with an arrow opened from a
+   button, holding a title and a few lines, or a link or two. popover.js opens
+   it on a click (or, with data-popover-trigger="hover", on hover or focus) on
+   the side data-placement names, top unless given, flipped when the window has
+   no room, fixed to the window so nothing clips it. */
+
+.popover {
+  position: fixed;
+  z-index: 1070;
+  max-width: 18rem;
+  font-size: 0.875rem;
+  color: var(--body-color);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.07), 0 6px 30px 5px rgba(0, 0, 0, 0.06);
+}
+
+.popover[hidden] { display: none; }
+
+.popover-header {
+  padding: 0.625rem 1rem;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-bold);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.popover-body {
+  padding: 0.75rem 1rem;
+  color: var(--secondary);
+}
+
+.popover-body > :last-child { margin-bottom: 0; }
+
+/* The arrow: a square turned half out of the bubble's edge, on the side facing
+   its button; --arrow puts it opposite the button's middle. */
+.popover::before {
+  position: absolute;
+  width: 0.625rem;
+  height: 0.625rem;
+  content: "";
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  transform: rotate(45deg);
+}
+
+.popover[data-side="top"]::before { bottom: -0.3125rem; left: calc(var(--arrow, 50%) - 0.3125rem); border-top: 0; border-left: 0; }
+.popover[data-side="bottom"]::before { top: -0.3125rem; left: calc(var(--arrow, 50%) - 0.3125rem); border-right: 0; border-bottom: 0; }
+.popover[data-side="left"]::before { right: -0.3125rem; top: calc(var(--arrow, 50%) - 0.3125rem); border-bottom: 0; border-left: 0; }
+.popover[data-side="right"]::before { left: -0.3125rem; top: calc(var(--arrow, 50%) - 0.3125rem); border-top: 0; border-right: 0; }
+
+@media print {
+  .popover { display: none !important; }
+}
+
+/* ------------------------------------------------------------ 18. autosize */
+/* A textarea with data-autosize grows with what is typed: by the browser's own
+   field-sizing where it has it, else by autosize.js. */
+
+textarea[data-autosize] {
+  min-height: 2.375rem;
+  overflow: hidden;
+  resize: none;
+}
+
+@supports (field-sizing: content) {
+  textarea[data-autosize] { field-sizing: content; }
 }

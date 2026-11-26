@@ -76,7 +76,7 @@ The stylesheets, scripts and fonts are a kit of their own, `source/almanac/ui/`,
 scripts/export-ui.sh ../budget
 ```
 
-then start from `almanac/starter.html`. The kit's `README.md` says what each file binds and what data a page supplies; the guide's "Pages by hand" page says the same for a reader.
+then start from `almanac/starter.html`. The kit's `README.md` says what each file binds and what data a page supplies; the guide's "Pages by hand" page says the same for a reader, and `almanac/GUIDELINES.md` sets out the rules and contracts a project's pages follow, for a person or a coding agent.
 
 ## Layout of the repository
 

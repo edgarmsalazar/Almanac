@@ -1,7 +1,7 @@
 ---
 title: Forms and actions
 layout: cards
-description: "What a page that takes input needs: buttons in every colour, groups of them, forms with checkboxes, input groups and validation, modal dialogs, toasts, menus and pagination."
+description: "What a page that takes input needs: buttons in every colour, groups of them, forms with checkboxes, input groups, select boxes and validation, a calendar to pick a day, modal dialogs, popovers, toasts, menus and pagination."
 ---
 
 ## Buttons
@@ -121,6 +121,56 @@ description: "What a page that takes input needs: buttons in every colour, group
 
 Input groups take text or a button at either end, or both: `<span class="input-group-text">$</span>` before the field, `<button class="btn">` after it.
 
+## Select boxes and pills
+
+*A choice drawn as boxes, each holding its mark, a title and a line of detail; or as pills that, with checkboxes, take several at once.*
+
+```example
+<div class="form-selectgroup form-selectgroup-boxes d-flex flex-column flex-md-row">
+  <label class="form-selectgroup-item flex-fill">
+    <input class="form-selectgroup-input" type="radio" name="sg-account" value="checking" checked>
+    <span class="form-selectgroup-label d-flex align-items-center gap-3">
+      <span class="form-selectgroup-check"></span>
+      <span class="form-selectgroup-label-content"><span class="form-selectgroup-title">Checking</span>Ending in 2807 · $2,140</span>
+    </span>
+  </label>
+  <label class="form-selectgroup-item flex-fill">
+    <input class="form-selectgroup-input" type="radio" name="sg-account" value="savings">
+    <span class="form-selectgroup-label d-flex align-items-center gap-3">
+      <span class="form-selectgroup-check"></span>
+      <span class="form-selectgroup-label-content"><span class="form-selectgroup-title">Savings</span>Ending in 7998 · $8,300</span>
+    </span>
+  </label>
+  <label class="form-selectgroup-item flex-fill">
+    <input class="form-selectgroup-input" type="radio" name="sg-account" value="card">
+    <span class="form-selectgroup-label d-flex align-items-center gap-3">
+      <span class="form-selectgroup-check"></span>
+      <span class="form-selectgroup-label-content"><span class="form-selectgroup-title">Credit card</span>Due on the 12th · $410</span>
+    </span>
+  </label>
+</div>
+<div class="form-selectgroup form-selectgroup-pills mt-4" role="group" aria-label="Categories">
+  <label class="form-selectgroup-item"><input class="form-selectgroup-input" type="checkbox" name="sg-cat" value="groceries" checked><span class="form-selectgroup-label">Groceries</span></label>
+  <label class="form-selectgroup-item"><input class="form-selectgroup-input" type="checkbox" name="sg-cat" value="eating-out" checked><span class="form-selectgroup-label">Eating out</span></label>
+  <label class="form-selectgroup-item"><input class="form-selectgroup-input" type="checkbox" name="sg-cat" value="transport"><span class="form-selectgroup-label">Transport</span></label>
+  <label class="form-selectgroup-item"><input class="form-selectgroup-input" type="checkbox" name="sg-cat" value="rent"><span class="form-selectgroup-label">Rent</span></label>
+  <label class="form-selectgroup-item"><input class="form-selectgroup-input" type="checkbox" name="sg-cat" value="gifts"><span class="form-selectgroup-label">Gifts</span></label>
+</div>
+```
+
+The inputs are real radios and checkboxes, so a form sends them and the keyboard moves through them; `.form-selectgroup-vertical` stacks the boxes. For one choice of a few short words, the [segmented control](controls.md) or a [button group](#groups-and-lists) is simpler.
+
+## Growing textarea
+
+*A note field that grows as it is typed into, as tall as its text.*
+
+```example
+<label class="form-label" for="note-grow">Note</label>
+<textarea class="form-control" id="note-grow" data-autosize rows="1" placeholder="Type a few lines…"></textarea>
+```
+
+`data-autosize` is all it takes: browsers that size a field to its content do it themselves, the others through `autosize.js`.
+
 ## Validation
 
 *`.is-invalid` or `.is-valid` on a field colours it and shows the message after it. A form with `.was-validated` does the same from the browser's own checks: required, type, min and max.*
@@ -157,6 +207,25 @@ Input groups take text or a button at either end, or both: `<span class="input-g
 ```
 
 The page decides when to check: on submit, as here, or as each field is left. A message names what is wanted, not what went wrong.
+
+## Mini calendar
+
+*A month to pick a day from: today ringed, the chosen day filled, days with something on them dotted. calendar.js draws it.*
+
+```example
+<div class="d-flex flex-wrap gap-4 align-items-start">
+  <div class="calendar flex-fill" data-calendar data-month="2026-11" data-selected="2026-11-15" data-marked="2026-11-01 2026-11-15 2026-11-18 2026-11-28" aria-label="Bills and paydays" id="cal-example"></div>
+  <div class="calendar flex-fill" data-calendar data-month="2026-12" data-range="2026-12-07 2026-12-11" data-week="0" aria-label="A week away"></div>
+</div>
+<p class="text-secondary mt-3 mb-0" id="cal-picked">Picked: 2026-11-15</p>
+<script>
+  document.getElementById('cal-example').addEventListener('almanac:date', function (event) {
+    document.getElementById('cal-picked').textContent = 'Picked: ' + event.detail.date;
+  });
+</script>
+```
+
+`data-month`, `data-selected`, `data-marked` (days by spaces), `data-range` (a first and last day) and `data-week` (`1` Monday, the default, or `0` Sunday) set it up; `calendar.js` describes each. Picking a day fires `almanac:date` with the date as `YYYY-MM-DD`. Day and month names are the reader's language. For a month of events with times, see [FullCalendar](libraries.md#calendar).
 
 ## Modal
 
@@ -205,6 +274,24 @@ The page decides when to check: on submit, as here, or as each field is left. A 
 ```
 
 `data-open="id"` on any button opens the dialog with that id. Inside a `<form method="dialog">`, a submit button closes it and leaves its `value` in the dialog's `returnValue`; the page listens for the dialog's `close` event to act on it.
+
+## Popover
+
+*A bubble from a button, holding a title and a few lines: the reason a number is red, a short how-to.*
+
+```example
+<div class="btn-list">
+  <button class="btn" type="button" data-popover-title="Over budget" data-popover-content="Eating out is $20 over for November: three dinners after the 20th.">Why red?</button>
+  <button class="btn" type="button" data-popover="pop-rollover" data-placement="bottom">Rollover</button>
+  <button class="btn btn-ghost-secondary" type="button" data-popover-content="Shown while the pointer or the focus is on the button." data-popover-trigger="hover" data-placement="right">Hover me</button>
+</div>
+<div class="popover" id="pop-rollover" role="dialog" aria-label="Rollover" hidden>
+  <div class="popover-header">Rollover</div>
+  <div class="popover-body">What is left in an envelope moves to next month. <a href="#popover">Change it</a></div>
+</div>
+```
+
+`data-popover-title` and `data-popover-content` write a popover of words; `data-popover="id"` opens one written in the page, which may hold links. `data-placement` is `top`, the default, `bottom`, `left` or `right`; the bubble flips when there is no room. A click elsewhere or Escape closes it.
 
 ## Toast
 

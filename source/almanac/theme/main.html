@@ -120,6 +120,17 @@
 {%- if 'class="arithmatex"' in page.content %}
 <link rel="stylesheet" href="{{ 'almanac/vendor/katex/katex.min.css' | url }}">
 {%- endif %}
+{#- The libraries in vendor/, each only on a page that uses it: a drop zone, a
+    rich-text field, a FullCalendar the page's own script makes. -#}
+{%- set dropzone = 'class="dropzone' in page.content %}
+{%- set editor = 'data-editor' in page.content %}
+{%- set fullcalendar = 'FullCalendar.Calendar' in page.content %}
+{%- if dropzone %}
+<link rel="stylesheet" href="{{ 'almanac/vendor/dropzone/dropzone.css' | url }}">
+{%- endif %}
+{%- if dropzone or editor or fullcalendar %}
+<link rel="stylesheet" href="{{ 'almanac/css/vendors.css' | url }}">
+{%- endif %}
 {#- mkdocstrings' own stylesheet is written for Material; reference.css draws its output instead. -#}
 {%- for path in config.extra_css if not path.endswith('_mkdocstrings.css') %}
 <link rel="stylesheet" href="{{ path | url }}">
@@ -301,6 +312,9 @@
 <script src="{{ 'almanac/js/filter.js' | url }}"></script>
 <script src="{{ 'almanac/js/dropdown.js' | url }}"></script>
 <script src="{{ 'almanac/js/toast.js' | url }}"></script>
+<script src="{{ 'almanac/js/popover.js' | url }}"></script>
+<script src="{{ 'almanac/js/calendar.js' | url }}"></script>
+<script src="{{ 'almanac/js/autosize.js' | url }}"></script>
 <script src="{{ 'almanac/js/terms.js' | url }}"></script>
 <script src="{{ 'almanac/js/search.js' | url }}"></script>
 {%- if page.meta.lexicon %}
@@ -313,6 +327,17 @@
 {%- if 'class="arithmatex"' in page.content %}
 <script src="{{ 'almanac/vendor/katex/katex.min.js' | url }}"></script>
 <script src="{{ 'almanac/js/maths.js' | url }}"></script>
+{%- endif %}
+{%- if dropzone %}
+<script src="{{ 'almanac/vendor/dropzone/dropzone-min.js' | url }}"></script>
+<script>Dropzone.autoDiscover = false;</script>
+{%- endif %}
+{%- if editor %}
+<script src="{{ 'almanac/vendor/hugerte/hugerte.min.js' | url }}"></script>
+<script src="{{ 'almanac/js/editor.js' | url }}"></script>
+{%- endif %}
+{%- if fullcalendar %}
+<script src="{{ 'almanac/vendor/fullcalendar/fullcalendar.min.js' | url }}"></script>
 {%- endif %}
 {%- for script in config.extra_javascript %}
 {{ script | script_tag }}

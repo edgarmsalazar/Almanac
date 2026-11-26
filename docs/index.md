@@ -22,7 +22,8 @@ The site's navigation is a navbar across the top, as here, or a sidebar down the
 
 - The components under Components, each drawn live with its markup: alerts, tables, charts, tabs, drawers and the rest, and the light, dark and accent settings in the navbar.
 - A [dashboard](components/dashboard.md)'s pieces: canvas charts with a legend and a table view, KPI cards, a period control that steps a page by month, week or day, and a table filter.
-- A page that takes input: [buttons, forms, dialogs, toasts, menus and pagination](components/forms.md), laid out on a [twelve-column grid](components/grid.md) with Bootstrap's utilities.
+- A page that takes input: [buttons, forms, dialogs, popovers, toasts, menus and pagination](components/forms.md), [card extras, accordions, loading states and the rest](components/cards.md), laid out on a [twelve-column grid](components/grid.md) with Bootstrap's utilities.
+- [Three libraries](components/libraries.md) in the theme's look, each loaded only where it is used: a drop zone for files, a month of events, and a rich-text field.
 - Numbers bound to data: `<span data-value="showcase.pages"></span>` shows <span data-value="showcase.pages"></span>, read from a script the project writes.
 - The lexicon's words explained where a page first uses them, as the layout and the header band are here.
 - Mermaid diagrams, drawn in the browser in the theme's own colours and face.

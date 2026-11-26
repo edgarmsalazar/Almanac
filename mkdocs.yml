@@ -75,9 +75,11 @@ nav:
       - Dashboard: components/dashboard.md
       - Controls: components/controls.md
       - Forms and actions: components/forms.md
+      - Cards and small pieces: components/cards.md
       - Layout: components/layout.md
       - Grid and utilities: components/grid.md
       - Code and diagrams: components/code.md
+      - Libraries: components/libraries.md
       - Page standing: components/standing.md
       - Reference pages: components/reference.md
   - Lexicon: lexicon.md

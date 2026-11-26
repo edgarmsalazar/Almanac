@@ -22,6 +22,7 @@
  *   8. sizing          .w-50 .w-100 .h-100 .mw-100
  *   9. borders         .border .border-top .border-0 .rounded .rounded-pill
  *  10. position        .position-relative .overflow-hidden .visually-hidden
+ *  11. colour          .bg-red .bg-success .bg-green-lt .text-green .text-primary-fg
  *
  * Breakpoints, as Tabler's: sm 576px, md 768px, lg 992px, xl 1200px, xxl 1400px.
  * A class with one, .col-md-6, applies from that width up.
@@ -769,3 +770,74 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* ------------------------------------------------------------- 11. colour */
+/* Tabler's colour utilities: a background in any semantic colour or hue of the
+   palette (.bg-success, .bg-orange), its pale tint with the hue as the text's
+   colour (.bg-orange-lt, opaque, so it hides what is behind it), a hue for the
+   text (.text-orange), and the text that
+   reads on a filled semantic background (.text-primary-fg). For a card's status
+   strip, a ribbon, an avatar or its status dot, a filled card. */
+
+.bg-primary { background-color: var(--primary) !important; }
+.bg-secondary { background-color: var(--secondary) !important; }
+.bg-success { background-color: var(--success) !important; }
+.bg-info { background-color: var(--info) !important; }
+.bg-warning { background-color: var(--warning) !important; }
+.bg-danger { background-color: var(--danger) !important; }
+.bg-blue { background-color: var(--blue) !important; }
+.bg-azure { background-color: var(--azure) !important; }
+.bg-indigo { background-color: var(--indigo) !important; }
+.bg-purple { background-color: var(--purple) !important; }
+.bg-pink { background-color: var(--pink) !important; }
+.bg-red { background-color: var(--red) !important; }
+.bg-orange { background-color: var(--orange) !important; }
+.bg-yellow { background-color: var(--yellow) !important; }
+.bg-lime { background-color: var(--lime) !important; }
+.bg-green { background-color: var(--green) !important; }
+.bg-teal { background-color: var(--teal) !important; }
+.bg-cyan { background-color: var(--cyan) !important; }
+
+.bg-primary-lt { color: var(--primary) !important; background-color: color-mix(in srgb, var(--primary) 10%, var(--bg-surface)) !important; }
+.bg-success-lt { color: var(--success) !important; background-color: color-mix(in srgb, var(--success) 10%, var(--bg-surface)) !important; }
+.bg-info-lt { color: var(--info) !important; background-color: color-mix(in srgb, var(--info) 10%, var(--bg-surface)) !important; }
+.bg-warning-lt { color: var(--warning) !important; background-color: color-mix(in srgb, var(--warning) 10%, var(--bg-surface)) !important; }
+.bg-danger-lt { color: var(--danger) !important; background-color: color-mix(in srgb, var(--danger) 10%, var(--bg-surface)) !important; }
+.bg-blue-lt { color: var(--blue) !important; background-color: color-mix(in srgb, var(--blue) 10%, var(--bg-surface)) !important; }
+.bg-azure-lt { color: var(--azure) !important; background-color: color-mix(in srgb, var(--azure) 10%, var(--bg-surface)) !important; }
+.bg-indigo-lt { color: var(--indigo) !important; background-color: color-mix(in srgb, var(--indigo) 10%, var(--bg-surface)) !important; }
+.bg-purple-lt { color: var(--purple) !important; background-color: color-mix(in srgb, var(--purple) 10%, var(--bg-surface)) !important; }
+.bg-pink-lt { color: var(--pink) !important; background-color: color-mix(in srgb, var(--pink) 10%, var(--bg-surface)) !important; }
+.bg-red-lt { color: var(--red) !important; background-color: color-mix(in srgb, var(--red) 10%, var(--bg-surface)) !important; }
+.bg-orange-lt { color: var(--orange) !important; background-color: color-mix(in srgb, var(--orange) 10%, var(--bg-surface)) !important; }
+.bg-yellow-lt { color: var(--yellow) !important; background-color: color-mix(in srgb, var(--yellow) 10%, var(--bg-surface)) !important; }
+.bg-lime-lt { color: var(--lime) !important; background-color: color-mix(in srgb, var(--lime) 10%, var(--bg-surface)) !important; }
+.bg-green-lt { color: var(--green) !important; background-color: color-mix(in srgb, var(--green) 10%, var(--bg-surface)) !important; }
+.bg-teal-lt { color: var(--teal) !important; background-color: color-mix(in srgb, var(--teal) 10%, var(--bg-surface)) !important; }
+.bg-cyan-lt { color: var(--cyan) !important; background-color: color-mix(in srgb, var(--cyan) 10%, var(--bg-surface)) !important; }
+.bg-secondary-lt { color: var(--secondary) !important; background-color: var(--bg-surface-tertiary) !important; }
+
+.text-blue { color: var(--blue) !important; }
+.text-azure { color: var(--azure) !important; }
+.text-indigo { color: var(--indigo) !important; }
+.text-purple { color: var(--purple) !important; }
+.text-pink { color: var(--pink) !important; }
+.text-red { color: var(--red) !important; }
+.text-orange { color: var(--orange) !important; }
+.text-yellow { color: var(--yellow) !important; }
+.text-lime { color: var(--lime) !important; }
+.text-green { color: var(--green) !important; }
+.text-teal { color: var(--teal) !important; }
+.text-cyan { color: var(--cyan) !important; }
+
+.text-primary-fg { color: var(--primary-fg) !important; }
+.text-success-fg { color: var(--success-fg) !important; }
+.text-info-fg { color: var(--info-fg) !important; }
+.text-warning-fg { color: var(--warning-fg) !important; }
+.text-danger-fg { color: var(--danger-fg) !important; }
+.text-secondary-fg { color: var(--text-inverted) !important; }
+
+.bg-surface { background-color: var(--bg-surface) !important; }
+.bg-surface-secondary { background-color: var(--bg-surface-secondary) !important; }
+.bg-surface-tertiary { background-color: var(--bg-surface-tertiary) !important; }
+.bg-transparent { background-color: transparent !important; }
