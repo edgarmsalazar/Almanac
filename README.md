@@ -68,17 +68,29 @@ mkdocs build && open site/index.html
 mkdocs build -f mkdocs-sidebar.yml && open site-sidebar/index.html   # the sidebar navigation
 ```
 
+## Outside MkDocs
+
+The stylesheets, scripts and fonts are a kit of their own, `source/almanac/ui/`, for pages written by hand: a dashboard, a small app. Copy it into a project, as `almanac/` with a `VERSION` saying where it came from:
+
+```bash
+scripts/export-ui.sh ../budget
+```
+
+then start from `almanac/starter.html`. The kit's `README.md` says what each file binds and what data a page supplies.
+
 ## Layout of the repository
 
 | Path | Holds |
 | --- | --- |
+| `source/almanac/ui/` | The kit: the CSS, scripts and fonts every page loads, a site's or a page written by hand. `css/theme.css` and `css/components.css` are a hand-written port of Tabler; `css/almanac.css` and `js/almanac.js` are Almanac's own layout; `vendor/` holds Mermaid and KaTeX. A site serves it under `almanac/`. See its `README.md`. |
 | `source/almanac/theme/main.html` | The page shell, the one template. |
-| `source/almanac/theme/assets/` | The CSS, scripts and fonts the site loads. `theme.css` and `components.css` are a hand-written port of Tabler; `almanac.css` and `almanac.js` are the theme's own layout. |
+| `source/almanac/theme/assets/mkdocs.css` | The rules for markup other tools write (Pygments, pymdownx.tabbed, toc's permalinks), which a page written by hand never holds. |
 | `source/almanac/plugin.py` | Cards from a cards page's sections, the theme's classes on Markdown tables, the lexicon as `data/lexicon.js`, the search index as `search/search_index.js`, each page's standing, and the template's icon helpers. |
 | `source/almanac/fences.py` | The `example` fence. |
 | `source/almanac/lexicon.py`, `roadmap.py` | The pages a `lexicon: true` or `roadmap: true` page draws from its file. |
 | `source/almanac/admonitions.py` | Admonitions drawn as Tabler alerts; the plugin adds it to Markdown. |
 | `source/almanac/icons/` | Tabler's outline icons, drawn into a page by name. Not copied into the site. |
+| `scripts/export-ui.sh` | Copies the kit into a project. |
 | `docs/` | The guide and showcase. |
 | `tests/` | The plugin's and the admonitions' tests: `pytest`. |
 

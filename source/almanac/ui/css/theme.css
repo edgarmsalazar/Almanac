@@ -24,28 +24,28 @@
 
 @font-face {
   font-family: "Lexend";
-  src: url("fonts/lexend/Lexend-Variable.ttf") format("truetype");
+  src: url("../fonts/lexend/Lexend-Variable.ttf") format("truetype");
   font-weight: 100 900;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Exo 2";
-  src: url("fonts/exo-2/Exo2-Variable.ttf") format("truetype");
+  src: url("../fonts/exo-2/Exo2-Variable.ttf") format("truetype");
   font-weight: 100 900;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Barlow";
-  src: url("fonts/barlow/Barlow-Regular.ttf") format("truetype");
+  src: url("../fonts/barlow/Barlow-Regular.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Fira Code";
-  src: url("fonts/fira-code/FiraCode-Regular.ttf") format("truetype");
+  src: url("../fonts/fira-code/FiraCode-Regular.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }

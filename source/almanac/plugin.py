@@ -12,7 +12,8 @@ from the docs drawn inline so the page's colours reach it. Admonitions are
 drawn as Tabler's alerts, by a Markdown extension the plugin adds (admonitions.py).
 A page whose front matter says lexicon: true gets every term of the lexicon as
 a card (lexicon.py); one that says roadmap: true gets the roadmap's stops on a
-timeline (roadmap.py).
+timeline (roadmap.py). The kit, ui/, the stylesheets, scripts and fonts a page
+written by hand loads as well, is served under almanac/.
 """
 
 import json
@@ -24,6 +25,7 @@ from markupsafe import Markup
 from mkdocs.config import config_options
 from mkdocs.config.base import Config
 from mkdocs.plugins import BasePlugin, event_priority
+from mkdocs.structure.files import File
 
 from almanac.lexicon import lexicon_page
 
@@ -40,6 +42,9 @@ LEXICON_FIELDS = ("term", "definition", "note")
 STANDING_FIELDS = ("status", "checked", "checked_date", "why", "commits", "files")
 STANDINGS = ("built", "designed", "drifted", "disagrees")
 ICONS = Path(__file__).parent / "icons" / "tabler-nodes-outline.json"
+# The kit, and what in it a site does not serve: the page shell to copy and the kit's own notes.
+UI = Path(__file__).parent / "ui"
+UI_UNSERVED = ("starter.html", "README.md", "VERSION")
 ICON_ATTRIBUTES = ('viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
                    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"')
 
@@ -121,6 +126,12 @@ def standing_of(meta: dict, recorded: dict | None) -> dict | None:
 
 
 @cache
+def kit_files() -> list[Path]:
+    """Returns every file of the kit a site serves, the page shell and the kit's notes left out."""
+    return sorted(path for path in UI.rglob("*")
+                  if path.is_file() and path.name not in UI_UNSERVED and not path.name.startswith("."))
+
+
 def icon_nodes() -> dict:
     """Returns Tabler's outline icons, each a list of [element, attributes]."""
     return json.loads(ICONS.read_text(encoding="utf-8"))
@@ -172,6 +183,18 @@ class AlmanacPlugin(BasePlugin[AlmanacConfig]):
             source = Path(config["docs_dir"]) / self.config.status
             self.recorded = json.loads(source.read_text(encoding="utf-8"))
         return config
+
+    def on_files(self, files, config):
+        # A file of the docs at the same path wins, as it does over the theme's own.
+        for path in kit_files():
+            uri = f"almanac/{path.relative_to(UI).as_posix()}"
+            if files.get_file_from_path(uri) is None:
+                files.append(File.generated(config, uri, abs_src_path=str(path)))
+        return files
+
+    def on_serve(self, server, config, builder):
+        server.watch(str(UI))
+        return server
 
     def on_env(self, env, config, files):
         docs = Path(config["docs_dir"])

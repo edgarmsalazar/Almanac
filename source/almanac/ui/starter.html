@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+  Almanac's page shell, written by hand: copy it beside the almanac/ folder and
+  fill the body. It is the MkDocs theme's main.html with the site's parts typed
+  in: a navbar across the top, the header band naming the page, and a body of
+  cards, one a section. Opened from disk, it needs no server.
+
+  For a sidebar down the left instead of the navbar, see main.html's sidebar
+  branch: <aside class="navbar navbar-vertical" id="sidebar"> in place of the
+  <header class="navbar" id="navbar"> below.
+
+  The scripts each look for their own markup and do nothing without it, so a
+  page may load all of them. Those that read data take it from a script loaded
+  before them (almanac/README.md says what each expects).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page — Project</title>
+<link rel="stylesheet" href="almanac/css/theme.css">
+<link rel="stylesheet" href="almanac/css/components.css">
+<link rel="stylesheet" href="almanac/css/almanac.css">
+<!-- Not deferred: it sets the theme before the page is painted. -->
+<script src="almanac/js/settings.js"></script>
+<script src="almanac/js/charts.js"></script>
+</head>
+<body>
+<div class="page">
+  <header class="navbar d-print-none" id="navbar">
+    <div class="container-xl">
+      <button class="navbar-toggler" type="button" aria-controls="navbar-menu" aria-expanded="false" aria-label="Menu"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg></button>
+      <a class="navbar-brand" href="index.html">Project</a>
+      <nav class="navbar-collapse" id="navbar-menu" aria-label="Site"><ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="index.html" aria-current="page"><span class="nav-link-title">Overview</span></a></li>
+        <li class="nav-item dropdown">
+          <button class="nav-link dropdown-toggle" type="button" aria-expanded="false" aria-controls="menu-1"><span class="nav-link-title">Reports</span></button>
+          <div class="dropdown-menu" id="menu-1" hidden>
+            <a class="dropdown-item" href="monthly.html">Monthly</a>
+            <a class="dropdown-item" href="yearly.html">Yearly</a>
+          </div>
+        </li>
+      </ul></nav>
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="theme-settings-open" type="button" aria-label="Customize the theme" aria-haspopup="dialog" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21v-4a4 4 0 1 1 4 4h-4"/><path d="M21 3a16 16 0 0 0 -12.8 10.2"/><path d="M21 3a16 16 0 0 1 -10.2 12.8"/><path d="M10.6 9a9 9 0 0 1 4.4 4.4"/></svg></button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></svg></button>
+      </div>
+    </div>
+  </header>
+  <script src="almanac/js/navbar.js"></script>
+
+  <div class="page-wrapper">
+    <header class="page-header d-print-none">
+      <div class="container-xl page-header-row">
+        <div class="page-header-titles">
+          <div class="page-pretitle">Section</div>
+          <h1 class="page-title">Page</h1>
+          <p class="page-lead">A line about the page.</p>
+        </div>
+      </div>
+    </header>
+    <main class="page-body">
+      <div class="container-xl">
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="first">A section</h2></div></div>
+          <div class="card-body"><div class="prose">
+            <p>Each section of the page is a card. The contents button lists them by their titles.</p>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="table">A table</h2></div></div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead><tr>
+                <th><button class="table-sort" data-sort="sort-name">Name</button></th>
+                <th><button class="table-sort" data-sort="sort-amount">Amount</button></th>
+              </tr></thead>
+              <tbody class="table-tbody">
+                <tr><td class="sort-name">Rent</td><td class="sort-amount" data-sort-value="1200">1,200</td></tr>
+                <tr><td class="sort-name">Food</td><td class="sort-amount" data-sort-value="430">430</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- The page's contents, from its cards: toc.js fills the panel and shows the button. -->
+<button class="btn btn-primary btn-icon btn-floating d-print-none" id="toc-toggle" type="button" aria-controls="toc" aria-expanded="false" aria-label="Contents" title="Contents" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l11 0"/><path d="M9 12l11 0"/><path d="M9 18l11 0"/><path d="M5 6l0 .01"/><path d="M5 12l0 .01"/><path d="M5 18l0 .01"/></svg></button>
+<nav class="offcanvas offcanvas-end offcanvas-narrow d-print-none" id="toc" aria-labelledby="toc-title" hidden>
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title" id="toc-title">Contents</h2>
+    <button class="btn-close" type="button" aria-label="Close contents"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg></button>
+  </div>
+  <div class="offcanvas-body"><div class="nav nav-vertical" data-toc-list></div></div>
+</nav>
+
+<script src="almanac/js/toc.js"></script>
+<script src="almanac/js/code.js"></script>
+<script src="almanac/js/data.js"></script>
+<script src="almanac/js/table.js"></script>
+</body>
+</html>

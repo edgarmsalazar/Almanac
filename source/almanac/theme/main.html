@@ -107,21 +107,22 @@
 {%- if config.theme.icon %}
 <link rel="icon" href="{{ config.theme.icon | url }}">
 {%- endif %}
-<link rel="stylesheet" href="{{ 'assets/theme.css' | url }}">
-<link rel="stylesheet" href="{{ 'assets/components.css' | url }}">
-<link rel="stylesheet" href="{{ 'assets/almanac.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/css/theme.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/css/components.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/css/almanac.css' | url }}">
+<link rel="stylesheet" href="{{ 'assets/mkdocs.css' | url }}">
 {%- if 'class="doc doc-object' in page.content %}
-<link rel="stylesheet" href="{{ 'assets/reference.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/css/reference.css' | url }}">
 {%- endif %}
 {%- if 'class="arithmatex"' in page.content %}
-<link rel="stylesheet" href="{{ 'assets/katex/katex.min.css' | url }}">
+<link rel="stylesheet" href="{{ 'almanac/vendor/katex/katex.min.css' | url }}">
 {%- endif %}
 {#- mkdocstrings' own stylesheet is written for Material; reference.css draws its output instead. -#}
 {%- for path in config.extra_css if not path.endswith('_mkdocstrings.css') %}
 <link rel="stylesheet" href="{{ path | url }}">
 {%- endfor %}
-<script src="{{ 'assets/settings.js' | url }}"></script>
-<script src="{{ 'assets/charts.js' | url }}"></script>
+<script src="{{ 'almanac/js/settings.js' | url }}"></script>
+<script src="{{ 'almanac/js/charts.js' | url }}"></script>
 <script src="{{ 'data/lexicon.js' | url }}"></script>
 {%- for path in page.meta.data or [] %}
 <script src="{{ path | url }}"></script>
@@ -187,7 +188,7 @@
     </div>
   </header>
 {%- endif %}
-  <script src="{{ 'assets/navbar.js' | url }}"></script>
+  <script src="{{ 'almanac/js/navbar.js' | url }}"></script>
 
   <div class="page-wrapper">
     <header class="page-header d-print-none">
@@ -284,25 +285,25 @@
 </nav>
 {%- endif %}
 {%- if layout == "cards" %}
-<script src="{{ 'assets/toc.js' | url }}"></script>
+<script src="{{ 'almanac/js/toc.js' | url }}"></script>
 {%- else %}
-<script src="{{ 'assets/almanac.js' | url }}"></script>
+<script src="{{ 'almanac/js/almanac.js' | url }}"></script>
 {%- endif %}
-<script src="{{ 'assets/code.js' | url }}"></script>
-<script src="{{ 'assets/data.js' | url }}"></script>
-<script src="{{ 'assets/table.js' | url }}"></script>
-<script src="{{ 'assets/terms.js' | url }}"></script>
-<script src="{{ 'assets/search.js' | url }}"></script>
+<script src="{{ 'almanac/js/code.js' | url }}"></script>
+<script src="{{ 'almanac/js/data.js' | url }}"></script>
+<script src="{{ 'almanac/js/table.js' | url }}"></script>
+<script src="{{ 'almanac/js/terms.js' | url }}"></script>
+<script src="{{ 'almanac/js/search.js' | url }}"></script>
 {%- if page.meta.lexicon %}
-<script src="{{ 'assets/lexicon.js' | url }}"></script>
+<script src="{{ 'almanac/js/lexicon.js' | url }}"></script>
 {%- endif %}
 {%- if 'class="mermaid"' in page.content %}
-<script src="{{ 'assets/mermaid.min.js' | url }}"></script>
-<script src="{{ 'assets/diagrams.js' | url }}"></script>
+<script src="{{ 'almanac/vendor/mermaid.min.js' | url }}"></script>
+<script src="{{ 'almanac/js/diagrams.js' | url }}"></script>
 {%- endif %}
 {%- if 'class="arithmatex"' in page.content %}
-<script src="{{ 'assets/katex/katex.min.js' | url }}"></script>
-<script src="{{ 'assets/maths.js' | url }}"></script>
+<script src="{{ 'almanac/vendor/katex/katex.min.js' | url }}"></script>
+<script src="{{ 'almanac/js/maths.js' | url }}"></script>
 {%- endif %}
 {%- for script in config.extra_javascript %}
 {{ script | script_tag }}

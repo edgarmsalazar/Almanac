@@ -1,6 +1,6 @@
 /* Almanac's own layout, over its Tabler port in theme.css and components.css:
    the docs layout's article and contents column, the header band's lead, the
-   pager, and Pygments' classes folded onto the theme's code colours. */
+   pager, search, examples, maths, and the lexicon and roadmap pages. */
 
 .page-lead {
   max-width: 60rem;
@@ -132,29 +132,9 @@
   color: var(--secondary);
 }
 
-/* Pygments' finer classes, as pymdownx.highlight writes them, folded onto the
-   theme's seven colours (.c .k .nc .nf .s .mi .cp in components.css). */
-.highlight .cm, .highlight .c1, .highlight .cs, .highlight .ch, .highlight .sd { color: #a0aec0; font-style: italic; }
-.highlight .kn, .highlight .kd, .highlight .kc, .highlight .kt, .highlight .kr, .highlight .kp,
-.highlight .ow, .highlight .nb, .highlight .bp { color: #93ddfd; }
-.highlight .nn { color: #ff8383; }
-.highlight .fm, .highlight .nd { color: #ffe484; }
-.highlight .s1, .highlight .s2, .highlight .sa, .highlight .se, .highlight .si, .highlight .sb { color: #b5f4a5; }
-.highlight .mf, .highlight .mh, .highlight .mo, .highlight .il { color: #d9a9ff; }
-
 .mermaid {
   margin: 1.5rem 0;
   text-align: center;
-}
-
-/* A mermaid fence written as code (fence_code_format) is a <pre>: no code
-   block's ground behind the diagram. */
-pre.mermaid {
-  max-height: none;
-  padding: 0;
-  overflow: visible;
-  color: inherit;
-  background: none;
 }
 
 /* A Markdown table, which the plugin gives the theme's classes, framed on its own. */
@@ -200,10 +180,6 @@ pre.mermaid {
   overflow: auto;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
-
-/* Pygments' HTML classes: tags as keywords, attributes as names. */
-.highlight .nt { color: #93ddfd; }
-.highlight .na { color: #ffe484; }
 
 /* The search: Tabler's navbar search field, its results in Tabler's dropdown
    under it. The selectors match the navbar's dropdown rules in weight, and come
@@ -339,165 +315,6 @@ pre.mermaid {
   }
 }
 
-/* The theme's tabs: pymdownx.tabbed's sets, drawn as Tabler's card tabs
-   (core/scss/ui/_cards.scss, .card-tabs), folder tabs on a bordered surface, the
-   chosen one opening onto it. They need no script, their tabs being radio
-   buttons. alternate_style puts the inputs, then
-   the labels, then the blocks; the classic style interleaves input, label and
-   content, and flex order sets the contents beneath. Twenty tabs a set. */
-.tabbed-set {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0 0 1rem;
-}
-
-.tabbed-set > input {
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
-}
-
-.tabbed-labels {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.tabbed-set > label,
-.tabbed-labels > label {
-  position: relative;
-  z-index: 1;
-  padding: 0.5rem 0.75rem;
-  margin-bottom: calc(-1 * var(--border-width));
-  font-size: 0.875rem;
-  color: var(--secondary);
-  cursor: pointer;
-  background: var(--bg-surface-tertiary);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
-}
-
-.tabbed-set > label:hover,
-.tabbed-labels > label:hover {
-  color: var(--body-color);
-}
-
-.tabbed-set > label:not(:first-of-type),
-.tabbed-labels > label:not(:first-child) {
-  margin-left: calc(-1 * var(--border-width));
-  border-top-left-radius: 0;
-}
-
-.tabbed-set > label:not(:last-of-type),
-.tabbed-labels > label:not(:last-child) {
-  border-top-right-radius: 0;
-}
-
-.tabbed-set > .tabbed-content {
-  display: none;
-  order: 99;
-  width: 100%;
-}
-
-.tabbed-alternate > .tabbed-content {
-  display: block;
-}
-
-.tabbed-block,
-.tabbed-set:not(.tabbed-alternate) > .tabbed-content {
-  padding: 1rem;
-  background: var(--bg-surface);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: 0 var(--border-radius-md) var(--border-radius-md) var(--border-radius-md);
-}
-
-.tabbed-block {
-  display: none;
-}
-
-.tabbed-block > :last-child,
-.tabbed-content > :last-child {
-  margin-bottom: 0;
-}
-
-/* The chosen tab and its block. */
-.tabbed-set > input:checked + label,
-.tabbed-alternate > input:nth-child(1):checked ~ .tabbed-labels > :nth-child(1),
-.tabbed-alternate > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
-.tabbed-alternate > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
-.tabbed-alternate > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
-.tabbed-alternate > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
-.tabbed-alternate > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
-.tabbed-alternate > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
-.tabbed-alternate > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
-.tabbed-alternate > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9),
-.tabbed-alternate > input:nth-child(10):checked ~ .tabbed-labels > :nth-child(10),
-.tabbed-alternate > input:nth-child(11):checked ~ .tabbed-labels > :nth-child(11),
-.tabbed-alternate > input:nth-child(12):checked ~ .tabbed-labels > :nth-child(12),
-.tabbed-alternate > input:nth-child(13):checked ~ .tabbed-labels > :nth-child(13),
-.tabbed-alternate > input:nth-child(14):checked ~ .tabbed-labels > :nth-child(14),
-.tabbed-alternate > input:nth-child(15):checked ~ .tabbed-labels > :nth-child(15),
-.tabbed-alternate > input:nth-child(16):checked ~ .tabbed-labels > :nth-child(16),
-.tabbed-alternate > input:nth-child(17):checked ~ .tabbed-labels > :nth-child(17),
-.tabbed-alternate > input:nth-child(18):checked ~ .tabbed-labels > :nth-child(18),
-.tabbed-alternate > input:nth-child(19):checked ~ .tabbed-labels > :nth-child(19),
-.tabbed-alternate > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20) {
-  color: var(--body-color);
-  background: var(--bg-surface);
-  border-bottom-color: var(--bg-surface);
-}
-
-.tabbed-set > input:checked + label + .tabbed-content,
-.tabbed-alternate > input:nth-child(1):checked ~ .tabbed-content > :nth-child(1),
-.tabbed-alternate > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
-.tabbed-alternate > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
-.tabbed-alternate > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
-.tabbed-alternate > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
-.tabbed-alternate > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
-.tabbed-alternate > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
-.tabbed-alternate > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
-.tabbed-alternate > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9),
-.tabbed-alternate > input:nth-child(10):checked ~ .tabbed-content > :nth-child(10),
-.tabbed-alternate > input:nth-child(11):checked ~ .tabbed-content > :nth-child(11),
-.tabbed-alternate > input:nth-child(12):checked ~ .tabbed-content > :nth-child(12),
-.tabbed-alternate > input:nth-child(13):checked ~ .tabbed-content > :nth-child(13),
-.tabbed-alternate > input:nth-child(14):checked ~ .tabbed-content > :nth-child(14),
-.tabbed-alternate > input:nth-child(15):checked ~ .tabbed-content > :nth-child(15),
-.tabbed-alternate > input:nth-child(16):checked ~ .tabbed-content > :nth-child(16),
-.tabbed-alternate > input:nth-child(17):checked ~ .tabbed-content > :nth-child(17),
-.tabbed-alternate > input:nth-child(18):checked ~ .tabbed-content > :nth-child(18),
-.tabbed-alternate > input:nth-child(19):checked ~ .tabbed-content > :nth-child(19),
-.tabbed-alternate > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20) {
-  display: block;
-}
-
-.tabbed-set > input:focus-visible + label,
-.tabbed-alternate > input:nth-child(1):focus-visible ~ .tabbed-labels > :nth-child(1),
-.tabbed-alternate > input:nth-child(2):focus-visible ~ .tabbed-labels > :nth-child(2),
-.tabbed-alternate > input:nth-child(3):focus-visible ~ .tabbed-labels > :nth-child(3),
-.tabbed-alternate > input:nth-child(4):focus-visible ~ .tabbed-labels > :nth-child(4),
-.tabbed-alternate > input:nth-child(5):focus-visible ~ .tabbed-labels > :nth-child(5),
-.tabbed-alternate > input:nth-child(6):focus-visible ~ .tabbed-labels > :nth-child(6),
-.tabbed-alternate > input:nth-child(7):focus-visible ~ .tabbed-labels > :nth-child(7),
-.tabbed-alternate > input:nth-child(8):focus-visible ~ .tabbed-labels > :nth-child(8),
-.tabbed-alternate > input:nth-child(9):focus-visible ~ .tabbed-labels > :nth-child(9),
-.tabbed-alternate > input:nth-child(10):focus-visible ~ .tabbed-labels > :nth-child(10),
-.tabbed-alternate > input:nth-child(11):focus-visible ~ .tabbed-labels > :nth-child(11),
-.tabbed-alternate > input:nth-child(12):focus-visible ~ .tabbed-labels > :nth-child(12),
-.tabbed-alternate > input:nth-child(13):focus-visible ~ .tabbed-labels > :nth-child(13),
-.tabbed-alternate > input:nth-child(14):focus-visible ~ .tabbed-labels > :nth-child(14),
-.tabbed-alternate > input:nth-child(15):focus-visible ~ .tabbed-labels > :nth-child(15),
-.tabbed-alternate > input:nth-child(16):focus-visible ~ .tabbed-labels > :nth-child(16),
-.tabbed-alternate > input:nth-child(17):focus-visible ~ .tabbed-labels > :nth-child(17),
-.tabbed-alternate > input:nth-child(18):focus-visible ~ .tabbed-labels > :nth-child(18),
-.tabbed-alternate > input:nth-child(19):focus-visible ~ .tabbed-labels > :nth-child(19),
-.tabbed-alternate > input:nth-child(20):focus-visible ~ .tabbed-labels > :nth-child(20) {
-  outline: 2px solid var(--primary);
-  outline-offset: -2px;
-}
-
 /* An image for one theme only, as Material and GitHub mark it on its address:
    ![…](picture-light.png#only-light) and ![…](picture-dark.png#only-dark). */
 [data-theme="dark"] img[src$="#only-light"],
@@ -516,20 +333,6 @@ div.arithmatex {
 
 div.arithmatex .katex-display {
   margin: 0.5rem 0;
-}
-
-/* A heading's permalink (toc's permalink: true): quiet, and shown only while the
-   pointer is on its heading or the link has focus. */
-.prose .headerlink {
-  margin-left: 0.25rem;
-  color: var(--tertiary);
-  text-decoration: none;
-  opacity: 0;
-}
-
-.prose :is(h1, h2, h3, h4, h5, h6):hover > .headerlink,
-.prose .headerlink:focus-visible {
-  opacity: 1;
 }
 
 /* The lexicon page (lexicon.py, lexicon.js): a filter above, then each group's
