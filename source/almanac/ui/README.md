@@ -10,13 +10,14 @@ To use it in a project, copy it there with `scripts/export-ui.sh <project>` from
 | --- | --- |
 | `css/theme.css` | The design tokens: palette, gray ramps, radii, fonts, light and dark. The `data-theme-*` attributes on `<html>` pick among them. |
 | `css/components.css` | Tabler's components, ported by hand: cards, tables, alerts, badges, status, steps, the navbar, the offcanvas panel and the rest. |
+| `css/layout.css` | The grid and the utilities, Bootstrap's names as Tabler uses them: `.row`, `.col-md-6`, `.row-cards`, `.d-flex`, `.gap-2`, `.mt-3`, `.text-end` and the rest. For arranging a page; the components do not lean on them, save the KPI cards' `.visually-hidden`. |
 | `css/almanac.css` | Almanac's own layout: the header band's lead, the docs layout and its contents column, the pager, search, examples, maths, and the lexicon and roadmap pages. |
 | `css/dashboard.css` | The dashboard pieces from Portal: the canvas charts' legend, toolbar and readout, KPI cards, the period control, card tabs, the tracking strip and the table filter. |
 | `css/reference.css` | API reference pages, as mkdocstrings writes them. Load it only where one is. |
 | `js/` | One script a behaviour. Each looks for its own markup and does nothing without it. |
 | `fonts/` | Lexend, Exo 2, Barlow and Fira Code, each with its licence. |
 | `vendor/` | Mermaid and KaTeX, unchanged. Load them only on a page with a diagram or maths. |
-| `starter.html` | A page shell to copy: navbar, header band, a KPI card, a chart, a card and a sortable table. |
+| `starter.html` | A page shell to copy: navbar, header band, a KPI card, a chart and a card side by side, and a sortable table. |
 
 ## Loading order
 

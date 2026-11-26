@@ -20,6 +20,7 @@
 <title>Page — Project</title>
 <link rel="stylesheet" href="almanac/css/theme.css">
 <link rel="stylesheet" href="almanac/css/components.css">
+<link rel="stylesheet" href="almanac/css/layout.css">
 <link rel="stylesheet" href="almanac/css/almanac.css">
 <link rel="stylesheet" href="almanac/css/dashboard.css">
 <!-- Not deferred: it sets the theme before the page is painted. -->
@@ -78,16 +79,22 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="chart">A chart</h2></div></div>
-          <div class="card-body"><canvas id="chart-figure" class="plot"></canvas></div>
-        </div>
-
-        <div class="card">
-          <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="first">A section</h2></div></div>
-          <div class="card-body"><div class="prose">
-            <p>Each section of the page is a card. The contents button lists them by their titles.</p>
-          </div></div>
+        <!-- Two cards side by side from 992 px, stacked below: layout.css's grid. -->
+        <div class="row row-cards row-deck">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="chart">A chart</h2></div></div>
+              <div class="card-body"><canvas id="chart-figure" class="plot"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header"><div class="card-header-titles"><h2 class="card-title" id="first">A section</h2></div></div>
+              <div class="card-body"><div class="prose">
+                <p>Each section of the page is a card. The contents button lists them by their titles.</p>
+              </div></div>
+            </div>
+          </div>
         </div>
 
         <div class="card">

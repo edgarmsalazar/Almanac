@@ -365,18 +365,7 @@ canvas.plot[hidden] {
   margin-top: auto;
 }
 
-/* Words for a screen reader that the arrow says to the eye. */
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+/* The words a screen reader hears for the arrow are .visually-hidden, in layout.css. */
 
 /* -------------------------------------------------------------------- tabs */
 /* Tabler's card tabs (core/scss/ui/_cards.scss, .card-tabs; card.mdx's "tabs"

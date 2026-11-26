@@ -74,6 +74,7 @@ nav:
       - Dashboard: components/dashboard.md
       - Controls: components/controls.md
       - Layout: components/layout.md
+      - Grid and utilities: components/grid.md
       - Code and diagrams: components/code.md
       - Page standing: components/standing.md
       - Reference pages: components/reference.md
